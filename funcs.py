@@ -34,22 +34,24 @@ def SpatialDerivatives(bxmin,bxmax,bymin,bymax,dellatlong):
         
     for i in range(sx):
         plong = x[i]
+        if plong>360:
+            plong -= 360
         for j in range(sy):
             plat = y[j]
             #
             ib = np.floor(toporesi * plong).astype(int)
             ibp = ib+1
-            if ibp > ntopo:
+            if ibp >= ntopo:
                 ibp = ibp-ntopo
 
             ibs = np.floor(toporesi * plong-0.5).astype(int)
             ibsp = ibs+1
             plongs = plong
-            if ibs < 0:
-                ibs = ntopo
-                plongs = plong+360
+            if ibs < -1:
+                ibs = ntopo - 1
+                plongs = plong + 360
 
-            if ibsp > ntopo:
+            if ibsp >= ntopo:
                 ibsp = ibsp-ntopo
 
             jb = np.floor(toporesi * (plat+90)).astype(int)
@@ -111,6 +113,9 @@ def EstimateDragCoefficients(plat,plong,sfac):
     for i in range(sx):
         for j in range(sy):
             ib = np.floor(4*plong[i]).astype(int)
+            if ib >= 1440:
+                ib -= 1440
+            
             ibp = ib + 1
             if ibp > 1440-1:
                 ibp = 0
@@ -118,9 +123,13 @@ def EstimateDragCoefficients(plat,plong,sfac):
             ibs = np.floor(4*plong[i]-0.5).astype(int)
             plongs = plong
             if ibs < 0:
-                ibs = 1440-1
+                ibs += 1440
                 plongs = plong+360
-             
+            
+            if ibs >= 1440-1:
+                ibs -= 1440
+                plongs = plong-360 
+                
             ibsp = ibs+1
             jb = np.floor(4*(plat[j]+90)).astype(int)
             jbs = np.floor(4*(plat[j]+90)-0.5).astype(int)
@@ -579,13 +588,15 @@ def utrans(latstore,longstore):
     dtfac  = 1/(4*1.852)
     netfac = dtfac * dfac
     nn, m  = np.shape(latstore)
-    ut     = np.zeros((nn,m))
-    vt     = np.zeros((nn,m))
+    ut     = np.nan*np.zeros((nn,m))
+    vt     = np.nan*np.zeros((nn,m))
     jmax   = np.zeros((nn))
     
     for n in range(nn):
         lat = latstore[n,:]
-        jm = np.argmin(np.abs(lat))    # Get the length of each event by finding the first 0 element
+        # jm = np.argmin(np.abs(lat))     # For Emanuel output (matlab), get the length of each event by finding the first 0 element
+        lat = lat[(lat != 0) & ~np.isnan(lat)]            
+        jm = len(lat)        
         jm = np.maximum(jm,1)
         jmax[n] = jm
         long = longstore[n,:]
@@ -836,14 +847,16 @@ def rainswathx(nt,latstore,longstore,rmstore,vstore,rmsestore,vsestore,ut,vt,u85
         
     nrm, mrm = np.shape(rmstore)
     rfac = magfac * (1+np.zeros((nrm,mrm)))
-    
+        
     if bxmin < 0:
         bxmin += 360
     if bxmax < 0:
         bxmax += 360
     
     # Initialize variables
-    latsize = len(np.nonzero(latstore[nt, :])[0])
+    latdata = latstore[nt,:]
+    latdata = latdata[(latdata != 0) & ~np.isnan(latdata)]
+    latsize = len(latdata)
     utd = ut[nt,:latsize].reshape((1,latsize))
     vtd = vt[nt,:latsize].reshape((1,latsize))
     ush = np.zeros_like(utd)
@@ -857,15 +870,13 @@ def rainswathx(nt,latstore,longstore,rmstore,vstore,rmsestore,vsestore,ut,vt,u85
 
     lat = latstore[nt,:latsize].reshape((1,latsize))
     long = longstore[nt,:latsize].reshape((1,latsize))
+    long[long<0] += 360         # Convert longitude to 0 to 360 degree east
     v = vstore[nt,:latsize].reshape((1,latsize))
     vse = vsestore[nt,:latsize].reshape((1,latsize))
-
+        
     # Scale and randomize radii of maximum wind
     nrm, mrm = rmstore.shape
-    jmaxd = np.argmin(vstore, axis=1) # Get the length of each event by finding the first 0 element
-    jmaxd[vstore[:, -1] != 0] = mrm
-    jmaxd = jmaxd - 1
-    jmaxd = jmaxd.T
+    jmaxd = latsize - 1
     rfac = np.ones((nrm, mrm))
     
     temp = magfac * rfac[nt,:] * rmstore[nt,:]
@@ -874,7 +885,7 @@ def rainswathx(nt,latstore,longstore,rmstore,vstore,rmsestore,vsestore,ut,vt,u85
     temp = 0 * magfac * rfac[nt,:] * rmsestore[nt,:]
     rmse = temp[:latsize].reshape((1,latsize))
         
-    for i in range(jmaxd[nt]):
+    for i in range(jmaxd):
         if long[0,0] > 200 and long[0,i] < 50:
             long[0,i] += 360
     
@@ -886,7 +897,7 @@ def rainswathx(nt,latstore,longstore,rmstore,vstore,rmsestore,vsestore,ut,vt,u85
     h,hx,hy,x,y = SpatialDerivatives(bxmin,bxmax,bymin,bymax,dellatlongs)
     w = pointwshortn(lat, long, v, rm, vse, rmse, utd, vtd, ush, vsh, y, x, h, hx, hy, timeres)
     wq = np.maximum(w-wrad,0) * q900
-    netrain = eprecip * m_to_mm * timeres * 3600 * rowa_over_rowl * np.sum(wq,axis=1)
+    netrain = eprecip * m_to_mm * timeres * 3600 * rowa_over_rowl * np.sum(wq,axis=(0,1))
     
     return x,y,netrain.T
 
