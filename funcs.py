@@ -7,24 +7,7 @@ import datetime
 import pandas as pd
 
 
-def SpatialDerivatives(bxmin,bxmax,bymin,bymax,dellatlong):
-    mat = sio.loadmat('data/bathymetry_high.mat')
-    bathy = mat['bathy']
-    ntopo,_ = np.shape(bathy)
-    topores = 360/ntopo
-    toporesi = 1/topores
-    sfac = 1./(topores*60.*1852)
-    pifac = math.acos(-1)/180
-    
-    x = np.round(np.arange(bxmin,bxmax+1e-8,dellatlong),4)
-    y = np.round(np.arange(bymin,bymax+1e-8,dellatlong),4)
-    sx = np.max(np.shape(x))
-    sy = np.max(np.shape(y))
-
-    if sx == sy:
-        sx += 1
-        x = np.concatenate([x,[bxmax+dellatlong]])        
-        
+def CalculateSpatialDerivatives(bathy,x,y,sx,sy,sfac,pifac,ntopo,toporesi):
     h = np.zeros((sx,sy))
     hx = np.zeros((sx,sy))
     hy = np.zeros((sx,sy))
@@ -85,7 +68,29 @@ def SpatialDerivatives(bxmin,bxmax,bymin,bymax,dellatlong):
             b3 = dhdy[ibsp,jbs]
             b4 = dhdy[ibsp,jbs+1]
             hy[i,j] = (b1*d1 + b2*d2 + b3*d3 + b4*d4)
-            
+    return h, hx, hy
+
+
+def EstimateTopographicHeight(bxmin,bxmax,bymin,bymax,dellatlong):
+    mat = sio.loadmat('data/bathymetry_high.mat')
+    bathy = mat['bathy']
+    ntopo,_ = np.shape(bathy)
+    topores = 360/ntopo
+    toporesi = 1/topores
+    sfac = 1./(topores*60.*1852)
+    pifac = math.acos(-1)/180
+    
+    x = np.round(np.arange(bxmin,bxmax+1e-8,dellatlong),4)
+    y = np.round(np.arange(bymin,bymax+1e-8,dellatlong),4)
+    sx = np.max(np.shape(x))
+    sy = np.max(np.shape(y))
+
+    if sx == sy:
+        sx += 1
+        x = np.concatenate([x,[bxmax+dellatlong]])        
+        
+    h, hx, hy = CalculateSpatialDerivatives(bathy,x,y,sx,sy,sfac,pifac,ntopo,toporesi)
+    
     return h,hx,hy,x,y
             
 
@@ -421,7 +426,7 @@ def rainfieldx(nt,monthplot,dayplot,hourplot):
         bymin = np.floor(latstorm[1]-deltay)
         bymax = np.ceil(latstorm[1]+deltay)
 
-    h, hx, hy, x ,y = SpatialDerivatives(bxmin, bxmax, bymin, bymax, dellatlong)
+    h, hx, hy, x ,y = EstimateTopographicHeight(bxmin, bxmax, bymin, bymax, dellatlong)
     w = pointwfield(latstorm, longstorm, vstorm, rmstorm, vsestorm, rmsestorm, 
                     utstorm, vtstorm, ush, vsh, y, x, h, hx, hy)
     temp = eprecip * m_to_mm * 3600 * rowa_over_rowl * q900 * np.maximum(w[0,1,:,:]-wrad, 0)
@@ -630,7 +635,7 @@ def pointwfield(latstore,longstore,vstore,rmstore,vsestore,
     This function takes the nn X m 'store' matrices  and, using the 
     latitude (plat) and longitude (plong) vectors of points of interest, 
     calculates the spatial distribution of vertical velocity centered at 
-    plong, plat. The routine utrans.m should be run before this one. 
+    plong, plat. The routine utrans should be run before this one. 
     Args:
         us, vs: vertical shears (m/s) used to estimate the baroclinic 
                 components of the vertical motion
@@ -876,7 +881,7 @@ def rainswathx(nt,latstore,longstore,rmstore,vstore,rmsestore,vsestore,ut,vt,u85
         
     # Scale and randomize radii of maximum wind
     nrm, mrm = rmstore.shape
-    jmaxd = latsize - 1
+    jmaxd = latsize
     rfac = np.ones((nrm, mrm))
     
     temp = magfac * rfac[nt,:] * rmstore[nt,:]
@@ -894,7 +899,7 @@ def rainswathx(nt,latstore,longstore,rmstore,vstore,rmsestore,vsestore,ut,vt,u85
     bymin = np.min(lat[np.nonzero(lat)]) - deltay
     bymax = np.max(lat[np.nonzero(lat)]) + deltay
         
-    h,hx,hy,x,y = SpatialDerivatives(bxmin,bxmax,bymin,bymax,dellatlongs)
+    h,hx,hy,x,y = EstimateTopographicHeight(bxmin,bxmax,bymin,bymax,dellatlongs)
     w = pointwshortn(lat, long, v, rm, vse, rmse, utd, vtd, ush, vsh, y, x, h, hx, hy, timeres)
     wq = np.maximum(w-wrad,0) * q900
     netrain = eprecip * m_to_mm * timeres * 3600 * rowa_over_rowl * np.sum(wq,axis=(0,1))
@@ -1084,3 +1089,49 @@ def pointwshortn(latstore,longstore,vstore,rmstore,vsestore,rmsestore,ut,vt,us,v
     w = w + (Vd*latfac*dx*rfinei + vtfine)*hyfine + (utfine - Vd*latfac*dy*rfinei)*hxfine + Vd*dx*rfinei*hymod - Vd*dy*rfinei*hxmod
     w = np.minimum(w,7)
     return w
+
+
+
+def raingen(plat, plong, latstore, longstore, vstore, rmstore, vsestore, rmsestore, u850store, v850store, ut, vt):
+    plat = np.array([plat])
+    plong = np.array([plong])
+    magfac = params.magfac
+    sx = plong.size    
+    sy = plat.size
+    
+    mat = sio.loadmat('data/bathymetry_high.mat')
+    bathy = mat['bathy']
+    ntopo,_ = np.shape(bathy)
+    topores = 360/ntopo
+    toporesi = 1/topores
+    sfac = 1./(topores*60.*1852)
+    pifac = math.acos(-1)/180
+    knotfac = 1852./3600    
+    m, n = ut.shape
+    
+    ush = np.zeros((n,m))
+    vsh = np.zeros((n,m))
+    vdrift = 1.5*3600/1852
+    vdrift = vdrift*latstore[0,0]/(abs(latstore[0,0])+1e-8)
+    if 'u850store' in locals():
+        ush = 5 * knotfac * (ut - u850store)
+        vsh = 5 * knotfac * (vt - vdrift * np.cos(pifac*latstore) - v850store)    
+    
+    lat = latstore.copy()
+    long = longstore.copy()
+    v = vstore.copy()
+    vse = vsestore.copy()
+    
+    nrm, mrm = rmstore.shape
+    rfac = magfac * np.ones((nrm, mrm))
+    
+    rm = rmstore * rfac 
+    rmse = rmsestore * rfac 
+    
+    m_to_mm = 1000
+    rowa_over_rowl = 0.00117
+    bathy = np.maximum(bathy,-1)
+    
+    h, hx, hy = CalculateSpatialDerivatives(bathy,plong,plat,sx,1,sfac,pifac,ntopo,toporesi)
+
+    return h, hx, hy
