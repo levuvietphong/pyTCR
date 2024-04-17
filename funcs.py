@@ -48,52 +48,59 @@ def calculate_spatial_derivatives(bathy, x, y, sx, sy, sfac, pifac, ntopo, topor
             plat = y[j]
             #
             ib = np.floor(toporesi * plong).astype(int)
-            ibp = ib+1
+            ibp = ib + 1
             if ibp >= ntopo:
-                ibp = ibp-ntopo
+                ibp = ibp - ntopo
 
-            ibs = np.floor(toporesi * plong-0.5).astype(int)
-            ibsp = ibs+1
+            ibs = np.floor(toporesi * plong - 0.5).astype(int)
+            ibsp = ibs + 1
             plongs = plong
             if ibs < -1:
                 ibs = ntopo - 1
                 plongs = plong + 360
 
             if ibsp >= ntopo:
-                ibsp = ibsp-ntopo
+                ibsp = ibsp - ntopo
 
-            jb = np.floor(toporesi * (plat+90)).astype(int)
-            jbs = np.floor(toporesi * (plat+90)-0.5).astype(int)
+            jb = np.floor(toporesi * (plat + 90)).astype(int)
+            jbs = np.floor(toporesi * (plat + 90) - 0.5).astype(int)
             b1 = bathy[ib, jb]
-            b2 = bathy[ib, jb+1]
+            b2 = bathy[ib, jb + 1]
             b3 = bathy[ibp, jb]
-            b4 = bathy[ibp, jb+1]
-            dely = toporesi * (plat+90)-jb
-            delx = toporesi * plong-ib
+            b4 = bathy[ibp, jb + 1]
+            dely = toporesi * (plat + 90) - jb
+            delx = toporesi * plong - ib
             d1 = (1 - delx) * (1 - dely)
             d2 = dely * (1 - delx)
             d3 = delx * (1 - dely)
             d4 = delx * dely
-            h[i, j] = np.exp(d1*np.log(b1+11) + d2*np.log(b2+11) +
-                             d3*np.log(b3+11) + d4*np.log(b4+11)) - 11
+            h[i, j] = (
+                np.exp(
+                    d1 * np.log(b1 + 11)
+                    + d2 * np.log(b2 + 11)
+                    + d3 * np.log(b3 + 11)
+                    + d4 * np.log(b4 + 11)
+                )
+                - 11
+            )
 
             b1 = dhdx[ibs, jbs]
-            b2 = dhdx[ibs, jbs+1]
+            b2 = dhdx[ibs, jbs + 1]
             b3 = dhdx[ibsp, jbs]
-            b4 = dhdx[ibsp, jbs+1]
-            dely = -0.5 + toporesi * (plat+90) - jbs
+            b4 = dhdx[ibsp, jbs + 1]
+            dely = -0.5 + toporesi * (plat + 90) - jbs
             delx = -0.5 + toporesi * plongs - ibs
             d1 = (1 - delx) * (1 - dely)
             d2 = dely * (1 - delx)
             d3 = delx * (1 - dely)
             d4 = delx * dely
-            hx[i, j] = (b1 * d1+b2 * d2+b3 * d3+b4 * d4) / np.cos(pifac * plat)
+            hx[i, j] = (b1 * d1 + b2 * d2 + b3 * d3 + b4 * d4) / np.cos(pifac * plat)
 
             b1 = dhdy[ibs, jbs]
-            b2 = dhdy[ibs, jbs+1]
+            b2 = dhdy[ibs, jbs + 1]
             b3 = dhdy[ibsp, jbs]
-            b4 = dhdy[ibsp, jbs+1]
-            hy[i, j] = b1*d1 + b2*d2 + b3*d3 + b4*d4
+            b4 = dhdy[ibsp, jbs + 1]
+            hy[i, j] = b1 * d1 + b2 * d2 + b3 * d3 + b4 * d4
     return h, hx, hy
 
 
@@ -122,8 +129,8 @@ def estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlong):
     sfac = 1.0 / (topores * 60.0 * 1852)            # factor converting degree to m
     pifac = math.acos(-1) / 180                     # pi number
 
-    x = np.round(np.arange(bxmin, bxmax+1e-8, dellatlong), 4)
-    y = np.round(np.arange(bymin, bymax+1e-8, dellatlong), 4)
+    x = np.round(np.arange(bxmin, bxmax + 1e-8, dellatlong), 4)
+    y = np.round(np.arange(bymin, bymax + 1e-8, dellatlong), 4)
     sx = np.max(np.shape(x))
     sy = np.max(np.shape(y))
 
@@ -151,13 +158,13 @@ def estimate_drag_coefficients(plat, plong, sfac):
         - cdx, cdy: derivatives of cd in x & y
     """
 
-    pifac = math.acos(-1)/180         # pi number
+    pifac = math.acos(-1) / 180  # pi number
 
     # Load neutral drag coefficients
-    mat = sio.loadmat('data/C_Drag500.mat')
-    cd = mat['cd']
+    mat = sio.loadmat("data/C_Drag500.mat")
+    cd = mat["cd"]
     # This corrects the drag coefficient to be better applied to gradient wind
-    cd = 0.9 * cd / (1+50*cd)
+    cd = 0.9 * cd / (1 + 50 * cd)
     # see Esau et al. (2004)
     # Align over-water values with Fortran (including some wave drag effect)
     cd = np.maximum(cd, 1e-3)
@@ -165,6 +172,8 @@ def estimate_drag_coefficients(plat, plong, sfac):
     # Interpolate drag coefficient and its gradients to POI
     sy = np.max(np.shape(plat))
     sx = np.max(np.shape(plong))
+
+    # Gradients of drag coefficients to POI
     dcddx = sfac * (np.roll(cd, -1, 0) - cd)
     dcddy = sfac * (np.roll(cd, -1, 1) - cd)
 
@@ -174,55 +183,55 @@ def estimate_drag_coefficients(plat, plong, sfac):
 
     for i in range(sx):
         for j in range(sy):
-            ib = np.floor(4*plong[i]).astype(int)
+            # This is applied specifically for 0.25x0.25 resolution
+            ib = np.floor(4 * plong[i]).astype(int)
             if ib >= 1440:
                 ib -= 1440
 
             ibp = ib + 1
-            if ibp > 1440-1:
+            if ibp > 1440 - 1:
                 ibp = 0
 
-            ibs = np.floor(4*plong[i]-0.5).astype(int)
+            ibs = np.floor(4 * plong[i] - 0.5).astype(int)
             plongs = plong
             if ibs < 0:
                 ibs += 1440
-                plongs = plong+360
+                plongs = plong + 360
 
-            if ibs >= 1440-1:
+            if ibs >= 1440 - 1:
                 ibs -= 1440
-                plongs = plong-360
+                plongs = plong - 360
 
-            ibsp = ibs+1
-            jb = np.floor(4*(plat[j]+90)).astype(int)
-            jbs = np.floor(4*(plat[j]+90)-0.5).astype(int)
+            ibsp = ibs + 1
+            jb = np.floor(4 * (plat[j] + 90)).astype(int)
+            jbs = np.floor(4 * (plat[j] + 90) - 0.5).astype(int)
             b1 = cd[ib, jb]
-            b2 = cd[ib, jb+1]
+            b2 = cd[ib, jb + 1]
             b3 = cd[ibp, jb]
-            b4 = cd[ibp, jb+1]
+            b4 = cd[ibp, jb + 1]
             b1x = dcddx[ibs, jbs]
-            b2x = dcddx[ibs, jbs+1]
+            b2x = dcddx[ibs, jbs + 1]
             b3x = dcddx[ibsp, jbs]
-            b4x = dcddx[ibsp, jbs+1]
+            b4x = dcddx[ibsp, jbs + 1]
             b1y = dcddy[ibs, jbs]
-            b2y = dcddy[ibs, jbs+1]
+            b2y = dcddy[ibs, jbs + 1]
             b3y = dcddy[ibsp, jbs]
-            b4y = dcddy[ibsp, jbs+1]
-            dely = 4*(plat[j]+90) - jb
-            delx = 4*plong[i] - ib
-            d1 = (1-delx) * (1-dely)
-            d2 = dely * (1.-delx)
-            d3 = delx * (1.-dely)
+            b4y = dcddy[ibsp, jbs + 1]
+            dely = 4 * (plat[j] + 90) - jb
+            delx = 4 * plong[i] - ib
+            d1 = (1 - delx) * (1 - dely)
+            d2 = dely * (1.0 - delx)
+            d3 = delx * (1.0 - dely)
             d4 = delx * dely
-            cdrag[i, j] = d1*b1+d2*b2+d3*b3+d4*b4
-            dely = -0.5 + 4 * (plat[j]+90) - jbs
+            cdrag[i, j] = d1 * b1 + d2 * b2 + d3 * b3 + d4 * b4
+            dely = -0.5 + 4 * (plat[j] + 90) - jbs
             delx = -0.5 + 4 * plongs[i] - ibs
-            d1 = (1.-delx) * (1.-dely)
-            d2 = dely * (1-delx)
-            d3 = delx * (1-dely)
+            d1 = (1.0 - delx) * (1.0 - dely)
+            d2 = dely * (1 - delx)
+            d3 = delx * (1 - dely)
             d4 = delx * dely
             cdx[i, j] = (d1*b1x + d2*b2x + d3*b3x + d4*b4x) / np.cos(pifac * plat[j])
             cdy[i, j] = d1*b1y + d2*b2y + d3*b3y + d4*b4y
-
     return cdrag, cdx, cdy
 
 
@@ -1040,104 +1049,6 @@ def vouternew(vm, fc, ro, wc, CD, q):
     return v, rm, imin
 
 
-def rainswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore,
-               ut, vt, u850store, v850store):
-    """
-    This script calculates the distribution of accumulated precipitation for a given
-    individual storm.
-
-    Inputs:
-        - nt: Track number of the storm
-        - latstore, longstore: Latitudes and longitudes along each track
-        - vstore: Maximum circular wind along each storm track
-        - rmstore: Radius (in km) of maximum circular wind along each track
-        - vsestore: maximum circular wind of any secondary eyewalls that may be present
-        - rmsestore: Radius (in km) of maximum circular wind of any secondary eyewalls
-        - ut: West-east component of the storm translation velocity
-        - u850store, v850store: Zonal & meridional components of the 850 hPa environmental
-                wind speed (knots)
-    Returns:
-        - x, y: vectors containing the longitudes and latitudes of the grid
-        - netrain: storm total rainfall (unit: mm) at each point on the grid
-    """
-    magfac = params.magfac
-    deltax = params.deltax
-    deltay = params.deltay
-    bxmin = params.bxmin
-    bxmax = params.bxmax
-    bymin = params.bymin
-    bymax = params.bymax
-    dellatlongs = params.dellatlongs
-    q900 = params.q900
-    eprecip = params.eprecip
-    wrad = params.wrad
-    timeres = params.timeres
-
-    m_to_mm = 1000
-    rowa_over_rowl = 0.00117
-
-    nrm, mrm = np.shape(rmstore)
-    rfac = magfac * (1+np.zeros((nrm, mrm)))
-
-    if bxmin < 0:
-        bxmin += 360
-    if bxmax < 0:
-        bxmax += 360
-
-    # Initialize variables
-    latdata = latstore[nt, :]
-    latdata = latdata[(latdata != 0) & ~np.isnan(latdata)]
-    latsize = len(latdata)
-    utd = ut[nt, :latsize].reshape((1, latsize))
-    vtd = vt[nt, :latsize].reshape((1, latsize))
-    ush = np.zeros_like(utd)
-    vsh = np.zeros_like(vtd)
-    vdrift = 1.5 * 3600 / 1852
-    vdrift *= latstore[0, 0] / (np.abs(latstore[0, 0]) + 1e-8)
-
-    if 'u850store' in locals():
-        ush = 5 * 1852 / 3600 * (utd - u850store[nt, :latsize])
-        vsh = 5 * 1852 / 3600 * \
-            (vtd - vdrift * np.cos(np.pi / 180 *
-             latstore[nt, :latsize]) - v850store[nt, :latsize])
-
-    lat = latstore[nt, :latsize].reshape((1, latsize))
-    long = longstore[nt, :latsize].reshape((1, latsize))
-    long[long < 0] += 360         # Convert longitude to 0 to 360 degree east
-    v = vstore[nt, :latsize].reshape((1, latsize))
-    vse = vsestore[nt, :latsize].reshape((1, latsize))
-
-    # Scale and randomize radii of maximum wind
-    nrm, mrm = rmstore.shape
-    jmaxd = latsize
-    rfac = np.ones((nrm, mrm))
-
-    temp = magfac * rfac[nt, :] * rmstore[nt, :]
-    rm = temp[:latsize].reshape((1, latsize))
-    nrm = np.shape(rm)[1]
-    temp = 0 * magfac * rfac[nt, :] * rmsestore[nt, :]
-    rmse = temp[:latsize].reshape((1, latsize))
-
-    for i in range(jmaxd):
-        if long[0, 0] > 200 and long[0, i] < 50:
-            long[0, i] += 360
-
-    bxmin = np.min(long[np.nonzero(long)]) - deltax
-    bxmax = np.max(long[np.nonzero(long)]) + deltax
-    bymin = np.min(lat[np.nonzero(lat)]) - deltay
-    bymax = np.max(lat[np.nonzero(lat)]) + deltay
-
-    h, hx, hy, x, y = estimate_topographic_height(
-        bxmin, bxmax, bymin, bymax, dellatlongs)
-    w = pointwshortn(lat, long, v, rm, vse, rmse, utd, vtd,
-                     ush, vsh, y, x, h, hx, hy, timeres)
-    wq = np.maximum(w-wrad, 0) * q900
-    netrain = eprecip * m_to_mm * timeres * 3600 * \
-        rowa_over_rowl * np.sum(wq, axis=(0, 1))
-
-    return x, y, netrain.T
-
-
 def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
                  vt, us, vs, plat, plong, h, hx, hy, timeres):
     """
@@ -1376,7 +1287,7 @@ def pointwshortnqdx(latstore, longstore, vstore, rmstore, vsestore, rmsestore, u
         - plat: latitude of point of interest
         - plong: longitude of point of interest
         - h: topographic heights
-        - hx, hy: derivatives of h in x and y
+        - hx, hy: gradients of h in x and y
         - timeres: time resolution
         - wrad: background subsidence velocity under radiative cooling
 
@@ -1427,7 +1338,7 @@ def pointwshortnqdx(latstore, longstore, vstore, rmstore, vsestore, rmsestore, u
         dx[:, :, i] = dfac * np.cos(pifac * plat[i]) * (plong[i] - longstore)
         dy[:, :, i] = dfac * (plat[i] - latstore)
 
-    radius = np.sqrt(dx * dx + dy * dy)
+    radius = np.sqrt(dx * dx + dy * dy)             # radius distance from storm center to POI
     radius = np.maximum(radius, 0.5)
 
     jmin = np.argmin(radius, axis=1)
@@ -1620,8 +1531,12 @@ def pointwshortnqdx(latstore, longstore, vstore, rmstore, vsestore, rmsestore, u
              + (rfine - 0.5 * deltar) * deltari * (V - Vrm)
              + 0.5 * (Vrm + V))
     dMdrm = np.maximum(dMdrm, 10)
-    efacp = np.minimum((-1 + 2 * ((rfine[:, 1: jfine - 1, :] + deltar) / rmfine[:, 1: jfine - 1, :]) ** 2), 1)
-    efacm = np.minimum((-1 + 2 * ((rfine[:, 1: jfine - 1, :] - deltar) / rmfine[:, 1: jfine - 1, :]) ** 2), 1)
+    efacp = np.minimum((-1 + 2 * ((rfine[:, 1:jfine - 1, :] + deltar)
+                                  / rmfine[:, 1:jfine - 1, :]) ** 2),
+                       1)
+    efacm = np.minimum((-1 + 2 * ((rfine[:, 1:jfine - 1, :] - deltar)
+                                  / rmfine[:, 1:jfine - 1, :]) ** 2),
+                       1)
 
     up[:, 1: jfine - 1, :] = (rfine[:, 1: jfine - 1, :] + deltar) \
         * (-0.5 * timeresi * efacp
@@ -1633,6 +1548,8 @@ def pointwshortnqdx(latstore, longstore, vstore, rmstore, vsestore, rmsestore, u
             * (Vpm[:, 1: jfine - 1, :] - Vmm[:, 1: jfine - 1, :])
             + uekm[:, 1: jfine - 1, :]) \
         / dMdrm[:, 1: jfine - 1, :]
+
+    #  stretching component arising from time dependence of the vorte
     w[:, 1: jfine - 1, :] = -Htrop * deltari \
         * ((rfine[:, 1: jfine - 1, :] + deltar) * up[:, 1: jfine - 1, :]
             - (rfine[:, 1: jfine - 1, :] - deltar) * um[:, 1: jfine - 1, :]) \
@@ -1643,11 +1560,9 @@ def pointwshortnqdx(latstore, longstore, vstore, rmstore, vsestore, rmsestore, u
     ##############################
 
     # Now add in topographic and shear components
-    hxmod = -0.0005 * (cp + 2 * V / (0.1 + rfine) +
-                       deltari * (Vrp - Vrm)) * vsfine
+    hxmod = -0.0005 * (cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)) * vsfine
     # to include shear dotted with storm entropy
-    hymod = 0.0005 * (cp + 2 * V / (0.1 + rfine) +
-                      deltari * (Vrp - Vrm)) * usfine
+    hymod = 0.0005 * (cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)) * usfine
 
     # Reduce effect of translation speed outside of radcity
     ufunc = (radcity - rfine) / 50
@@ -1671,12 +1586,122 @@ def pointwshortnqdx(latstore, longstore, vstore, rmstore, vsestore, rmsestore, u
         - Vd * dy * rfinei * hxmod
     )
     w = np.minimum(w, 7)
-    wq = dqfine * np.maximum(w - wrad, 0)
+
+    # Add radiative cooling
+    wq = dqfine * np.maximum(w - wrad, 0)       # If w-wrad is negative (downward motion): wp = 0
     return wq, dayk
 
 
-def raingen(plat, plong, latstore, longstore, vstore, rmstore, vsestore,
-            rmsestore, u850store, v850store, ut, vt):
+def rainswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore,
+               ut, vt, u850store, v850store):
+    """
+    This script calculates the distribution of accumulated precipitation for a given
+    individual storm.
+
+    Inputs:
+        - nt: Track number of the storm
+        - latstore, longstore: Latitudes and longitudes along each track
+        - vstore: Maximum circular wind along each storm track
+        - rmstore: Radius (in km) of maximum circular wind along each track
+        - vsestore: maximum circular wind of any secondary eyewalls that may be present
+        - rmsestore: Radius (in km) of maximum circular wind of any secondary eyewalls
+        - ut: West-east component of the storm translation velocity
+        - u850store, v850store: Zonal & meridional components of the 850 hPa environmental
+                wind speed (knots)
+    Returns:
+        - x, y: vectors containing the longitudes and latitudes of the grid
+        - netrain: storm total rainfall (unit: mm) at each point on the grid
+    """
+    magfac = params.magfac              # overall scale factor for storm size
+    deltax = params.deltax              # longitudinal distance of map boundaries from storm center
+    deltay = params.deltay              # latitudinal distance of map boundaries from storm center
+    bxmin = params.bxmin                # minimum longitude of map (degree)
+    bxmax = params.bxmax                # maximum longitude of map (degree)
+    bymin = params.bymin                # minimum latitude of map (degree)
+    bymax = params.bymax                # maximum latitude of map (degree)
+    dellatlongs = params.dellatlongs    # horizontal resolution of field maps
+    q900 = params.q900                  # specific humidity at 900 hPa
+    timeres = params.timeres            # time resolution for time series at fixed points
+    wrad = params.wrad                  # background subsidence velocity under radiative cooling
+    eprecip = params.eprecip            # precipitation efficiency
+
+    m_to_mm = 1000
+    rowa_over_rowl = 0.00117            # $rho_{air} / rho_{liquid}$
+
+    nrm, mrm = np.shape(rmstore)
+    rfac = magfac * (1+np.zeros((nrm, mrm)))
+
+    if bxmin < 0:
+        bxmin += 360
+    if bxmax < 0:
+        bxmax += 360
+
+    # Initialize variables
+    latdata = latstore[nt, :]
+    latdata = latdata[(latdata != 0) & ~np.isnan(latdata)]
+    latsize = len(latdata)
+    utd = ut[nt, :latsize].reshape((1, latsize))
+    vtd = vt[nt, :latsize].reshape((1, latsize))
+    ush = np.zeros_like(utd)
+    vsh = np.zeros_like(vtd)
+    vdrift = 1.5 * 3600 / 1852
+    vdrift *= latstore[0, 0] / (np.abs(latstore[0, 0]) + 1e-8)
+
+    if 'u850store' in locals():
+        ush = 5 * 1852 / 3600 * (utd - u850store[nt, :latsize])
+        vsh = (
+            5 * 1852 / 3600
+            * (
+                vtd
+                - vdrift * np.cos(np.pi / 180 * latstore[nt, :latsize])
+                - v850store[nt, :latsize]
+            )
+        )
+
+    lat = latstore[nt, :latsize].reshape((1, latsize))
+    long = longstore[nt, :latsize].reshape((1, latsize))
+
+    # Convert longitude to 0 to 360 degree east
+    long[long < 0] += 360
+    v = vstore[nt, :latsize].reshape((1, latsize))
+    vse = vsestore[nt, :latsize].reshape((1, latsize))
+
+    # Scale and randomize radii of maximum wind
+    nrm, mrm = rmstore.shape
+    jmaxd = latsize
+    rfac = np.ones((nrm, mrm))
+
+    temp = magfac * rfac[nt, :] * rmstore[nt, :]
+    rm = temp[:latsize].reshape((1, latsize))
+    nrm = np.shape(rm)[1]
+    temp = 0 * magfac * rfac[nt, :] * rmsestore[nt, :]
+    rmse = temp[:latsize].reshape((1, latsize))
+
+    for i in range(jmaxd):
+        if long[0, 0] > 200 and long[0, i] < 50:
+            long[0, i] += 360
+
+    bxmin = np.min(long[np.nonzero(long)]) - deltax
+    bxmax = np.max(long[np.nonzero(long)]) + deltax
+    bymin = np.min(lat[np.nonzero(lat)]) - deltay
+    bymax = np.max(lat[np.nonzero(lat)]) + deltay
+
+    # Get topographic height and its gradients
+    h, hx, hy, x, y = estimate_topographic_height(
+        bxmin, bxmax, bymin, bymax, dellatlongs)
+
+    # Calculate vertical velocity time series
+    w = pointwshortn(lat, long, v, rm, vse, rmse, utd, vtd,
+                     ush, vsh, y, x, h, hx, hy, timeres)
+    wq = np.maximum(w-wrad, 0) * q900
+    netrain = eprecip * m_to_mm * timeres * 3600 * \
+        rowa_over_rowl * np.sum(wq, axis=(0, 1))
+
+    return x, y, netrain.T
+
+
+def raingen(plat, plong, latstore, longstore, vstore, rmstore, vsestore, rmsestore, u850store,
+            v850store, ut, vt):
     """
     Calculate accumulated rain and rainrates at specified locations for the active event set
 
@@ -1696,13 +1721,16 @@ def raingen(plat, plong, latstore, longstore, vstore, rmstore, vsestore,
         - rainrate: Rain rate (unit: mm/hr)
         - dayk: Time in date format corresponding to rainrate 
     """
+
+    # Convert point lat,lon to array
     plat = np.array([plat])
     plong = np.array([plong])
-    magfac = params.magfac
-    q900 = params.q900
-    timeres = params.timeres
-    wrad = params.wrad
-    eprecip = params.eprecip
+
+    magfac = params.magfac                  # overall scale factor for storm size
+    q900 = params.q900                      # specific humidity at 900 hPa
+    timeres = params.timeres                # time resolution for time series at fixed points
+    wrad = params.wrad                      # background subsidence velocity under radiative cooling
+    eprecip = params.eprecip                # precipitation efficiency
 
     sx = plong.size                         # get number of points
     # sy = plat.size
@@ -1741,11 +1769,11 @@ def raingen(plat, plong, latstore, longstore, vstore, rmstore, vsestore,
     rowa_over_rowl = 0.00117                # density of air over density of liquid
     bathy = np.maximum(bathy, -1)
 
-    # Get topographic gradient
+    # Calculate topographic and its gradients
     h, hx, hy = calculate_spatial_derivatives(
         bathy, plong, plat, sx, 1, sfac, pifac, ntopo, toporesi)
 
-    wq, dayk = pointwshortnqdx(lat, long, v, rm, vse, rmse, ut, vt, ush, vsh, plat, plong, 
+    wq, dayk = pointwshortnqdx(lat, long, v, rm, vse, rmse, ut, vt, ush, vsh, plat, plong,
                                h, hx, hy, timeres, wrad)
     rainrate = eprecip * m_to_mm * 3600 * rowa_over_rowl * wq
     rain = timeres * np.sum(rainrate, axis=1).reshape(-1, 1)
