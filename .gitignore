@@ -1,0 +1,10 @@
+.DS_Store
+.vscode/
+__pycache__/
+
+*.mp4
+/notebooks/animations/
+/notebooks/figures/
+/notebooks/hidden_*.ipynb
+/notebooks/*_dev.ipynb
+/miscellaneous/
