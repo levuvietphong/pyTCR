@@ -7,8 +7,8 @@ import os
 import sys
 import math
 import numpy as np
-from . import terrain_boundary as tcr_tb
-from . import params
+from tcr import terrain_boundary as tcr_tb
+from tcr import params
 
 
 def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
@@ -282,7 +282,7 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None):
     wp : float
         Wind profile shape parameter, typically used to adjust the wind decay rate.
     vm2 : float, optional
-        Secondary maximum circular wind speed (knots), if a secondary eyewall is present. 
+        Secondary maximum circular wind speed (knots), if a secondary eyewall is present.
         Default is 0, indicating no secondary eyewall.
     rm2 : float, optional
         Secondary radius of maximum wind (km). Default is 0, indicating no secondary eyewall.
@@ -294,7 +294,7 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None):
 
     Notes:
     ------
-    - The function assumes vm2 and rm2 are set to 0 if no secondary eyewall is present.        
+    - The function assumes vm2 and rm2 are set to 0 if no secondary eyewall is present.
     """
 
     wprofile = wp  # Use holland (1) or emanuel (2) or er2011 (3) wind profile
@@ -305,7 +305,7 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None):
         vm2 = vm2 * 1852 / 3600     # Convert maximum wind speed to m/s
 
     if rm2 is not None:
-        se = np.sum(rm2[rm2 != 0])  # Test if there are any secondary eyewalls    
+        se = np.sum(rm2[rm2 != 0])  # Test if there are any secondary eyewalls
 
     # Holland 2010 wind profile model
     if wprofile == 1:
@@ -327,7 +327,7 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None):
 
     elif wprofile == 2:
         r0 = 1000  # Outer radius (km)
-        
+
         # Re-scale radius of maximum winds by random number drawn from log-normal distribution
         # Shape parameters
         b = 0.25

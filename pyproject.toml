@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyTCR"
+version = "0.1.0"
+description = "Python-based Tropical Cyclone Rainfall"
+authors = [
+    {name = "Phong Le", email = "levuvietphong@gmail.com"}
+]
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "colorcet",
+    "scipy",
+    "cartopy",
+    "shapely",
+    "xarray",
+    "netcdf4"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+readme = "README.md"

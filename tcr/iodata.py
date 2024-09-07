@@ -7,7 +7,7 @@ import glob
 import numpy as np
 import scipy.io as sio
 import xarray as xr
-from netCDF4 import Dataset 
+from netCDF4 import Dataset
 
 
 def load_Matlab_data(directory, filename):
@@ -63,7 +63,8 @@ def load_NetCDF_data(directory, filename):
     tc_years = np.nan_to_num(ds['tc_years'].values)
     tc_time = np.nan_to_num(ds['time'].values)
 
-    return ds, lat_trks, lon_trks, n_trk, v_trks, vmax_trks, u850_trks, v850_trks, tc_month, tc_years, tc_time
+    return ds, lat_trks, lon_trks, n_trk, v_trks, vmax_trks, u850_trks, v850_trks, \
+        tc_month, tc_years, tc_time
 
 
 def load_best_tracks_obs(fname, year_start, year_end):
