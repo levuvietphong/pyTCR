@@ -14,31 +14,44 @@
 
 ![](notebooks/images/Intro-hurricane.gif)
 
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#books-overview">Overview</a></li>
+    <li><a href="#wrench-installation">Installation</a></li>
+    <li><a href="#arrow_forward-getting-started">Getting Started</a></li>
+    <li><a href="#framed_picture-gallery">Gallery</a></li>
+    <li><a href="#page_facing_up-license">License</a></li>
+    <li><a href="#people_hugging-acknowledgments">Acknowledgments</a></li>    
+    <li><a href="#mailbox-contacts">Contacts</a></li>
+  </ol>
+</details>
+
 ## :books: Overview
 **pyTCR** is a physics-based model designed for estimating rainfall driven by tropical cylones (TC) ([Zhu *et al.*, 2013](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2013GL058284); [Lu *et al.*, 2018](https://journals.ametsoc.org/view/journals/atsc/75/7/jas-d-17-0264.1.xml)). The PyTCR simulates convective TC rainfall by relating the precipitation rate to the total upward velocity within the TC vortex. The `PyTCR` seamlessly integrates with outputs from [a tropical cylone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) (see [Lin *et al.,* 2023](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023MS003686)) to produce detailed spatial-temporal rainfall patterns aligned with hurricane tracks.
 
 ## :wrench: Installation
 
-First, clone pyTCR to your local computer:
+1. Clone the pyTCR repo
+    ```sh
+    git clone https://github.com/levuvietphong/pyTCR.git
+    ```
 
-```shell
-git clone https://github.com/levuvietphong/pyTCR.git
-```
+2. Navigate to the pyTCR directory and create a `conda` virtual environment using the provided `environment.yml` file
+    ```sh
+    conda env create -f environment.yml
+    ```
 
-Next, navigate to the pyTCR directory and create a `conda` virtual environment using the provided `environment.yml` file:
-```shell
-conda env create -f environment.yml
-```
+3. Activate the environment:
+    ```sh
+    conda activate pyTCR
+    ```
 
-Activate the environment:
-```shell
-conda activate pyTCR
-```
-
-Finally, install the PyTCR package:
-```shell
-pip install -e .
-```
+4. Install the PyTCR package:
+    ```sh
+    pip install -e .
+    ```
 
 ## :arrow_forward: Getting Started
 This repository provides several [`jupyter notebooks`](https://github.com/levuvietphong/pyTCR/tree/main/notebooks) to help you get started with PyTCR for generating and visualizing tropical cyclone-driven rainfall. The notebooks demonstrate different use cases and data sources:
@@ -67,7 +80,7 @@ The following figures illustrate the inputs used in pyTCR and results obtained f
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 
-## :people_hugging: Acknowledgements
+## :people_hugging: Acknowledgments
 This work was supported by the [Southeast Texas Urban Integrated Field Lab](https://setx-uifl.org/) (<img src="https://setx-uifl.org/wp-content/uploads/2023/08/SETx-URBAN-IFL-Logo-Full-Color-Final-300x109.png" height="22" style="vertical-align: -5px" />) project, one of four [Urban Integrated Field Laboratories](https://ess.science.energy.gov/urban-ifls/) (UIFLs <img src="https://ess.science.energy.gov/urban-ifls/wp-content/uploads/sites/2/2023/04/UIFL-logo-final.jpg" height="22" style="vertical-align: -4px" />). The software was mostly developed at the <img src="https://map.ornl.org/art/logo.png" height="22" style="vertical-align: -6px"/> (ORNL). We extend our gratitude to the SETx-UIFL team for their support and collaboration.
 
 
