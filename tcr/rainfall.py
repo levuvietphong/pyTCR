@@ -6,10 +6,10 @@ import datetime
 import math
 import pandas as pd
 import numpy as np
-from . import wind as tcr_wind
-from . import terrain_boundary as tcr_tb
-from . import iodata as tcr_io
-from . import params
+from tcr import wind as tcr_wind
+from tcr import terrain_boundary as tcr_tb
+from tcr import iodata as tcr_io
+from tcr import params
 
 
 def rainfieldx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore, ut, vt,
@@ -109,7 +109,7 @@ def rainfieldx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore, ut
     )
 
     w = tcr_wind.pointwfield(latstorm, longstorm, vstorm, rmstorm, vsestorm,
-                              rmsestorm, utstorm, vtstorm, ush, vsh, y, x, h, hx, hy)
+                             rmsestorm, utstorm, vtstorm, ush, vsh, y, x, h, hx, hy)
 
     temp = eprecip * m_to_mm * 3600 * rhoa_over_rhol * q900 * np.maximum(w[0, 1, :, :]-wrad, 0)
 

@@ -4,7 +4,7 @@ Functions for topography and boundary layers in PyTCR
 
 import math
 import numpy as np
-from . import iodata as tcr_io
+from tcr import iodata as tcr_io
 
 
 def calculate_distance_POI_from_track(plat, plong, latstore, longstore, nn, m, sx, sy, ngrid, dfac):

@@ -10,8 +10,9 @@ dependencies:
   - scipy
   - cartopy
   - ipykernel
+  - jupyter
   - shapely
-  - xarray  
+  - xarray
   - pip
   - pip:
     # Add any additional pip packages if needed
