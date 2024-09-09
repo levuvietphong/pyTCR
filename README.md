@@ -14,19 +14,16 @@
 
 ![](notebooks/images/Intro-hurricane.gif)
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li><a href="#books-overview">Overview</a></li>
-    <li><a href="#wrench-installation">Installation</a></li>
-    <li><a href="#arrow_forward-getting-started">Getting Started</a></li>
-    <li><a href="#framed_picture-gallery">Gallery</a></li>
-    <li><a href="#page_facing_up-license">License</a></li>
-    <li><a href="#people_hugging-acknowledgments">Acknowledgments</a></li>    
-    <li><a href="#mailbox-contacts">Contacts</a></li>
-  </ol>
-</details>
+
+## Table of Contents
+
+- [Overview](#books-overview)
+- [Installation](#wrench-installation)
+- [Getting Started](#arrow_forward-getting-started)
+- [Gallery](#framed_picture-gallery)
+- [License](#page_facing_up-license)
+- [Acknowledgments](#people_hugging-acknowledgments)
+- [Contacts](#mailbox-contacts)
 
 ## :books: Overview
 **pyTCR** is a physics-based model designed for estimating rainfall driven by tropical cylones (TC) ([Zhu *et al.*, 2013](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2013GL058284); [Lu *et al.*, 2018](https://journals.ametsoc.org/view/journals/atsc/75/7/jas-d-17-0264.1.xml)). The PyTCR simulates convective TC rainfall by relating the precipitation rate to the total upward velocity within the TC vortex. The `PyTCR` seamlessly integrates with outputs from [a tropical cylone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) (see [Lin *et al.,* 2023](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023MS003686)) to produce detailed spatial-temporal rainfall patterns aligned with hurricane tracks.
@@ -87,3 +84,7 @@ This work was supported by the [Southeast Texas Urban Integrated Field Lab](http
 ## :mailbox: Contacts
 Collaborators and contributions are very welcome! For questions and feedback, please contact:
 - Phong Le (lepv@ornl.gov)
+
+<hr>
+
+[Go to Top](#table-of-contents)
