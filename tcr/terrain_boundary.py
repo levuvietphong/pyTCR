@@ -28,10 +28,7 @@ def calculate_distance_POI_from_track(plat, plong, latstore, longstore, nn, m, s
     dy = np.zeros((nn, m, sx, sy))              # 4d array of dy
     for i in range(sx):
         for jj in range(sy):
-            if ngrid == 1:
-                j = i
-            else:
-                j = jj
+            j = i if ngrid == 1 else jj
 
             if (np.ndim(longstore) == 1) & (np.ndim(latstore) == 1):
                 dx[:, :, i, j] = dfac * np.cos(pifac*plat[j]) * (plong[i]-longstore)
@@ -43,29 +40,30 @@ def calculate_distance_POI_from_track(plat, plong, latstore, longstore, nn, m, s
                 dx[:, :, i, j] = dfac * np.cos(pifac*plat[j]) * (plong[i]-longstore[:, :, i, jj])
                 dy[:, :, i, j] = dfac * (plat[j]-latstore[:, :, i, jj])
 
-    radius = np.sqrt(dx*dx+dy*dy)
+    radius = np.sqrt(dx * dx + dy * dy)
     return radius, dx, dy
 
 
 def calculate_spatial_derivatives(bathy, x, y, sx, sy, sfac, pifac, ntopo, toporesi):
     """
-    Calculate spatial derivatives:
         This function computes the spatial derivatives of a given topography
 
     Parameters:
-        bathy:  bathymetry
-        x: spatial coordinate in x
-        y: spatial coordinate in y
-        sx: size of x
-        sy: size of y
-        sfac: factor converting nautical to km
-        pifac: pi number
-        ntopo: number of row of bathymetry array
-        toporesi: inverse of topgraphic resolution (topores)
+    ----------
+        - bathy : bathymetry
+        - x : spatial coordinate in x
+        - y : spatial coordinate in y
+        - sx : size of x
+        - sy : size of y
+        - sfac : factor converting nautical to km
+        - pifac : pi number
+        - ntopo : number of row of bathymetry array
+        - toporesi : inverse of topgraphic resolution (topores)
 
     Returns:
-        h: topographic heights
-        hx, hy: derivatives of h in x and y
+    -------
+        - h : topographic heights
+        - hx, hy : derivatives of h in x and y
     """
 
     h = np.zeros((sx, sy))
@@ -185,7 +183,7 @@ def estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlong):
 
 def estimate_drag_coefficients(plat, plong, sfac):
     """
-    This function load the drag coefficient from datasets
+    Load the drag coefficient from datasets
 
     Inputs:
     -------
@@ -283,14 +281,13 @@ def calculate_qs900(T600, vmax):
     specific humidity at pressure 'pref' given 600 hPa T (K) and assuming a
     moist adiabatic lapse rate.
 
-    This version is faster than qs900 and takes into account increased
-    eyewall entropy, which requires input of circular wind.
-
     Parameters:
+    ----------
     - T600: Temperature at 600 hPa (K)
     - vmax: Maximum wind speed (knots)
 
     Returns:
+    --------
     - q900: Saturation specific humidity at pref (950 hPa)
     - q600: Saturation specific humidity at 600 hPa
     """

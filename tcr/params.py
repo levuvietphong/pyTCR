@@ -17,7 +17,7 @@ deltar = 2         #        2  |   km  | Delta radius for calculating dM/dr
 
 # Storm geometry
 randfac = 'n'
-seyewall = 'n'     #    'y'    |   -   | Use secondary eyewall information?
+seyewall = 'n'     #    'n'    |   -   | Use secondary eyewall information?
 wprofile = 3       #     3     |   -   | Wind profile 1=Holland, 2=Emanuel, 3=Emanuel & Rotunno 2011
 magfac = 1.0       #    1.0    |   -   | Overall scale factor for storm size
 
@@ -35,6 +35,9 @@ bxmin = 20         #      -    |degrees| Minimum longitude of map
 bxmax = 380        #      -    |degrees| Maximum longitude of map
 bymin = -60        #      -    |degrees| Minimum latitude of map
 bymax = 60         #      -    |degrees| Maximum latitude of map
+
+# Parameter for wind reduction
+wheight = 30       #    30     |   m   | Altitude above local terrain to estimate surface winds
 
 # Parameters for mapping
 mapmode = 'auto'   #   'auto'  |   -   | Mode of determining lat-long bounds of map
