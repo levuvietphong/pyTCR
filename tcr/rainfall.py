@@ -126,6 +126,7 @@ def rainswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore,
     individual storm.
 
     Inputs:
+    ------
         - nt: Track number of the storm
         - latstore, longstore: Latitudes and longitudes along each track
         - vstore: Maximum circular wind along each storm track
@@ -136,6 +137,7 @@ def rainswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore,
         - u850store, v850store: Zonal & meridional components of the 850 hPa environmental
                 wind speed (knots)
     Returns:
+    -------
         - x, y: vectors containing the longitudes and latitudes of the grid
         - netrain: storm total rainfall (unit: mm) at each point on the grid
     """
@@ -233,6 +235,7 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
     Calculate accumulated rain and rainrates at specified locations for the active event set
 
     Inputs:
+    ------
         - plat, plong: Latitude and longitude of points of interest.
         - latstore, longstore: Latitudes and longitude along each storm track
         - datestore: datetime info in integer format
@@ -245,9 +248,10 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
         - vtrans: North-south component of the storm translation velocity
 
     Returns:
+    -------
         - rain: Total storm rainfall (unit: mm)
         - rainrate: Rain rate (unit: mm/hr)
-        - dayk: Time in date format corresponding to rainrate
+        - date_record: Time in date format corresponding to rainrate
     """
 
     ut = np.nan_to_num(utrans)
@@ -264,7 +268,6 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
     eprecip = params.eprecip                # precipitation efficiency
 
     sx = plong.size                         # get number of points
-    # sy = plat.size
 
     # Load high-resolution bathymetry from matlab file
     mat = tcr_io.load_Matlab_data('data', 'bathymetry_high.mat')
@@ -316,12 +319,12 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
         q900 = np.where(ut != 0, q900_default, 0)
 
     # Estimate vertical wind velocity
-    wq, dayk = tcr_wind.pointwshortnqdx(
+    wq, date_record = tcr_wind.pointwshortnqdx(
         lat, long, dates, q900, v, rm, vse, rmse, ut, vt, ush, vsh,
         plong, plat, h, hx, hy, timeres, wrad)
 
-    # convert dayk to pandas format
-    datetimes = pd.to_datetime(dayk.flatten(), unit='s')
+    # convert date_record to pandas format
+    datetimes = pd.to_datetime(date_record.flatten(), unit='s')
     datetimes_numpy = np.array(
         [
             (
@@ -332,9 +335,9 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
             for dt in datetimes
         ]
     )
-    dayk = np.reshape(datetimes_numpy, wq.shape)
+    date_record = np.reshape(datetimes_numpy, wq.shape)
 
     rainrate = eprecip * m_to_mm * 3600 * rhoa_over_rhol * wq
     rainrate = np.nan_to_num(rainrate)
     rain = timeres * np.sum(rainrate, axis=1).reshape(-1, 1)
-    return rain, rainrate, dayk
+    return rain, rainrate, date_record

@@ -9,3 +9,5 @@ pyTCR.egg-info/
 /notebooks/hidden_*.ipynb
 /notebooks/*_dev.ipynb
 /miscellaneous/
+/data/MIROC6_20th_Atlantic.mat
+/data/bathymetry.mat
