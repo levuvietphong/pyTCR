@@ -269,9 +269,9 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
 
     sx = plong.size                         # get number of points
 
-    # Load high-resolution bathymetry from matlab file
-    mat = tcr_io.load_Matlab_data('data', 'bathymetry_high.mat')
-    bathy = mat["bathy"]
+    # Load high-resolution bathymetry from netcdf
+    bathy = tcr_io.load_netcdf_2d_parameters('../data', 'surface_data.nc', 'bathymetry')
+
     ntopo, _ = np.shape(bathy)
     topores = 360. / ntopo                  # topo resolution in degree
     toporesi = 1. / topores                 # inverse of topo resolution

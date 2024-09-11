@@ -158,8 +158,7 @@ def estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlong):
     """
 
     # Load high-resolution bathymetry file in `data`` directory
-    mat = tcr_io.load_Matlab_data('data', 'bathymetry_high.mat')
-    bathy = mat['bathy']
+    bathy = tcr_io.load_netcdf_2d_parameters('../data', 'surface_data.nc', 'bathymetry_high')
     ntopo, _ = np.shape(bathy)                      # number of grid point in x direction
     topores = 360 / ntopo                           # topo resolution in degree
     toporesi = 1 / topores                          # inverse of topo resolution
@@ -200,9 +199,8 @@ def estimate_drag_coefficients(plat, plong, sfac):
     pifac = math.acos(-1) / 180  # pi number
 
     # Load neutral drag coefficients
-    mat = tcr_io.load_Matlab_data('data', 'C_Drag500.mat')
+    cd = tcr_io.load_netcdf_2d_parameters('../data', 'surface_data.nc', 'cdrag')
 
-    cd = mat["cd"]
     # This corrects the drag coefficient to be better applied to gradient wind
     cd = 0.9 * cd / (1 + 50 * cd)
     # see Esau et al. (2004)

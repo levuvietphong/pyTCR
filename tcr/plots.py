@@ -190,11 +190,11 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1, wind_speed_thresh
 
     # PLOT HURRICANE TRACKS
     for i in track_inds:
-        lat = lats[i, :].data
+        lat = lats[i, :]
         indmax = np.where(lat > -90)[0][-1]+1
         lat = lat[:indmax:interval]
-        lon = lons[i, :indmax:interval].data
-        vs = vmaxs[i, :indmax:interval].data
+        lon = lons[i, :indmax:interval]
+        vs = vmaxs[i, :indmax:interval]
         ind = np.where(vs >= wind_speed_threshold)[0]
         if len(ind) > 0:
             lat = lat[ind]
