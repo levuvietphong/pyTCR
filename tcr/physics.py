@@ -27,16 +27,16 @@ def estimate_track_density(lat_trks, lon_trks, vmax_trks, num_trks, threshold, c
 
     for tc_id in ind_trks:
         density = np.zeros((nrows, ncols))
-        temp = lat_trks[tc_id, :].data
+        temp = lat_trks[tc_id, :]
         indmax = np.where(temp > -90)[0][-1]+1
-        lat = lat_trks[tc_id, 0:indmax:interval].data
-        lon = lon_trks[tc_id, 0:indmax:interval].data
+        lat = lat_trks[tc_id, 0:indmax:interval]
+        lon = lon_trks[tc_id, 0:indmax:interval]
         ind = np.where(lon >= 360)
 
         if len(ind) > 0:
             lon[ind] -= 360
 
-        vmax = vmax_trks[tc_id, 0:indmax:interval].data
+        vmax = vmax_trks[tc_id, 0:indmax:interval]
         ind = np.where(vmax > threshold)
         lat = lat[ind]
         lon = lon[ind]
@@ -70,11 +70,11 @@ def estimate_pdi(lat_trks, lon_trks, vmax_trks, num_trks, cellsize, dt):
 
     for tc_id in ind_trks:
         pdi = np.zeros((nrows, ncols))
-        temp = lat_trks[tc_id, :].data
+        temp = lat_trks[tc_id, :]
         indmax = np.where(temp > -90)[0][-1]+1
-        lat = lat_trks[tc_id, 0:indmax].data
-        lon = lon_trks[tc_id, 0:indmax].data
-        vmax = vmax_trks[tc_id, 0:indmax].data
+        lat = lat_trks[tc_id, 0:indmax]
+        lon = lon_trks[tc_id, 0:indmax]
+        vmax = vmax_trks[tc_id, 0:indmax]
         ind = np.where(lon >= 360)
         if len(ind) > 0:
             lon[ind] -= 360

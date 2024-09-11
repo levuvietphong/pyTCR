@@ -724,12 +724,10 @@ def pointshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut, v
     logfac = np.log(wheight / 500) / 0.35
 
     # Load bathymetry
-    mat = tcr_io.load_Matlab_data('data', 'bathymetry.mat')
-    bathy = mat['bathy']
+    bathy = tcr_io.load_netcdf_2d_parameters('data', 'surface_data.nc', 'bathy')
 
     # Load neutral drag coefficients
-    mat = tcr_io.load_Matlab_data('data', 'C_Drag500.mat')
-    cd = mat["cd"]
+    cd = tcr_io.load_netcdf_2d_parameters('data', 'surface_data.nc', 'cd')
     mincd = np.min(cd)
     cd[bathy < 0] = mincd
     rat = 1 / (1 + np.sqrt(mincd) * logfac)
