@@ -63,12 +63,15 @@ def rainfieldx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore, ut
     pifac = math.acos(-1)/180
     knotfac = 1852./3600
 
-    # Get the length of each event by finding the first 0 element
+    # Get the length of each event by finding the first 0 element, if non-zero, get all length
     jmaxd = np.argmin(vstore, axis=1)
+    duration = jmaxd[nt]
+    if duration == 0:
+        duration = vstore.shape[1]
 
-    dum = np.zeros((jmaxd[nt]))
-    V = np.column_stack((dum+2000, monthstore[nt, 0:jmaxd[nt]].T,
-                        daystore[nt, 0:jmaxd[nt]].T, hourstore[nt, 0:jmaxd[nt]].T, dum, dum))
+    dum = np.zeros((duration))
+    V = np.column_stack((dum+2000, monthstore[nt, 0:duration].T,
+                        daystore[nt, 0:duration].T, hourstore[nt, 0:duration].T, dum, dum))
     timev = pd.to_datetime(dict(
         year=V[:, 0], month=V[:, 1], day=V[:, 2], hour=V[:, 3], minute=V[:, 4], second=V[:, 5]))
     timeplot = datetime.datetime(2000, monthplot, dayplot, hourplot, 0, 0)
@@ -122,59 +125,66 @@ def rainfieldx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore, ut
 def rainswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore,
                ut, vt, u850store, v850store):
     """
-    This script calculates the distribution of accumulated precipitation for a given
-    individual storm.
+    Calculate the distribution of accumulated precipitation for a given individual storm.
 
-    Inputs:
-    ------
-        - nt: Track number of the storm
-        - latstore, longstore: Latitudes and longitudes along each track
-        - vstore: Maximum circular wind along each storm track
-        - rmstore: Radius (in km) of maximum circular wind along each track
-        - vsestore: maximum circular wind of any secondary eyewalls that may be present
-        - rmsestore: Radius (in km) of maximum circular wind of any secondary eyewalls
-        - ut: West-east component of the storm translation velocity
-        - u850store, v850store: Zonal & meridional components of the 850 hPa environmental
-                wind speed (knots)
+    Parameters:
+    -----------
+    nt : int
+        Track number of the storm
+    latstore, longstore : array_like
+        Latitudes and longitudes along each track
+    vstore : array_like
+        Maximum circular wind along each storm track
+    rmstore : array_like
+        Radius (in km) of maximum circular wind along each track
+    vsestore : array_like
+        Maximum circular wind of any secondary eyewalls that may be present
+    rmsestore : array_like
+        Radius (in km) of maximum circular wind of any secondary eyewalls
+    ut, vt : array_like
+        West-east and north-south components of the storm translation velocity
+    u850store, v850store : array_like
+        Zonal & meridional components of the 850 hPa environmental wind speed (knots)
+
     Returns:
-    -------
-        - x, y: vectors containing the longitudes and latitudes of the grid
-        - netrain: storm total rainfall (unit: mm) at each point on the grid
+    --------
+    x, y : array_like
+        Vectors containing the longitudes and latitudes of the grid
+    netrain : array_like
+        Storm total rainfall (unit: mm) at each point on the grid
     """
-    magfac = params.magfac              # overall scale factor for storm size
-    deltax = params.deltax              # longitudinal distance of map boundaries from storm center
-    deltay = params.deltay              # latitudinal distance of map boundaries from storm center
-    bxmin = params.bxmin                # minimum longitude of map (degree)
-    bxmax = params.bxmax                # maximum longitude of map (degree)
-    bymin = params.bymin                # minimum latitude of map (degree)
-    bymax = params.bymax                # maximum latitude of map (degree)
-    dellatlongs = params.dellatlongs    # horizontal resolution of field maps
-    q900 = params.q900                  # specific humidity at 900 hPa
-    timeres = params.timeres            # time resolution for time series at fixed points
-    wrad = params.wrad                  # background subsidence velocity under radiative cooling
-    eprecip = params.eprecip            # precipitation efficiency
+    # Load parameters
+    magfac = params.magfac
+    deltax, deltay = params.deltax, params.deltay
+    bxmin, bxmax = params.bxmin, params.bxmax
+    bymin, bymax = params.bymin, params.bymax
+    dellatlongs = params.dellatlongs
+    q900 = params.q900
+    timeres = params.timeres
+    wrad = params.wrad
+    eprecip = params.eprecip
 
-    m_to_mm = 1000
-    rhoa_over_rhol = 0.00117            # $rho_{air} / rho_{liquid}$
-
-    nrm, mrm = np.shape(rmstore)
-    rfac = magfac * (1+np.zeros((nrm, mrm)))
-
-    if bxmin < 0:
-        bxmin += 360
-    if bxmax < 0:
-        bxmax += 360
+    # Constants
+    M_TO_MM = 1000
+    RHOA_OVER_RHOL = 0.00117  # rho_air / rho_liquid
 
     # Initialize variables
+    nrm, mrm = np.shape(rmstore)
+    rfac = magfac * np.ones((nrm, mrm))
+
+    bxmin = (bxmin + 360) if bxmin < 0 else bxmin
+    bxmax = (bxmax + 360) if bxmax < 0 else bxmax
+
     latdata = latstore[nt, :]
     latdata = latdata[(latdata != 0) & ~np.isnan(latdata)]
     latsize = len(latdata)
+
     utd = ut[nt, :latsize].reshape((1, latsize))
     vtd = vt[nt, :latsize].reshape((1, latsize))
     ush = np.zeros_like(utd)
     vsh = np.zeros_like(vtd)
-    vdrift = 1.5 * 3600 / 1852
-    vdrift *= latstore[0, 0] / (np.abs(latstore[0, 0]) + 1e-8)
+
+    vdrift = 1.5 * 3600 / 1852 * latstore[0, 0] / (np.abs(latstore[0, 0]) + 1e-8)
 
     if 'u850store' in locals():
         ush = 5 * 1852 / 3600 * (utd - u850store[nt, :latsize])
@@ -195,36 +205,27 @@ def rainswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore,
     v = vstore[nt, :latsize].reshape((1, latsize))
     vse = vsestore[nt, :latsize].reshape((1, latsize))
 
-    # Scale and randomize radii of maximum wind
-    nrm, mrm = rmstore.shape
-    jmaxd = latsize
-    rfac = np.ones((nrm, mrm))
+    # Scale radii of maximum wind
+    rm = (magfac * rfac[nt, :] * rmstore[nt, :])[:latsize].reshape((1, latsize))
+    rmse = (magfac * rfac[nt, :] * rmsestore[nt, :])[:latsize].reshape((1, latsize))
 
-    temp = magfac * rfac[nt, :] * rmstore[nt, :]
-    rm = temp[:latsize].reshape((1, latsize))
-    nrm = np.shape(rm)[1]
-    temp = magfac * rfac[nt, :] * rmsestore[nt, :]
-    rmse = temp[:latsize].reshape((1, latsize))
+    # Adjust longitudes for date line crossing
+    long[0, (long[0, 0] > 200) & (long[0, :] < 50)] += 360
 
-    for i in range(jmaxd):
-        if long[0, 0] > 200 and long[0, i] < 50:
-            long[0, i] += 360
-
+    # Calculate map boundaries
     bxmin = np.min(long[np.nonzero(long)]) - deltax
     bxmax = np.max(long[np.nonzero(long)]) + deltax
     bymin = np.min(lat[np.nonzero(lat)]) - deltay
     bymax = np.max(lat[np.nonzero(lat)]) + deltay
 
     # Get topographic height and its gradients
-    h, hx, hy, x, y = tcr_tb. estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlongs)
+    h, hx, hy, x, y = tcr_tb.estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlongs)
 
     # Calculate vertical velocity time series
     w = tcr_wind.pointwshortn(lat, long, v, rm, vse, rmse, utd, vtd,
                               ush, vsh, x, y, h, hx, hy, timeres)
-    wq = np.maximum(w-wrad, 0) * q900
-    netrain = (
-        eprecip * m_to_mm * timeres * 3600 * rhoa_over_rhol * np.sum(wq, axis=(0, 1))
-    )
+    wq = np.maximum(w - wrad, 0) * q900
+    netrain = eprecip * M_TO_MM * timeres * 3600 * RHOA_OVER_RHOL * np.sum(wq, axis=(0, 1))
 
     return x, y, netrain.T
 
@@ -232,28 +233,48 @@ def rainswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore,
 def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsestore, rmsestore,
             u850store, v850store, utrans, vtrans, T600=None):
     """
-    Calculate accumulated rain and rainrates at specified locations for the active event set
+    Calculate accumulated rain and rainrates at specified locations for the active event set.
 
-    Inputs:
-    ------
-        - plat, plong: Latitude and longitude of points of interest.
-        - latstore, longstore: Latitudes and longitude along each storm track
-        - datestore: datetime info in integer format
-        - vstore: Maximum circular wind along each storm track
-        - rmstore: Radius (in km) of maximum circular wind along each track
-        - vsestore: maximum circular wind of any secondary eyewalls that may be present
-        - rmsestore: Radius (in km) of maximum circular wind of any secondary eyewalls
-        - u850store: Zonal component of the 850 hPa environmental wind speed (in knots)
-        - utrans: West-east component of the storm translation velocity
-        - vtrans: North-south component of the storm translation velocity
+    Parameters:
+    -----------
+    plat : array-like
+        Latitude of points of interest.
+    plong : array-like
+        Longitude of points of interest.
+    latstore : array-like
+        Latitudes along each storm track.
+    longstore : array-like
+        Longitudes along each storm track.
+    datestore : array-like
+        Datetime info in integer format.
+    vstore : array-like
+        Maximum circular wind along each storm track.
+    rmstore : array-like
+        Radius (in km) of maximum circular wind along each track.
+    vsestore : array-like
+        Maximum circular wind of any secondary eyewalls that may be present.
+    rmsestore : array-like
+        Radius (in km) of maximum circular wind of any secondary eyewalls.
+    u850store : array-like
+        Zonal component of the 850 hPa environmental wind speed (in knots).
+    v850store : array-like
+        Meridional component of the 850 hPa environmental wind speed (in knots).
+    utrans : array-like
+        West-east component of the storm translation velocity.
+    vtrans : array-like
+        North-south component of the storm translation velocity.
+    T600 : array-like, optional
+        Temperature at 600 hPa level.
 
     Returns:
-    -------
-        - rain: Total storm rainfall (unit: mm)
-        - rainrate: Rain rate (unit: mm/hr)
-        - date_record: Time in date format corresponding to rainrate
+    --------
+    rain : ndarray
+        Total storm rainfall (unit: mm).
+    rainrate : ndarray
+        Rain rate (unit: mm/hr).
+    date_record : ndarray
+        Time in date format corresponding to rainrate.
     """
-
     ut = np.nan_to_num(utrans)
     vt = np.nan_to_num(vtrans)
 
@@ -261,6 +282,7 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
     plat = np.array([plat])
     plong = np.array([plong])
 
+    # Load parameters
     magfac = params.magfac                  # overall scale factor for storm size
     q900_default = params.q900              # specific humidity at 900 hPa
     timeres = params.timeres                # time resolution for time series at fixed points
@@ -285,10 +307,9 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
 
     ush = np.zeros((n, m))
     vsh = np.zeros((n, m))
-    vdrift = 1.5 * 3600 / 1852
-    vdrift = vdrift * latstore[0, 0] / (abs(latstore[0, 0]) + 1e-8)
+    vdrift = 1.5 * 3600 / 1852 * latstore[0, 0] / (np.abs(latstore[0, 0]) + 1e-8)
 
-    if "u850store" in locals():
+    if 'u850store' in locals():
         ush = 5 * knotfac * (ut - u850store)
         vsh = 5 * knotfac * (vt - vdrift * np.cos(pifac * latstore) - v850store)
 
@@ -304,8 +325,10 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
     rm = rmstore * rfac
     rmse = rmsestore * rfac
 
-    m_to_mm = 1000                          # meter to millimeter
-    rhoa_over_rhol = 0.00117                # density of air over density of liquid
+    # Constants
+    M_TO_MM = 1000
+    RHOA_OVER_RHOL = 0.00117  # rho_air / rho_liquid
+
     bathy = np.maximum(bathy, -1)
 
     # Calculate topographic and its gradients
@@ -323,7 +346,7 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
         lat, long, dates, q900, v, rm, vse, rmse, ut, vt, ush, vsh,
         plong, plat, h, hx, hy, timeres, wrad)
 
-    # convert date_record to pandas format
+    # Convert date_record to pandas format
     datetimes = pd.to_datetime(date_record.flatten(), unit='s')
     datetimes_numpy = np.array(
         [
@@ -337,7 +360,8 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
     )
     date_record = np.reshape(datetimes_numpy, wq.shape)
 
-    rainrate = eprecip * m_to_mm * 3600 * rhoa_over_rhol * wq
+    rainrate = eprecip * M_TO_MM * 3600 * RHOA_OVER_RHOL * wq
     rainrate = np.nan_to_num(rainrate)
     rain = timeres * np.sum(rainrate, axis=1).reshape(-1, 1)
+
     return rain, rainrate, date_record

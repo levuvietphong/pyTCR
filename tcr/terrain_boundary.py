@@ -7,107 +7,180 @@ import numpy as np
 from tcr import iodata as tcr_io
 
 
-def calculate_distance_POI_from_track(plat, plong, latstore, longstore, nn, m, sx, sy, ngrid, dfac):
+def calculate_distance_to_track(
+    point_lat,
+    point_lon,
+    track_lats,
+    track_lons,
+    num_storms,
+    storm_length,
+    num_x_points,
+    num_y_points,
+    num_grid_points,
+    degree_to_km_factor,
+):
     """
-    This function calculates the distances of points of interest from the track
+    Calculate the distances of points of interest (POI) from the track.
 
     Parameters:
-        - plat, plong: point latitude & longitude
-        - latstore, longstore: Latitude and longitude of points along each track
-        - nn: number of storms
-        - m: length of each storm
-        - sx, sy: number of points for x & y direction?
-        - ngrid: number of grid points???
-        - dfac: factor converting degree to km
+    -----------
+    point_lat : numpy.ndarray
+        Array of latitudes for points of interest.
+    point_lon : numpy.ndarray
+        Array of longitudes for points of interest.
+    track_lats : numpy.ndarray
+        Array of latitudes along each track.
+    track_lons : numpy.ndarray
+        Array of longitudes along each track.
+    num_storms : int
+        Number of storms.
+    storm_length : int
+        Length of each storm.
+    num_x_points : int
+        Number of points in the x direction.
+    num_y_points : int
+        Number of points in the y direction.
+    num_grid_points : int
+        Number of grid points.
+    degree_to_km_factor : float
+        Factor for converting degrees to kilometers.
+
     Returns:
-        radius: Euclidean distance from track
-        dx, dy: distance components in x & y directions
+    --------
+    radius : numpy.ndarray
+        Euclidean distance from track.
+    dx : numpy.ndarray
+        Distance components in the x direction.
+    dy : numpy.ndarray
+        Distance components in the y direction.
     """
-    pifac = math.acos(-1)/180                   # pi number
-    dx = np.zeros((nn, m, sx, sy))              # 4d array of dx
-    dy = np.zeros((nn, m, sx, sy))              # 4d array of dy
-    for i in range(sx):
-        for jj in range(sy):
-            j = i if ngrid == 1 else jj
+    pi_factor = math.acos(-1) / 180
+    dx = np.zeros((num_storms, storm_length, num_x_points, num_y_points))
+    dy = np.zeros((num_storms, storm_length, num_x_points, num_y_points))
 
-            if (np.ndim(longstore) == 1) & (np.ndim(latstore) == 1):
-                dx[:, :, i, j] = dfac * np.cos(pifac*plat[j]) * (plong[i]-longstore)
-                dy[:, :, i, j] = dfac * (plat[j]-latstore)
-            elif (np.ndim(longstore) == 2) & (np.ndim(latstore) == 2):
-                dx[:, :, i, j] = dfac * np.cos(pifac*plat[j]) * (plong[i]-longstore)
-                dy[:, :, i, j] = dfac * (plat[j]-latstore)
-            elif (np.ndim(longstore) == 4) & (np.ndim(latstore) == 4):
-                dx[:, :, i, j] = dfac * np.cos(pifac*plat[j]) * (plong[i]-longstore[:, :, i, jj])
-                dy[:, :, i, j] = dfac * (plat[j]-latstore[:, :, i, jj])
+    for i in range(num_x_points):
+        for jj in range(num_y_points):
+            j = i if num_grid_points == 1 else jj
 
-    radius = np.sqrt(dx * dx + dy * dy)
+            if np.ndim(track_lons) == 1 and np.ndim(track_lats) == 1:
+                dx[:, :, i, j] = (
+                    degree_to_km_factor
+                    * np.cos(pi_factor * point_lat[j])
+                    * (point_lon[i] - track_lons)
+                )
+                dy[:, :, i, j] = degree_to_km_factor * (point_lat[j] - track_lats)
+            elif np.ndim(track_lons) == 2 and np.ndim(track_lats) == 2:
+                dx[:, :, i, j] = (
+                    degree_to_km_factor
+                    * np.cos(pi_factor * point_lat[j])
+                    * (point_lon[i] - track_lons)
+                )
+                dy[:, :, i, j] = degree_to_km_factor * (point_lat[j] - track_lats)
+            elif np.ndim(track_lons) == 4 and np.ndim(track_lats) == 4:
+                dx[:, :, i, j] = (
+                    degree_to_km_factor
+                    * np.cos(pi_factor * point_lat[j])
+                    * (point_lon[i] - track_lons[:, :, i, jj])
+                )
+                dy[:, :, i, j] = degree_to_km_factor * (
+                    point_lat[j] - track_lats[:, :, i, jj]
+                )
+
+    radius = np.sqrt(dx**2 + dy**2)
     return radius, dx, dy
 
 
-def calculate_spatial_derivatives(bathy, x, y, sx, sy, sfac, pifac, ntopo, toporesi):
+def calculate_spatial_derivatives(
+    bathymetry,
+    x_coords,
+    y_coords,
+    x_size,
+    y_size,
+    scale_factor,
+    pi_factor,
+    num_topo_rows,
+    topo_resolution_inv,
+):
     """
-        This function computes the spatial derivatives of a given topography
+    Compute the spatial derivatives of a given topography.
 
     Parameters:
     ----------
-        - bathy : bathymetry
-        - x : spatial coordinate in x
-        - y : spatial coordinate in y
-        - sx : size of x
-        - sy : size of y
-        - sfac : factor converting nautical to km
-        - pifac : pi number
-        - ntopo : number of row of bathymetry array
-        - toporesi : inverse of topgraphic resolution (topores)
+    bathymetry : numpy.ndarray
+        Array representing the bathymetry.
+    x_coords : numpy.ndarray
+        Array of spatial coordinates in the x direction.
+    y_coords : numpy.ndarray
+        Array of spatial coordinates in the y direction.
+    x_size : int
+        Size of the x dimension.
+    y_size : int
+        Size of the y dimension.
+    scale_factor : float
+        Factor for converting nautical miles to kilometers.
+    pi_factor : float
+        Value of pi divided by 180.
+    num_topo_rows : int
+        Number of rows in the bathymetry array.
+    topo_resolution_inv : float
+        Inverse of the topographic resolution.
 
     Returns:
     -------
-        - h : topographic heights
-        - hx, hy : derivatives of h in x and y
+    h : numpy.ndarray
+        Array of topographic heights.
+    hx : numpy.ndarray
+        Array of derivatives of h in the x direction.
+    hy : numpy.ndarray
+        Array of derivatives of h in the y direction.
     """
 
-    h = np.zeros((sx, sy))
-    hx = np.zeros((sx, sy))
-    hy = np.zeros((sx, sy))
-    bathy = np.maximum(bathy, -1)
-    dhdx = sfac * (np.roll(bathy, -1, 0) - np.roll(bathy, 0, 0))
-    dhdy = sfac * (np.roll(bathy, -1, 1) - np.roll(bathy, 0, 1))
+    h = np.zeros((x_size, y_size))
+    hx = np.zeros((x_size, y_size))
+    hy = np.zeros((x_size, y_size))
+    bathymetry = np.maximum(bathymetry, -1)
+    dhdx = scale_factor * (np.roll(bathymetry, -1, 0) - np.roll(bathymetry, 0, 0))
+    dhdy = scale_factor * (np.roll(bathymetry, -1, 1) - np.roll(bathymetry, 0, 1))
 
-    for i in range(sx):
-        plong = x[i]
-        if plong >= 360:
-            plong -= 360
+    for i in range(x_size):
+        longitude = x_coords[i]
+        if longitude >= 360:
+            longitude -= 360
 
-        for j in range(sy):
-            plat = y[j]
-            ib = np.floor(toporesi * plong).astype(int)
+        for j in range(y_size):
+            latitude = y_coords[j]
+            ib = np.floor(topo_resolution_inv * longitude).astype(int)
             ibp = ib + 1
-            if ibp >= ntopo:
-                ibp = ibp - ntopo
+            if ibp >= num_topo_rows:
+                ibp -= num_topo_rows
 
-            ibs = np.floor(toporesi * plong - 0.5).astype(int)
+            ibs = np.floor(topo_resolution_inv * longitude - 0.5).astype(int)
             ibsp = ibs + 1
-            plongs = plong
+            if ibs < 0:
+                ibs = num_topo_rows - 1
+                longitude += 360
 
-            if ibs < -1:
-                ibs = ntopo - 1
-                plongs = plong + 360
+            if ibsp >= num_topo_rows:
+                ibsp -= num_topo_rows
 
-            if ibsp >= ntopo:
-                ibsp = ibsp - ntopo
-
-            jb = np.floor(toporesi * (plat + 90)).astype(int)
-            jbs = np.floor(toporesi * (plat + 90) - 0.5).astype(int)
-            b1 = bathy[ib, jb]
-            b2 = bathy[ib, jb + 1]
-            b3 = bathy[ibp, jb]
-            b4 = bathy[ibp, jb + 1]
-            dely = toporesi * (plat + 90) - jb
-            delx = toporesi * plong - ib
-            d1 = (1 - delx) * (1 - dely)
-            d2 = dely * (1 - delx)
-            d3 = delx * (1 - dely)
-            d4 = delx * dely
+            jb = np.floor(topo_resolution_inv * (latitude + 90)).astype(int)
+            jbs = np.floor(topo_resolution_inv * (latitude + 90) - 0.5).astype(int)
+            b1, b2, b3, b4 = (
+                bathymetry[ib, jb],
+                bathymetry[ib, jb + 1],
+                bathymetry[ibp, jb],
+                bathymetry[ibp, jb + 1],
+            )
+            dely, delx = (
+                topo_resolution_inv * (latitude + 90) - jb,
+                topo_resolution_inv * longitude - ib,
+            )
+            d1, d2, d3, d4 = (
+                (1 - delx) * (1 - dely),
+                dely * (1 - delx),
+                delx * (1 - dely),
+                delx * dely,
+            )
             h[i, j] = (
                 np.exp(
                     d1 * np.log(b1 + 11)
@@ -118,184 +191,225 @@ def calculate_spatial_derivatives(bathy, x, y, sx, sy, sfac, pifac, ntopo, topor
                 - 11
             )
 
-            b1 = dhdx[ibs, jbs]
-            b2 = dhdx[ibs, jbs + 1]
-            b3 = dhdx[ibsp, jbs]
-            b4 = dhdx[ibsp, jbs + 1]
-            dely = -0.5 + toporesi * (plat + 90) - jbs
-            delx = -0.5 + toporesi * plongs - ibs
-            d1 = (1 - delx) * (1 - dely)
-            d2 = dely * (1 - delx)
-            d3 = delx * (1 - dely)
-            d4 = delx * dely
-            hx[i, j] = (b1 * d1 + b2 * d2 + b3 * d3 + b4 * d4) / np.cos(pifac * plat)
+            b1, b2, b3, b4 = (
+                dhdx[ibs, jbs],
+                dhdx[ibs, jbs + 1],
+                dhdx[ibsp, jbs],
+                dhdx[ibsp, jbs + 1],
+            )
+            dely, delx = (
+                -0.5 + topo_resolution_inv * (latitude + 90) - jbs,
+                -0.5 + topo_resolution_inv * longitude - ibs,
+            )
+            d1, d2, d3, d4 = (
+                (1 - delx) * (1 - dely),
+                dely * (1 - delx),
+                delx * (1 - dely),
+                delx * dely,
+            )
+            hx[i, j] = (b1 * d1 + b2 * d2 + b3 * d3 + b4 * d4) / np.cos(
+                pi_factor * latitude
+            )
 
-            b1 = dhdy[ibs, jbs]
-            b2 = dhdy[ibs, jbs + 1]
-            b3 = dhdy[ibsp, jbs]
-            b4 = dhdy[ibsp, jbs + 1]
+            b1, b2, b3, b4 = (
+                dhdy[ibs, jbs],
+                dhdy[ibs, jbs + 1],
+                dhdy[ibsp, jbs],
+                dhdy[ibsp, jbs + 1],
+            )
             hy[i, j] = b1 * d1 + b2 * d2 + b3 * d3 + b4 * d4
+
     return h, hx, hy
 
 
 def estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlong):
     """
-    Load topographic from file and estimate the spatial derivatives
+    Estimate the topographic height and its spatial derivatives.
 
-    Inputs:
-    -------
-        - bxmin: bound min in x-axis
-        - bxmax: bound max in x-axis
-        - bymin: bound min in y-axis
-        - bymax: bound max in y-axis
-        - dellatlong: horizontal resolution of map (unit: degree)
+    Parameters:
+    -----------
+    bxmin : float
+        Minimum bound in the x-axis (longitude).
+    bxmax : float
+        Maximum bound in the x-axis (longitude).
+    bymin : float
+        Minimum bound in the y-axis (latitude).
+    bymax : float
+        Maximum bound in the y-axis (latitude).
+    dellatlong : float
+        Horizontal resolution of the map in degrees.
 
     Returns:
     --------
-        - h: topographic data
-        - hx, hy: topographic gradient in x & y direction
-        - x, y: vectors containing the longs and lats of the grid
+    h : numpy.ndarray
+        Topographic height data.
+    hx : numpy.ndarray
+        Topographic gradient in the x direction.
+    hy : numpy.ndarray
+        Topographic gradient in the y direction.
+    x : numpy.ndarray
+        Array of longitude values for the grid.
+    y : numpy.ndarray
+        Array of latitude values for the grid.
     """
 
-    # Load high-resolution bathymetry file in `data`` directory
-    bathy = tcr_io.load_netcdf_2d_parameters('../data', 'surface_data.nc', 'bathymetry_high')
-    ntopo, _ = np.shape(bathy)                      # number of grid point in x direction
-    topores = 360 / ntopo                           # topo resolution in degree
-    toporesi = 1 / topores                          # inverse of topo resolution
-    sfac = 1.0 / (topores * 60.0 * 1852)            # factor converting degree to m
-    pifac = math.acos(-1) / 180                     # pi number
+    # Load high-resolution bathymetry data
+    bathymetry = tcr_io.load_netcdf_2d_parameters(
+        "../data", "surface_data.nc", "bathymetry_high"
+    )
+    ntopo, _ = np.shape(bathymetry)  # number of grid point in x direction
+    topo_resolution = 360 / ntopo
+    topo_resolution_inv = 1 / topo_resolution
+    scale_factor = 1.0 / (
+        topo_resolution * 60.0 * 1852
+    )  # factor converting degree to m
+    pi_factor = math.pi / 180  # pi number
 
     x = np.round(np.arange(bxmin, bxmax + 1e-8, dellatlong), 4)
     y = np.round(np.arange(bymin, bymax + 1e-8, dellatlong), 4)
-    sx = np.max(np.shape(x))
-    sy = np.max(np.shape(y))
+    x_size = len(x)
+    y_size = len(y)
 
-    if sx == sy:
-        sx += 1
-        x = np.concatenate([x, [bxmax+dellatlong]])
+    if x_size == y_size:
+        x_size += 1
+        x = np.append(x, bxmax + dellatlong)
 
     h, hx, hy = calculate_spatial_derivatives(
-        bathy, x, y, sx, sy, sfac, pifac, ntopo, toporesi)
+        bathymetry,
+        x,
+        y,
+        x_size,
+        y_size,
+        scale_factor,
+        pi_factor,
+        ntopo,
+        topo_resolution_inv,
+    )
 
     return h, hx, hy, x, y
 
 
 def estimate_drag_coefficients(plat, plong, sfac):
     """
-    Load the drag coefficient from datasets
+    Estimate the drag coefficients and their gradients at points of interest (POI).
 
-    Inputs:
-    -------
-        - plat: point latitude
-        - plong: point longitude
-        - sfac: factor converting nautical to km
+    Parameters:
+    -----------
+    plat : numpy.ndarray
+        Array of latitudes for points of interest.
+    plong : numpy.ndarray
+        Array of longitudes for points of interest.
+    sfac : float
+        Factor for converting nautical miles to kilometers.
 
     Returns:
     --------
-        - cdrag: drag coefficient
-        - cdx, cdy: derivatives of cd in x & y
+    cdrag : numpy.ndarray
+        Array of drag coefficients at POI.
+    cdx : numpy.ndarray
+        Array of drag coefficient gradients in the x direction.
+    cdy : numpy.ndarray
+        Array of drag coefficient gradients in the y direction.
     """
 
-    pifac = math.acos(-1) / 180  # pi number
+    pi_factor = math.pi / 180  # pi number
 
     # Load neutral drag coefficients
-    cd = tcr_io.load_netcdf_2d_parameters('../data', 'surface_data.nc', 'cdrag')
+    cd = tcr_io.load_netcdf_2d_parameters("../data", "surface_data.nc", "cdrag")
 
-    # This corrects the drag coefficient to be better applied to gradient wind
+    # Correct the drag coefficient for gradient wind application
     cd = 0.9 * cd / (1 + 50 * cd)
-    # see Esau et al. (2004)
-    # Align over-water values with Fortran (including some wave drag effect)
-    cd = np.maximum(cd, 1e-3)
+    cd = np.maximum(cd, 1e-3)  # Ensure minimum drag coefficient value
 
-    # Interpolate drag coefficient and its gradients to POI
-    sy = np.max(np.shape(plat))
-    sx = np.max(np.shape(plong))
+    # Calculate gradients of drag coefficients
+    dcddx = sfac * (np.roll(cd, -1, axis=0) - cd)
+    dcddy = sfac * (np.roll(cd, -1, axis=1) - cd)
 
-    # Gradients of drag coefficients to POI
-    dcddx = sfac * (np.roll(cd, -1, 0) - cd)
-    dcddy = sfac * (np.roll(cd, -1, 1) - cd)
-
+    # Initialize arrays for drag coefficients and their gradients at POI
+    sx, sy = plong.size, plat.size
     cdrag = np.zeros((sx, sy))
     cdx = np.zeros((sx, sy))
     cdy = np.zeros((sx, sy))
 
     for i in range(sx):
         for j in range(sy):
-            # This is applied specifically for 0.25x0.25 resolution
-            ib = np.floor(4 * plong[i]).astype(int)
-            if ib >= 1440:
-                ib -= 1440
+            # Calculate indices for interpolation
+            ib = int(np.floor(4 * plong[i])) % 1440
+            ibp = (ib + 1) % 1440
+            ibs = int(np.floor(4 * plong[i] - 0.5)) % 1440
+            ibsp = (ibs + 1) % 1440
+            jb = int(np.floor(4 * (plat[j] + 90)))
+            jbs = int(np.floor(4 * (plat[j] + 90) - 0.5))
 
-            ibp = ib + 1
-            if ibp > 1440 - 1:
-                ibp = 0
-
-            ibs = np.floor(4 * plong[i] - 0.5).astype(int)
-            plongs = plong
-            if ibs < 0:
-                ibs += 1440
-                plongs = plong + 360
-
-            if ibs >= 1440 - 1:
-                ibs -= 1440
-                plongs = plong - 360
-
-            ibsp = ibs + 1
-            jb = np.floor(4 * (plat[j] + 90)).astype(int)
-            jbs = np.floor(4 * (plat[j] + 90) - 0.5).astype(int)
-            b1 = cd[ib, jb]
-            b2 = cd[ib, jb + 1]
-            b3 = cd[ibp, jb]
-            b4 = cd[ibp, jb + 1]
-            b1x = dcddx[ibs, jbs]
-            b2x = dcddx[ibs, jbs + 1]
-            b3x = dcddx[ibsp, jbs]
-            b4x = dcddx[ibsp, jbs + 1]
-            b1y = dcddy[ibs, jbs]
-            b2y = dcddy[ibs, jbs + 1]
-            b3y = dcddy[ibsp, jbs]
-            b4y = dcddy[ibsp, jbs + 1]
-            dely = 4 * (plat[j] + 90) - jb
+            # Interpolate drag coefficient and its gradients
             delx = 4 * plong[i] - ib
-            d1 = (1 - delx) * (1 - dely)
-            d2 = dely * (1.0 - delx)
-            d3 = delx * (1.0 - dely)
-            d4 = delx * dely
-            cdrag[i, j] = d1 * b1 + d2 * b2 + d3 * b3 + d4 * b4
+            dely = 4 * (plat[j] + 90) - jb
+            weights = [
+                (1 - delx) * (1 - dely),
+                dely * (1 - delx),
+                delx * (1 - dely),
+                delx * dely,
+            ]
+
+            cdrag[i, j] = (
+                weights[0] * cd[ib, jb]
+                + weights[1] * cd[ib, jb + 1]
+                + weights[2] * cd[ibp, jb]
+                + weights[3] * cd[ibp, jb + 1]
+            )
+
+            delx = -0.5 + 4 * plong[i] - ibs
             dely = -0.5 + 4 * (plat[j] + 90) - jbs
-            delx = -0.5 + 4 * plongs[i] - ibs
-            d1 = (1.0 - delx) * (1.0 - dely)
-            d2 = dely * (1 - delx)
-            d3 = delx * (1 - dely)
-            d4 = delx * dely
-            cdx[i, j] = (d1*b1x + d2*b2x + d3*b3x + d4*b4x) / np.cos(pifac * plat[j])
-            cdy[i, j] = d1*b1y + d2*b2y + d3*b3y + d4*b4y
+            weights = [
+                (1 - delx) * (1 - dely),
+                dely * (1 - delx),
+                delx * (1 - dely),
+                delx * dely,
+            ]
+
+            cdx[i, j] = (
+                weights[0] * dcddx[ibs, jbs]
+                + weights[1] * dcddx[ibs, jbs + 1]
+                + weights[2] * dcddx[ibsp, jbs]
+                + weights[3] * dcddx[ibsp, jbs + 1]
+            ) / np.cos(pi_factor * plat[j])
+
+            cdy[i, j] = (
+                weights[0] * dcddy[ibs, jbs]
+                + weights[1] * dcddy[ibs, jbs + 1]
+                + weights[2] * dcddy[ibsp, jbs]
+                + weights[3] * dcddy[ibsp, jbs + 1]
+            )
+
     return cdrag, cdx, cdy
 
 
 def calculate_qs900(T600, vmax):
     """
-    Calculates saturation specific humidity at 600 hPa and saturation
-    specific humidity at pressure 'pref' given 600 hPa T (K) and assuming a
-    moist adiabatic lapse rate.
+    Calculate saturation specific humidity at 600 hPa and 950 hPa given the
+    temperature at 600 hPa and assuming a moist adiabatic lapse rate.
 
     Parameters:
     ----------
-    - T600: Temperature at 600 hPa (K)
-    - vmax: Maximum wind speed (knots)
+    T600 : numpy.ndarray
+        Temperature at 600 hPa (K).
+    vmax : numpy.ndarray
+        Maximum wind speed (knots).
 
     Returns:
     --------
-    - q900: Saturation specific humidity at pref (950 hPa)
-    - q600: Saturation specific humidity at 600 hPa
+    q900 : numpy.ndarray
+        Saturation specific humidity at 950 hPa.
+    q600 : numpy.ndarray
+        Saturation specific humidity at 600 hPa.
     """
     pref = 950  # Pressure to find qs at (hPa)
 
     # Constants
-    cp = 1005
-    Rv = 491
-    Rd = 287
-    Lv = 2.5e6
+    cp = 1005  # Specific heat capacity of dry air at constant pressure (J/(kg·K))
+    Rv = 491  # Gas constant for water vapor (J/(kg·K))
+    Rd = 287  # Gas constant for dry air (J/(kg·K))
+    Lv = 2.5e6  # Latent heat of vaporization (J/kg)
 
     c1 = Lv / Rv
     c2 = Rd * np.log(pref / 600)
@@ -327,10 +441,15 @@ def calculate_qs900(T600, vmax):
         Tc_valid = T[valid_mask] - 273.15
         es_valid = 6.112 * np.exp(17.67 * Tc_valid / (243.5 + Tc_valid))
         qs_valid = 0.622 * es_valid / (pref - es_valid)
-        er = (cp * np.log(T[valid_mask] / T600[valid_mask]) +
-              Lv * (qs_valid / T[valid_mask] - q600[valid_mask] / T600[valid_mask]) -
-              c2 - c3 * vmax[valid_mask] ** 2)
-        derdT = (cp * T[valid_mask] + Lv * qs_valid * (c1 / T[valid_mask] - 1)) / T[valid_mask] ** 2
+        er = (
+            cp * np.log(T[valid_mask] / T600[valid_mask])
+            + Lv * (qs_valid / T[valid_mask] - q600[valid_mask] / T600[valid_mask])
+            - c2
+            - c3 * vmax[valid_mask] ** 2
+        )
+        derdT = (cp * T[valid_mask] + Lv * qs_valid * (c1 / T[valid_mask] - 1)) / T[
+            valid_mask
+        ] ** 2
         T[valid_mask] -= er / derdT
 
     # Update q900 only for valid entries

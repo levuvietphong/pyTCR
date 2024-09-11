@@ -4,43 +4,60 @@ Functions for physics in PyTCR
 
 import numpy as np
 
-
 def estimate_track_density(lat_trks, lon_trks, vmax_trks, num_trks, threshold, cellsize, interval):
     """
-    Estimate the total number of TC tracks crossing a lat-long box at resolution
-    cellsize x cellsize (degree).
+    Estimate the total number of tropical cyclone (TC) tracks crossing a latitude-longitude box 
+    at a specified resolution (cellsize x cellsize in degrees).
+
+    Parameters:
+    -----------
+    lat_trks : numpy.ndarray
+        Array of latitudes for each TC track.
+    lon_trks : numpy.ndarray
+        Array of longitudes for each TC track.
+    vmax_trks : numpy.ndarray
+        Array of maximum wind speeds for each TC track.
+    num_trks : int
+        Number of TC tracks to randomly sample.
+    threshold : float
+        Wind speed threshold to consider a TC track.
+    cellsize : float
+        Size of the grid cell in degrees.
+    interval : int
+        Interval for sampling points along each track.
+
+    Returns:
+    --------
+    latitude : numpy.ndarray
+        Array of latitude values for the grid.
+    longitude : numpy.ndarray
+        Array of longitude values for the grid.
+    density_all : numpy.ndarray
+        2D array representing the density of TC tracks in each grid cell.
     """
-    num_tc = np.shape(lat_trks)[0]
+
+    num_tc = lat_trks.shape[0]
     ind_trks = np.random.choice(np.arange(num_tc), num_trks, replace=False)
-    num_tc = len(ind_trks)
 
-    x0 = cellsize / 2
-    x1 = 360 - cellsize / 2
-    y0 = 0 + cellsize / 2
-    y1 = 180 - cellsize / 2
+    x0, x1 = cellsize / 2, 360 - cellsize / 2
+    y0, y1 = cellsize / 2, 180 - cellsize / 2
 
-    nrows = int(180. / cellsize)
-    ncols = int(360. / cellsize)
-    latitude = np.arange(y0, y1+cellsize, cellsize)
-    longitude = np.arange(x0, x1+cellsize, cellsize)
+    nrows, ncols = int(180 / cellsize), int(360 / cellsize)
+    latitude = np.arange(y0, y1 + cellsize, cellsize)
+    longitude = np.arange(x0, x1 + cellsize, cellsize)
     density_all = np.zeros((nrows, ncols))
 
     for tc_id in ind_trks:
         density = np.zeros((nrows, ncols))
         temp = lat_trks[tc_id, :]
-        indmax = np.where(temp > -90)[0][-1]+1
+        indmax = np.where(temp > -90)[0][-1] + 1
         lat = lat_trks[tc_id, 0:indmax:interval]
         lon = lon_trks[tc_id, 0:indmax:interval]
-        ind = np.where(lon >= 360)
-
-        if len(ind) > 0:
-            lon[ind] -= 360
+        lon[lon >= 360] -= 360
 
         vmax = vmax_trks[tc_id, 0:indmax:interval]
-        ind = np.where(vmax > threshold)
-        lat = lat[ind]
-        lon = lon[ind]
-        vmax = vmax[ind]
+        valid_indices = np.where(vmax > threshold)
+        lat, lon, vmax = lat[valid_indices], lon[valid_indices], vmax[valid_indices]
 
         jrow = np.floor(lat / cellsize).astype(int)
         icol = np.floor(lon / cellsize).astype(int)
@@ -52,39 +69,58 @@ def estimate_track_density(lat_trks, lon_trks, vmax_trks, num_trks, threshold, c
 
 def estimate_pdi(lat_trks, lon_trks, vmax_trks, num_trks, cellsize, dt):
     """
-    Estimate the Power Dissipitation Index (PDI) of tropical cyclones
-    """
-    num_tc = np.shape(lat_trks)[0]
-    ind_trks = np.random.choice(np.arange(num_tc), num_trks, replace=False)
-    num_tc = len(ind_trks)
-    x0 = cellsize/2
-    x1 = 360-cellsize/2
-    y0 = 0+cellsize/2
-    y1 = 180-cellsize/2
+    Estimate the Power Dissipation Index (PDI) of tropical cyclones.
 
-    nrows = int(180/cellsize)
-    ncols = int(360/cellsize)
-    latitude = np.arange(y0, y1+cellsize, cellsize)
-    longitude = np.arange(x0, x1+cellsize, cellsize)
+    Parameters:
+    -----------
+    lat_trks : numpy.ndarray
+        Array of latitude tracks for tropical cyclones.
+    lon_trks : numpy.ndarray
+        Array of longitude tracks for tropical cyclones.
+    vmax_trks : numpy.ndarray
+        Array of maximum wind speeds for tropical cyclones.
+    num_trks : int
+        Number of TC tracks to randomly sample.
+    cellsize : float
+        Size of the grid cell in degrees.
+    dt : float
+        Time interval in hours.
+
+    Returns:
+    --------
+    latitude : numpy.ndarray
+        Array of latitude values for the grid.
+    longitude : numpy.ndarray
+        Array of longitude values for the grid.
+    pdi_all : numpy.ndarray
+        2D array representing the PDI of TC tracks in each grid cell.
+    """
+    num_tc = lat_trks.shape[0]
+    ind_trks = np.random.choice(np.arange(num_tc), num_trks, replace=False)
+
+    x0, x1 = cellsize / 2, 360 - cellsize / 2
+    y0, y1 = cellsize / 2, 180 - cellsize / 2
+
+    nrows, ncols = int(180 / cellsize), int(360 / cellsize)
+    latitude = np.arange(y0, y1 + cellsize, cellsize)
+    longitude = np.arange(x0, x1 + cellsize, cellsize)
     pdi_all = np.zeros((nrows, ncols))
 
     for tc_id in ind_trks:
         pdi = np.zeros((nrows, ncols))
         temp = lat_trks[tc_id, :]
-        indmax = np.where(temp > -90)[0][-1]+1
+        indmax = np.where(temp > -90)[0][-1] + 1
         lat = lat_trks[tc_id, 0:indmax]
         lon = lon_trks[tc_id, 0:indmax]
         vmax = vmax_trks[tc_id, 0:indmax]
-        ind = np.where(lon >= 360)
-        if len(ind) > 0:
-            lon[ind] -= 360
+        lon[lon >= 360] -= 360
 
         for k in range(indmax):
             jrow = np.floor(lat[k] / cellsize).astype(int)
             icol = np.floor(lon[k] / cellsize).astype(int)
-            if (np.isnan(vmax[k])) or (vmax[k] < 0):
+            if np.isnan(vmax[k]) or vmax[k] < 0:
                 vmax[k] = 0
-            pdi[jrow, icol] += vmax[k]**3 * dt * 3600         # unit L^3/L^2
+            pdi[jrow, icol] += vmax[k]**3 * dt * 3600  # unit L^3/L^2
         pdi_all += pdi
 
     return latitude, longitude, pdi_all

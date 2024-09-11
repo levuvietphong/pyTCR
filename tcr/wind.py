@@ -601,7 +601,7 @@ def pointwfield(latstore, longstore, vstore, rmstore, vsestore,
     cdrag, cdx, cdy = tcr_tb.estimate_drag_coefficients(plat, plong, sfac)
     cdrag = np.maximum(cdrag, 0.0015)   # To put lower bound on drag coefficeint over water
 
-    rfull, dx, dy = tcr_tb.calculate_distance_POI_from_track(
+    rfull, dx, dy = tcr_tb.calculate_distance_to_track(
         plat, plong, latstore, longstore, nn, m, sx, sy, ngrid, dfac)
     rfull = np.maximum(rfull, 0.5)
     costhetafull = dx / rfull
@@ -752,7 +752,7 @@ def pointshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut, v
             cdrag[i, j] = 1 / (d1 / b1 + d2 / b2 + d3 / b3 + d4 / b4)
 
     # Calculate distance of each POI from track
-    radius, _, _ = tcr_tb.calculate_distance_POI_from_track(
+    radius, _, _ = tcr_tb.calculate_distance_to_track(
         plat, plong, latstore, longstore, nn, m, sx, sy, 0, dfac)
     radius = np.maximum(radius, 0.5)
 
@@ -826,7 +826,7 @@ def pointshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut, v
     utfine[:, k, :, :] = utshort[:, jtot - 1, :, :]
     vtfine[:, k, :, :] = vtshort[:, jtot - 1, :, :]
 
-    rfine, dx, dy = tcr_tb.calculate_distance_POI_from_track(
+    rfine, dx, dy = tcr_tb.calculate_distance_to_track(
         plat, plong, latfine, longfine, nn, jfine, sx, sy, ngrid, dfac)
 
     V = windprofiles(vfine, rmfine, rfine, wprofile, vsefine, rmsefine, opt=True)
@@ -925,7 +925,7 @@ def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
     cdx = cdx * 0.01 * np.minimum(np.maximum(h, 0), 100)
     cdy = cdy * 0.01 * np.minimum(np.maximum(h, 0), 100)
 
-    radius, dx, dy = tcr_tb.calculate_distance_POI_from_track(
+    radius, dx, dy = tcr_tb.calculate_distance_to_track(
         plat, plong, latstore, longstore, nn, m, sx, sy, ngrid, dfac)
     radius = np.maximum(radius, 0.5)
 
@@ -1022,7 +1022,7 @@ def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
     vsfine[:, k, :, :] = vsshort[:, jtot - 1, :, :]
 
     rmsefine = np.maximum(rmsefine, 0.1)
-    rfine, dx, dy = tcr_tb.calculate_distance_POI_from_track(
+    rfine, dx, dy = tcr_tb.calculate_distance_to_track(
         plat, plong, latfine, longfine, nn, jfine, sx, sy, ngrid, dfac)
     rfinei = 1 / np.maximum(rfine, 1)
 
@@ -1139,7 +1139,7 @@ def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestor
     cdy = cdy * 0.01 * np.minimum(np.maximum(h, 0), 100)
 
     # Calculate radius distance from storm center to POI
-    radius, dx, dy = tcr_tb.calculate_distance_POI_from_track(
+    radius, dx, dy = tcr_tb.calculate_distance_to_track(
         plat, plong, latstore, longstore, nn, m, sx, sy, 0, dfac)
     radius = np.maximum(radius, 0.5)
 
@@ -1248,7 +1248,7 @@ def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestor
     dqfine[:, k, :, :] = dqshort[:, jtot - 1, :, :]
 
     rmsefine = np.maximum(rmsefine, 0.1)
-    rfine, dx, dy = tcr_tb.calculate_distance_POI_from_track(
+    rfine, dx, dy = tcr_tb.calculate_distance_to_track(
         plat, plong, latfine, longfine, nn, jfine, sx, sy, 0, dfac)
     rfinei = 1 / np.maximum(rfine, 1)
 
