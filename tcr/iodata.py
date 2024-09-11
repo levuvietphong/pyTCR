@@ -7,7 +7,6 @@ import glob
 import numpy as np
 import scipy.io as sio
 import xarray as xr
-from netCDF4 import Dataset
 
 
 def load_Matlab_data(directory, filename):
@@ -31,7 +30,7 @@ def load_Matlab_data(directory, filename):
     return mat
 
 
-def load_NetCDF_data(directory, filename):
+def load_netcdf_track_data(directory, filename):
     """
     Load data in NetCDF format from Tropical cyclone downscaling
 
@@ -67,6 +66,31 @@ def load_NetCDF_data(directory, filename):
         tc_month, tc_years, tc_time
 
 
+def load_netcdf_2d_parameters(directory, filename, varname):
+    """
+    Load parameter data in NetCDF format
+
+    Inputs:
+    -------
+        - directory: name of directory where data is stored
+        - filename: name of the net file
+        - varname: name of the variable
+
+    Returns:
+    --------
+        - data
+    """
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    data_folder = os.path.join(current_dir, directory)
+    file_path = os.path.join(data_folder, filename)
+
+    ds = xr.open_dataset(file_path)
+    data = ds[varname].values
+
+    return data
+
+
 def load_best_tracks_obs(fname, year_start, year_end):
     """
     Load the best tracks of observed tropical cyclones
@@ -84,47 +108,36 @@ def load_best_tracks_obs(fname, year_start, year_end):
         - time_tc : time of TCs
         - ind_tc : index of TCs
         - name_tc : TC names
-        - basins : names of ocean basins
-        - windtc : circular wind speed of TCs
+        - basin_tc : names of ocean basins
+        - wind_tc : circular wind speed of TCs
         - speed_tc : translational velocity of TCs
     """
-    nc_file = Dataset(fname, 'r')
-    variables = nc_file.variables
-    nametc = variables['name'][:]
-    lat_tc = variables['lat'][:]
-    lon_tc = variables['lon'][:]
-    time_tc = variables['time'][:]
-    yeartc = variables['season'][:]
-    usa_wind = variables['usa_wind'][:]
-    wind_tc = usa_wind * 0.514444              # convert to unit m/s
-    speed_tc = variables['storm_speed'][:]
-    speed_tc = speed_tc * 0.514444        # convert to unit m/s
-    basin = variables['basin'][:]
+
+    ds = xr.open_dataset(fname)
+    name_tc = ds['name'].values
+    lat_tc = ds['lat'].values
+    lon_tc = ds['lon'].values
+    time_tc = ds['time'].values
+    yeartc = ds['season'].values
+    usa_wind = ds['usa_wind'].values
+    wind_tc = usa_wind * 0.514444               # convert to unit m/s
+    speed_tc = ds['storm_speed'].values
+    speed_tc = speed_tc * 0.514444              # convert to unit m/s
+    basin_tc = ds['basin'].values
 
     # Filter TCs from year_start to year_end
     ind = np.where((yeartc >= year_start) & (yeartc <= year_end))[0]
-    nametc = nametc[ind, :]
-    lat_tc = lat_tc[ind, :]
-    lon_tc = lon_tc[ind, :]
-    wind_tc = wind_tc[ind, :]
-    speed_tc = speed_tc[ind, :]
+    name_tc = name_tc[ind]
+    lat_tc = lat_tc[ind]
+    lon_tc = lon_tc[ind]
+    wind_tc = wind_tc[ind]
+    speed_tc = speed_tc[ind]
     time_tc = time_tc[ind]
-    ind = lon_tc < 0
-    lon_tc[ind] += 360                           # convert to 0-360 coordinate
+    lon_tc[lon_tc < 0] += 360                   # convert to 0-360 coordinate
+    num_storms = name_tc.shape[0]               # get number of storms
+    ind_tc = np.arange(0, num_storms, 1)        # id from 0 to num_storms
 
-    num_storms = nametc.shape[0]
-    name_tc = []
-    basins = []
-    ind_tc = np.arange(0, num_storms, 1)
-
-    # Decode storm and basin names from utf-8
-    for k in range(num_storms):
-        sd = ''.join(list(map(lambda x: x.decode('utf-8'), nametc.data[k, :]))).strip()
-        name_tc.append(sd)
-        bd = ''.join(list(map(lambda x: x.decode('utf-8'), basin.data[k, 1, :]))).strip()
-        basins.append(bd)
-
-    return lat_tc, lon_tc, time_tc, ind_tc, name_tc, basins, wind_tc, speed_tc
+    return lat_tc, lon_tc, time_tc, ind_tc, name_tc, basin_tc, wind_tc, speed_tc
 
 
 def load_tracks_GCMs(pathdir, modelid, basin, expmnt):
@@ -146,12 +159,13 @@ def load_tracks_GCMs(pathdir, modelid, basin, expmnt):
         - id_trks : index of TCs
         - vmax_trks : TC names
     """
+
     ncfile = glob.glob(f"{pathdir}/{expmnt}/tracks_{basin}_{modelid}_*.nc")[0]
-    nc_fid = Dataset(ncfile, 'r')
-    lon_trks = nc_fid.variables['lon_trks'][:]
-    lat_trks = nc_fid.variables['lat_trks'][:]
-    vmax_trks = nc_fid.variables['vmax_trks'][:]
-    year_trks = nc_fid.variables['year'][:]
-    id_trks = nc_fid.variables['n_trk'][:]
+    ds = xr.open_dataset(ncfile)
+    lon_trks = ds.variables['lon_trks'].values
+    lat_trks = ds.variables['lat_trks'].values
+    vmax_trks = ds.variables['vmax_trks'].values
+    year_trks = ds.variables['year'].values
+    id_trks = ds.variables['n_trk'].values
 
     return lat_trks, lon_trks, year_trks, id_trks, vmax_trks
