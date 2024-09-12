@@ -9,7 +9,7 @@ import math
 import numpy as np
 from tcr import terrain_boundary as tcr_tb
 from tcr import iodata as tcr_io
-from tcr import params
+from tcr.params import params
 
 
 def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
@@ -19,22 +19,75 @@ def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
                            costhetaf, sinthetaf, thresM, wprofile,
                            adj_water=False):
     """
-    This function calculate the wind in the primary band.
+    Calculate the wind in the primary band.
 
-    Inputs:
-    -------
-        - utf, vtf: west-east and storm translation velocity
-        - vf    : maximum circular wind speed at each 2-hour point along each track
-        - rf    : Euclidean distance from each track
-        - rmf   : radius (km) of maximum circular wind of 2-hour points along each track
-        - vsef  : maximum circular wind speed  of any secondary eyewalls that may be present at
-                  each 2-hour point along each track
-        - rmsef : radius (km) of maximum circular wind of any secondary wind maxima of 2-hour points
-                  along each track
+    Parameters:
+    -----------
+    utf, vtf : array-like
+        West-east and storm translation velocity.
+    vf : array-like
+        Maximum circular wind speed at each 2-hour point along each track.
+    rf : array-like
+        Euclidean distance from each track.
+    rmf : array-like
+        Radius (km) of maximum circular wind of 2-hour points along each track.
+    vsef : array-like
+        Maximum circular wind speed of any secondary eyewalls that may be present
+        at each 2-hour point along each track.
+    rmsef : array-like
+        Radius (km) of maximum circular wind of any secondary wind maxima of
+        2-hour points along each track.
+    latf : array-like
+        Latitude factor.
+    nn, jf, sx, sy : int
+        Dimensions of the input arrays.
+    h, hx, hy : array-like
+        Topographic heights and their derivatives in x and y.
+    cdrag : array-like
+        Drag coefficient.
+    hf, hxf, hyf : array-like
+        Topographic heights and their derivatives in x and y for the fine grid.
+    cdf, cdx, cdxf, cdy, cdyf : array-like
+        Drag coefficients and their derivatives.
+    Hi, Htrop : float
+        Depth of the lower troposphere in meters and its inverse.
+    omega : float
+        Earth angular velocity parameter.
+    pifac : float
+        Pi factor.
+    deltar, deltari : float
+        Delta radius in kilometers and its inverse.
+    knotfac : float
+        Conversion factor from knots to meters per second.
+    latfac : float
+        Latitude factor.
+    timereswi : float
+        Inverse of the native time resolution of WRT output in kilometers.
+    costhetaf, sinthetaf : array-like
+        Cosine and sine of the angle between the storm translation velocity and
+        the wind direction.
+    thresM : float
+        Threshold for the gradient wind.
+    wprofile : array-like
+        Wind profile parameter.
+    adj_water : bool, optional
+        Adjust for roughness changes over water (default is False).
+
     Returns:
     --------
+    w : array-like
+        Vertical velocity.
+    cp : array-like
+        Coriolis parameter.
+    V, Vd, Vrp, Vrm : array-like
+        Wind profiles.
+    u1temp, u2temp : array-like
+        Temporary variables for wind calculations.
+    Cdp, Cdm : array-like
+        Drag coefficients.
     """
 
+    # Initialize arrays
     V = np.zeros((nn, jf, sx, sy))
     Vd = np.zeros((nn, jf, sx, sy))
     Vpp = np.zeros((nn, jf, sx, sy))
@@ -47,34 +100,23 @@ def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
     um = np.zeros((nn, jf, sx, sy))
     w = np.zeros((nn, jf, sx, sy))
 
+    # Calculate wind profiles
     V = windprofiles(vf, rmf, rf, wprofile)
     Vd = windprofiles(vf, rmf, rf, wprofile, vsef, rmsef)
-    Vpp[:, 1:jf-1, :, :] = windprofiles(vf[:, 2:jf, :, :],
-                                        rmf[:, 2:jf, :, :],
-                                        rf[:, 1:jf-1, :, :] + deltar,
-                                        wprofile)
-    Vpm[:, 1:jf-1, :, :] = windprofiles(vf[:, 2:jf, :, :],
-                                        rmf[:, 2:jf, :, :],
-                                        np.maximum(rf[:, 1:jf-1, :, :]-deltar, 0),
-                                        wprofile)
-    Vmp[:, 1:jf-1, :, :] = windprofiles(vf[:, 0:jf-2, :, :],
-                                        rmf[:, 0:jf-2, :, :],
-                                        rf[:, 1:jf-1, :, :] + deltar,
-                                        wprofile)
-    Vmm[:, 1:jf-1, :, :] = windprofiles(vf[:, 0:jf-2, :, :],
-                                        rmf[:, 0:jf-2, :, :],
-                                        np.maximum(rf[:, 1:jf-1, :, :]-deltar, 0),
-                                        wprofile)
-    Vrp[:, :, :, :] = windprofiles(vf[:, :, :, :],
-                                   rmf[:, :, :, :],
-                                   rf[:, :, :, :]+deltar,
-                                   wprofile)
-    Vrm[:, :, :, :] = windprofiles(vf[:, :, :, :],
-                                   rmf[:, :, :, :],
-                                   np.maximum(rf[:, :, :, :] - deltar, 0),
-                                   wprofile)
+    Vpp[:, 1:jf - 1, :, :] = windprofiles(
+        vf[:, 2:jf, :, :], rmf[:, 2:jf, :, :], rf[:, 1:jf - 1, :, :] + deltar, wprofile)
+    Vpm[:, 1:jf - 1, :, :] = windprofiles(
+        vf[:, 2:jf, :, :], rmf[:, 2:jf, :, :], np.maximum(rf[:, 1:jf - 1, :, :] - deltar, 0), wprofile)
+    Vmp[:, 1:jf - 1, :, :] = windprofiles(
+        vf[:, 0:jf - 2, :, :], rmf[:, 0:jf - 2, :, :], rf[:, 1:jf - 1, :, :] + deltar, wprofile)
+    Vmm[:, 1:jf - 1, :, :] = windprofiles(
+        vf[:, 0:jf - 2, :, :], rmf[:, 0:jf - 2, :, :], np.maximum(rf[:, 1:jf - 1, :, :] - deltar, 0), wprofile)
+    Vrp[:, :, :, :] = windprofiles(
+        vf[:, :, :, :], rmf[:, :, :, :], rf[:, :, :, :] + deltar, wprofile)
+    Vrm[:, :, :, :] = windprofiles(
+        vf[:, :, :, :], rmf[:, :, :, :], np.maximum(rf[:, :, :, :] - deltar, 0), wprofile)
 
-    # Convert to meters per second. Done now because windprofile expects knots.
+    # Convert to meters per second
     V = knotfac * V
     Vd = knotfac * Vd
     Vpp = knotfac * Vpp
@@ -84,13 +126,15 @@ def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
     Vrp = knotfac * Vrp
     Vrm = knotfac * Vrm
 
+    # Calculate wind components
     vph = 0.5 * (V + Vrp)
     vmh = 0.5 * (V + Vrm)
     u1temp = vtf * costhetaf - utf * sinthetaf
-    u2temp = vtf**2 + utf**2
-    vnetp = np.sqrt(vph**2 + 2 * vph * latfac * u1temp + u2temp)
-    vnetm = np.sqrt(vmh**2 + 2 * vmh * latfac * u1temp + u2temp)
+    u2temp = vtf ** 2 + utf ** 2
+    vnetp = np.sqrt(vph ** 2 + 2 * vph * latfac * u1temp + u2temp)
+    vnetm = np.sqrt(vmh ** 2 + 2 * vmh * latfac * u1temp + u2temp)
 
+    # Update topographic heights and drag coefficients
     for n in range(nn):
         for j in range(jf):
             hf[n, j, :, :] = h[:, :]
@@ -100,15 +144,16 @@ def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
             cdyf[n, j, :, :] = cdy[:, :]
             cdxf[n, j, :, :] = cdx[:, :]
 
-    cdfac = 1e3 * 0.5 * deltar * (cdxf*costhetaf + cdyf*sinthetaf)
-    Cdp = cdf+cdfac
-    Cdm = cdf-cdfac
+    # Calculate drag coefficients
+    cdfac = 1e3 * 0.5 * deltar * (cdxf * costhetaf + cdyf * sinthetaf)
+    Cdp = cdf + cdfac
+    Cdm = cdf - cdfac
     Cdp = np.maximum(Cdp, 0)
     Cdp = np.minimum(Cdp, 0.005)
     Cdm = np.maximum(Cdm, 0)
     Cdm = np.minimum(Cdm, 0.005)
 
-    #  These lines of code added/modified  December 2018 to account for roughness changes over water
+    # Adjust for roughness changes over water
     if adj_water:
         facp = 1 + 0.0193 * vnetp
         facm = 1 + 0.0193 * vnetm
@@ -120,15 +165,16 @@ def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
         uekp = -Hi * Cdp * vph * vnetp
         uekm = -Hi * Cdm * vmh * vnetm
 
-    cp = 1000 * 2 * omega * np.sin(pifac*abs(latf))
-    dMdrp = cp * (rf+0.5*deltar) + (rf+0.5*deltar) * deltari * (Vrp-V) + 0.5 * (Vrp+V)
+    # Calculate Coriolis parameter and gradient wind
+    cp = 1000 * 2 * omega * np.sin(pifac * abs(latf))
+    dMdrp = cp * (rf + 0.5 * deltar) + (rf + 0.5 * deltar) * deltari * (Vrp - V) + 0.5 * (Vrp + V)
     dMdrp = np.maximum(dMdrp, thresM)
-    dMdrm = cp * (rf-0.5*deltar) + (rf-0.5*deltar) * deltari * (V-Vrm) + 0.5 * (Vrm+V)
+    dMdrm = cp * (rf - 0.5 * deltar) + (rf - 0.5 * deltar) * deltari * (V - Vrm) + 0.5 * (Vrm + V)
     dMdrm = np.maximum(dMdrm, thresM)
 
-    rmf_safe = np.where(rmf[:, 1:jf-1, :, :] == 0, 1e-32, rmf[:, 1:jf-1, :, :])
-    efacp = np.minimum((-1 + 2*((rf[:, 1:jf-1, :, :]+deltar) / rmf_safe)**2), 1)
-    efacm = np.minimum((-1 + 2*((rf[:, 1:jf-1, :, :]-deltar) / rmf_safe)**2), 1)
+    rmf_safe = np.where(rmf[:, 1:jf - 1, :, :] == 0, 1e-32, rmf[:, 1:jf - 1, :, :])
+    efacp = np.minimum((-1 + 2 * ((rf[:, 1:jf - 1, :, :] + deltar) / rmf_safe) ** 2), 1)
+    efacm = np.minimum((-1 + 2 * ((rf[:, 1:jf - 1, :, :] - deltar) / rmf_safe) ** 2), 1)
 
     up[:, 1:jf - 1, :, :] = (
         (rf[:, 1:jf - 1, :, :] + deltar)
@@ -163,15 +209,58 @@ def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop, o
                              deltar, deltari, knotfac, latfac, timereswi, u1temp, u2temp, Cdp,
                              Cdm, wprofile):
     """
-    This function calculate wind for secondary eyewalls
+    Calculate wind for secondary eyewalls in tropical cyclones.
+    This function computes various wind-related parameters for secondary eyewalls,
+    including vertical velocity, wind profiles, and Coriolis parameters.
 
-    Inputs:
-        - utf:
+    Parameters:
+    -----------
+    rf : array-like
+        Euclidean distance from each track.
+    vsef : array-like
+        Maximum circular wind speed of any secondary eyewalls.
+    rmsef : array-like
+        Radius of maximum circular wind of any secondary wind maxima.
+    latf : array-like
+        Latitude factor.
+    nn, jf, sx, sy : int
+        Dimensions of the input arrays.
+    Hi : float
+        Inverse of the depth of the lower troposphere.
+    Htrop : float
+        Depth of the lower troposphere in meters.
+    omega : float
+        Earth angular velocity parameter.
+    pifac : float
+        Pi factor.
+    deltar : float
+        Delta radius in kilometers.
+    deltari : float
+        Inverse of delta radius.
+    knotfac : float
+        Conversion factor from knots to meters per second.
+    latfac : float
+        Latitude factor.
+    timereswi : float
+        Inverse of the native time resolution of WRT output.
+    u1temp, u2temp : array-like
+        Temporary variables for wind calculations.
+    Cdp, Cdm : array-like
+        Drag coefficients.
+    wprofile : int
+        Wind profile parameter.
 
     Returns:
-        - w, cp, V, Vd, Vrp, Vrm:
+    --------
+    w2 : array-like
+        Vertical velocity for secondary eyewalls.
+    cp : array-like
+        Coriolis parameter.
+    V, Vd, Vrp, Vrm : array-like
+        Wind profiles for secondary eyewalls.
     """
 
+    # Initialize arrays
     V = np.zeros((nn, jf, sx, sy))
     Vd = np.zeros((nn, jf, sx, sy))
     Vpp = np.zeros((nn, jf, sx, sy))
@@ -184,6 +273,7 @@ def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop, o
     um = np.zeros((nn, jf, sx, sy))
     w2 = np.zeros((nn, jf, sx, sy))
 
+    # Calculate wind profiles
     V = windprofiles(vsef, rmsef, rf, wprofile)
     Vpp[:, 1:jf-1, :, :] = windprofiles(vsef[:, 2:jf, :, :],
                                         rmsef[:, 2:jf, :, :],
@@ -203,7 +293,7 @@ def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop, o
     Vrp = windprofiles(vsef, rmsef, rf+deltar, wprofile)
     Vrm = windprofiles(vsef, rmsef, np.maximum(rf-deltar, 0), wprofile)
 
-    # Convert to meters per second because windprofile expects knots.
+    # Convert to meters per second
     V = knotfac * V
     Vd = knotfac * Vd
     Vpp = knotfac * Vpp
@@ -213,6 +303,7 @@ def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop, o
     Vrp = knotfac * Vrp
     Vrm = knotfac * Vrm
 
+    # Calculate wind components
     vph = 0.5 * (V + Vrp)
     vmh = 0.5 * (V + Vrm)
     vnetp = np.sqrt(vph**2 + 2 * vph * latfac * u1temp + u2temp)
@@ -220,6 +311,7 @@ def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop, o
     uekp = -Hi * Cdp * vph * vnetp
     uekm = -Hi * Cdm * vmh * vnetm
 
+    # Calculate Coriolis parameter and gradient wind
     cp = 1000 * 2 * omega * np.sin(pifac * abs(latf))
     dMdrp = (
         cp * (rf + 0.5 * deltar)
@@ -240,9 +332,9 @@ def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop, o
         (-1 + 2 * ((rf[:, 1:jf-1, :, :] - deltar) / rmsef[:, 1:jf-1, :, :]) ** 2), 1
     )
 
-    #  Do not consider time rate of change when either velocity is zero
-    efacp = efacp*np.minimum(Vpp[:, 1:jf-1, :, :], 1) * np.minimum(Vmp[:, 1:jf-1, :, :], 1)
-    efacm = efacm*np.minimum(Vpm[:, 1:jf-1, :, :], 1) * np.minimum(Vmm[:, 1:jf-1, :, :], 1)
+    # Do not consider time rate of change when either velocity is zero
+    efacp = efacp * np.minimum(Vpp[:, 1:jf-1, :, :], 1) * np.minimum(Vmp[:, 1:jf-1, :, :], 1)
+    efacm = efacm * np.minimum(Vpm[:, 1:jf-1, :, :], 1) * np.minimum(Vmm[:, 1:jf-1, :, :], 1)
     up[:, 1:jf-1, :, :] = (rf[:, 1:jf-1, :, :] + deltar) \
         * (-0.5 * timereswi * efacp
             * (Vpp[:, 1:jf-1, :, :] - Vmp[:, 1:jf-1, :, :])
@@ -254,9 +346,9 @@ def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop, o
            + uekm[:, 1:jf-1, :, :]) \
         / dMdrm[:, 1:jf-1, :, :]
 
-    #  Do not calculate vertical velocities if either radial velocity is zero.
-    #  This is necessary because secondary wind maximum can vanish from one time
-    #  step to the next, so that time rate of change blows up
+    # Do not calculate vertical velocities if either radial velocity is zero.
+    # This is necessary because secondary wind maximum can vanish from one time
+    # step to the next, so that time rate of change blows up
     ufac = np.minimum(np.abs(30 * up[:, 1:jf-1, :, :]), 1) \
         * np.minimum(np.abs(30 * um[:, 1:jf-1, :, :]), 1)
     w2[:, 1:jf-1, :, :] = -Htrop * ufac * deltari \
@@ -272,7 +364,7 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
     Calculate the radial profiles of azimuthal wind. If secondary wind parameters
     (vm2 and rm2) are provided, the function incorporates any secondary eyewalls.
 
-    Inputs:
+    Parameters:
     -----------
     vm : float
         Maximum circular wind speed (knots).
@@ -287,11 +379,13 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
         Default is 0, indicating no secondary eyewall.
     rm2 : float, optional
         Secondary radius of maximum wind (km). Default is 0, indicating no secondary eyewall.
+    opt : bool, optional
+        Option to include additional scaling for the Emanuel wind profile (default is True).
 
     Returns:
     --------
-    V : float
-        Azimuthal wind (knots)
+    V : array-like
+        Azimuthal wind (knots).
 
     Notes:
     ------
@@ -299,11 +393,11 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
     """
 
     wprofile = wp  # Use holland (1) or emanuel (2) or er2011 (3) wind profile
-    wprofile = np.min([wprofile, 3])  # Forbid use of experimental profiles
+    wprofile = np.minimum(wprofile, 3)  # Forbid use of experimental profiles
     vm = vm * 1852 / 3600  # Convert maximum wind speed to m/s
 
     if vm2 is not None:
-        vm2 = vm2 * 1852 / 3600     # Convert maximum wind speed to m/s
+        vm2 = vm2 * 1852 / 3600  # Convert maximum wind speed to m/s
 
     if rm2 is not None:
         se = np.sum(rm2[rm2 != 0])  # Test if there are any secondary eyewalls
@@ -317,14 +411,13 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
         rh = r / rm
         x = 0.5 + (rh - 1) * (xn - 0.5) / (rn - 1)
         x[x < 0.5] = 0.5
-        V = vm * (rh ^ -bs * np.exp(1 - rh ^ -bs)) ** x
+        V = vm * (rh ** -bs * np.exp(1 - rh ** -bs)) ** x
 
-        if rm2 is not None:
-            if se != 0:
-                rh = r / rm2
-                x = 0.5 + (rh - 1) * (xn - 0.5) / (rn - 1)
-                x[x < 0.5] = 0.5
-                V2 = vm2 * (rh**-bs * np.exp(1 - rh**-bs)) ** x
+        if rm2 is not None and se != 0:
+            rh = r / rm2
+            x = 0.5 + (rh - 1) * (xn - 0.5) / (rn - 1)
+            x[x < 0.5] = 0.5
+            V2 = vm2 * (rh ** -bs * np.exp(1 - rh ** -bs)) ** x
 
     elif wprofile == 2:
         r0 = 1000  # Outer radius (km)
@@ -344,82 +437,92 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
             vm
             * (np.maximum((r0 - r), 0) / (r0 - rm))
             * np.sqrt(
-                rat**mb2 * (fac1 / (nb + mb * rat**fac3) + fac2 / (1 + mb2 * rat**fac4))
+                rat ** mb2 * (fac1 / (nb + mb * rat ** fac3) + fac2 / (1 + mb2 * rat ** fac4))
             )
         )
-        if rm2 is not None:
-            if se != 0:
-                rat = r / np.maximum(rm2, 1)
-                V2 = (
-                    vm2
-                    * (np.maximum((r0 - r), 0) / (r0 - rm2))
-                    * np.sqrt(rat**mb2 * (fac1 / (nb + mb * rat**fac3) + fac2 / (1 + mb2 * rat**fac4)))
-                )
+        if rm2 is not None and se != 0:
+            rat = r / np.maximum(rm2, 1)
+            V2 = (
+                vm2
+                * (np.maximum((r0 - r), 0) / (r0 - rm2))
+                * np.sqrt(rat ** mb2 * (fac1 / (nb + mb * rat ** fac3) + fac2 / (1 + mb2 * rat ** fac4)))
+            )
 
     elif wprofile == 3:
         crat = 1
-        f = 5.0e-5 * 1000        # converts from kms to meters
+        f = 5.0e-5 * 1000  # converts from kms to meters
 
         if opt:
             Mm = rm * vm
         else:
-            Mm = rm * vm + 0.5 * f * rm**2
+            Mm = rm * vm + 0.5 * f * rm ** 2
         rn = r / np.where(rm == 0, 1e-32, rm)
 
         if crat == 1:
-            M = Mm * (2 * rn**2 / (1 + rn**2))
+            M = Mm * (2 * rn ** 2 / (1 + rn ** 2))
         else:
-            M = Mm * (2 * rn**2 / (2 - crat + crat * rn**2)) ** (1 / (2 - crat))
+            M = Mm * (2 * rn ** 2 / (2 - crat + crat * rn ** 2)) ** (1 / (2 - crat))
 
         # Add long tail to V to avoid discontinuity in vorticity at outer radius
         V = M / (r + 1e-8)
         V[V < 0] = 0
         V = np.nan_to_num(V)
 
-        if rm2 is not None:
-            if se != 0:
-                Mm = rm2 * vm2
-                rn = r / rm2
-                if crat == 1:
-                    M = Mm * (2 * rn**2 / (1 + rn**2))
-                else:
-                    M = Mm * (2 * rn**2 / (2 - crat + crat * rn**2)) ** (1 / (2.0 - crat))
+        if rm2 is not None and se != 0:
+            Mm = rm2 * vm2
+            rn = r / rm2
+            if crat == 1:
+                M = Mm * (2 * rn ** 2 / (1 + rn ** 2))
+            else:
+                M = Mm * (2 * rn ** 2 / (2 - crat + crat * rn ** 2)) ** (1 / (2.0 - crat))
 
-                # Add long tail to V to avoid discontinuity in vorticity at outer radius
-                V2 = M / (r + 1e-8)
-                V2 = np.maximum(V2, 0)
-                V2 = np.nan_to_num(V2)
+            # Add long tail to V to avoid discontinuity in vorticity at outer radius
+            V2 = M / (r + 1e-8)
+            V2 = np.maximum(V2, 0)
+            V2 = np.nan_to_num(V2)
 
     # Merge primary and secondary wind profiles
-    if rm2 is not None:
-        if se != 0 & wprofile < 4:
-            rm_clipped = np.where(rm == 0, 1e-10, rm)
-            u = np.maximum(r, 1) / rm_clipped
-            hu = np.maximum(np.sign(u - 1), 0)
-            V = V * (1 - hu) + hu * vm / u
-            u = r / np.maximum(rm2, 1)
-            hu = np.maximum(np.sign(u - 1), 0)
-            V2 = V2 * hu + (1 - hu) * vm2 * u
-            V = np.maximum(V, V2)
+    if rm2 is not None and se != 0 and wprofile < 4:
+        rm_clipped = np.where(rm == 0, 1e-10, rm)
+        u = np.maximum(r, 1) / rm_clipped
+        hu = np.maximum(np.sign(u - 1), 0)
+        V = V * (1 - hu) + hu * vm / u
+        u = r / np.maximum(rm2, 1)
+        hu = np.maximum(np.sign(u - 1), 0)
+        V2 = V2 * hu + (1 - hu) * vm2 * u
+        V = np.maximum(V, V2)
 
-    V = V * 3600 / 1852    # Convert wind speed to knots
+    V = V * 3600 / 1852  # Convert wind speed to knots
 
     return V
 
 
 def transfunction(latitude):
     """
-    This function produces a translation factor (transfactor) based on latitude,
+    Calculate a translation factor based on latitude.
+    This function produces a translation factor (transfactor) based on the given latitude,
     which is added to the circular wind speeds of the synthetic track sets.
+
+    Parameters:
+    -----------
+    latitude : float or array-like
+        Latitude(s) for which the translation factor is to be calculated.
+
+    Returns:
+    --------
+    transfactor : float or array-like
+        The calculated translation factor(s).
     """
     transfac = 0.8
-    transcap = 1
+    transcap = 1.0
     amplitude = 0.35
-    centerlat = 35
-    latscale = 10
+    centerlat = 35.0
+    latscale = 10.0
 
     # Calculate the translation factor
-    transfactor = transfac + amplitude * (1 + np.tanh((np.abs(latitude) - centerlat) / latscale))
+    transfactor = transfac + amplitude * (
+        1 + np.tanh((np.abs(latitude) - centerlat) / latscale)
+    )
 
     # Cap the translation factor at the transcap value
     transfactor = np.minimum(transfactor, transcap)
@@ -429,26 +532,38 @@ def transfunction(latitude):
 
 def utrans(latstore, longstore):
     """
-    This function reads in track file, calculate translation speeds (knots) and smooth
+    Calculate translation speeds (knots) and smooth the results.
 
-    Inputs:
-        - latstore [n x m]: Latitude of points along each track
-        - longstore [n x m]: Longitude of points along each track
+    This function reads in track data, calculates the translation speeds in the west-east (ut) 
+    and north-south (vt) directions, and applies smoothing to the results.
+
+    Parameters:
+    -----------
+    latstore : array-like, shape (n, m)
+        Latitude of points along each track.
+    longstore : array-like, shape (n, m)
+        Longitude of points along each track.
 
     Returns:
-        - ut, vt [nn x m]: west-east, north-south component of the storm translation velocity
+    --------
+    ut : array-like, shape (n, m)
+        West-east component of the storm translation velocity.
+    vt : array-like, shape (n, m)
+        North-south component of the storm translation velocity.
+    jmax : array-like, shape (n,)
+        Time length of each event.
     """
     smfac = 0.4                         # Smoothing factor
-    pifac = math.acos(-1)/180           # pi number
+    pifac = math.acos(-1) / 180         # Pi number
     dfac = 60 * 1.852                   # 1 nautical mile = 1/60 degree = 1.852 km
-    dtfac = 1/(4*1.852)
+    dtfac = 1 / (4 * 1.852)
     netfac = dtfac * dfac
     nn, m = np.shape(latstore)          # nn: number of storms; m: max number of time points
-    ut = np.nan*np.zeros((nn, m))
-    vt = np.nan*np.zeros((nn, m))
-    jmax = np.zeros((nn))               # time length of each event
+    ut = np.nan * np.zeros((nn, m))
+    vt = np.nan * np.zeros((nn, m))
+    jmax = np.zeros((nn))               # Time length of each event
 
-    # loop for each storm
+    # Loop for each storm
     for n in range(nn):
         lat = latstore[n, :]
         long = longstore[n, :]
@@ -460,18 +575,19 @@ def utrans(latstore, longstore):
         jmax[n] = jm
 
         # Calculate storm translation velocity.
-        # The difference of lat/long between 2 consecutive time steps provide the distance that
-        # storms move during this time period, thus the translation speed in x & y direction.
+        # The difference of lat/long between 2 consecutive time steps provides
+        # the distance that storms move during this time period, thus the
+        # translation speed in x & y direction.
 
-        # ...for spatial difference in longitude, need to handle when track cross the prime meridian
+        # Handle spatial difference in longitude when track crosses the prime meridian
         longdif = long[2:jm] - long[0:jm-2]
         for j in range(jm-2):
             if longdif[j] < -300:
-                longdif[j] = longdif[j]+360
+                longdif[j] = longdif[j] + 360
             elif longdif[j] > 300:
-                longdif[j] = longdif[j]-360
+                longdif[j] = longdif[j] - 360
 
-        # include correction for ut at high latitude
+        # Include correction for ut at high latitude
         ut[n, 1: jm - 1] = netfac * np.cos(pifac * lat[1: jm - 1]) * longdif
         vt[n, 1: jm - 1] = netfac * (latstore[n, 2:jm] - latstore[n, 0: jm - 2])
         j2 = np.minimum(2, jm)
@@ -483,11 +599,11 @@ def utrans(latstore, longstore):
             vt[n, jm - 1] = 2.0 * vt[n, jm - 2] - vt[n, j3]
 
         # Smooth translation velocity
-        vt[n, 1 : jm - 1] = vt[n, 1 : jm - 1] + smfac * (
-            vt[n, 0 : jm - 2] + vt[n, 2:jm] - 2 * vt[n, 1 : jm - 1]
+        vt[n, 1: jm - 1] = vt[n, 1: jm - 1] + smfac * (
+            vt[n, 0: jm - 2] + vt[n, 2:jm] - 2 * vt[n, 1: jm - 1]
         )
-        ut[n, 1 : jm - 1] = ut[n, 1 : jm - 1] + smfac * (
-            ut[n, 0 : jm - 2] + ut[n, 2:jm] - 2 * ut[n, 1 : jm - 1]
+        ut[n, 1: jm - 1] = ut[n, 1: jm - 1] + smfac * (
+            ut[n, 0: jm - 2] + ut[n, 2:jm] - 2 * ut[n, 1: jm - 1]
         )
 
     ut = np.nan_to_num(ut)
@@ -498,9 +614,31 @@ def utrans(latstore, longstore):
 
 def utransfull(latstore, longstore, vstore=None, u850store=None, v850store=None):
     """
-    Calculates translation speed and corrections to circular wind speed.
-    In addition to latstore and longstore, inputs (in order) can be vstore,
-    u850store, and v850store if available.
+    Calculate Calculate translation speed and apply corrections to circular wind speed.
+
+    Parameters:
+    -----------
+    latstore : array-like
+        Latitude values along the storm track.
+    longstore : array-like
+        Longitude values along the storm track.
+    vstore : array-like, optional
+        Circular wind speed values along the storm track.
+    u850store : array-like, optional
+        Zonal component of the environmental 850 hPa wind.
+    v850store : array-like, optional
+        Meridional component of the environmental 850 hPa wind.
+
+    Returns:
+    --------
+    ut : array-like
+        Zonal translation velocity.
+    vt : array-like
+        Meridional translation velocity.
+    uinc : array-like
+        Corrected zonal wind speed.
+    vinc : array-like
+        Corrected meridional wind speed.
     """
     # Calculate translation velocity
     ut, vt, _ = utrans(latstore, longstore)
@@ -516,19 +654,19 @@ def utransfull(latstore, longstore, vstore=None, u850store=None, v850store=None)
         vdrift = 1.4 * 3600 / 1852
         vdrift = vdrift * latstore / (np.abs(latstore) + 1e-8)
 
-        # Apply baroclinic correction (factors changed from 0.25 to 0.5 in May 2014)
-        uinc = uinc + 0.5 * (ut - udrift - u850store) * (vstore / 15)
-        vinc = vinc + 0.5 * (vt - vdrift - v850store) * (vstore / 15)
+        # Apply baroclinic correction
+        uinc += 0.5 * (ut - udrift - u850store) * (vstore / 15)
+        vinc += 0.5 * (vt - vdrift - v850store) * (vstore / 15)
 
     # Do not allow wind speed increments to exceed circular gradient wind
     if vstore is not None:
         ufrac = vstore / (0.1 + np.abs(uinc))
         ufrac = np.minimum(ufrac, 1)
-        uinc = uinc * ufrac
+        uinc *= ufrac
 
         vfrac = vstore / (0.1 + np.abs(vinc))
         vfrac = np.minimum(vfrac, 1)
-        vinc = vinc * vfrac
+        vinc *= vfrac
 
     return ut, vt, uinc, vinc
 
@@ -536,35 +674,40 @@ def utransfull(latstore, longstore, vstore=None, u850store=None, v850store=None)
 def pointwfield(latstore, longstore, vstore, rmstore, vsestore,
                 rmsestore, ut, vt, us, vs, plat, plong, h, hx, hy):
     """
-    This function calculates the spatial distribution of vertical velocity.
-    nn: number of storms; m: max number of time points (length of each storm)
+    Calculate the spatial distribution of vertical velocity.
 
-    Inputs:
-    ------
-        - latstore[n x m], longstore[nxm]: Latitude and longitude of points along each track
-        - vstore [n x m]: Maximum circular wind speed along each track.
-        - vsestore [n x m]: The maximum circular wind speed of maximum circular wind of any
-                secondary eyewalls that may be present, along each track.
-        - rmstore [n x m]: The radius (km) of maximum circular wind along each track
-        - rmsestore [n x m]: The radius (km) of maximum circular wind of any secondary wind
-                maxima present (0 if absent), along each track.
-        - ut, vt [nn x m]: west-east, north-south component of the storm translation velocity
-        - us, vs [nn x m]: vertical shears (m/s) used to estimate the baroclinic components of the
-                vertical motion
-        - h, hx, hy: contain topographic heights and their derivatives in x and y
+    Parameters:
+    -----------
+    latstore, longstore : array-like
+        Latitude and longitude of points along each track.
+    vstore : array-like
+        Maximum circular wind speed along each track.
+    vsestore : array-like
+        Maximum circular wind speed of any secondary eyewalls along each track.
+    rmstore : array-like
+        Radius (km) of maximum circular wind along each track.
+    rmsestore : array-like
+        Radius (km) of maximum circular wind of any secondary wind maxima along each track.
+    ut, vt : array-like
+        West-east and north-south components of the storm translation velocity.
+    us, vs : array-like
+        Vertical shears (m/s) used to estimate the baroclinic components of the vertical motion.
+    h, hx, hy : array-like
+        Topographic heights and their derivatives in x and y.
+
     Returns:
-    ------
-        - w [n x m]: spatial distribution of vertical velocity centered at plong, plat
+    --------
+    w : array-like
+        Spatial distribution of vertical velocity centered at plong, plat.
     """
 
     # Load parameters
-    deltar = params.deltar              # Delta radius (km)
-    timeresw = params.timeresw          # Native time resolution of WRT output (km)
-    Htrop = params.Htrop                # Depth of lower troposphere (m)
-    radcity = params.radcity            # Distance of storm from point of interest beyond which
-                                        # the influence of the storm is ignored (km)
-    wprofile = params.wprofile          # Wind profile
-    se = np.max(vsestore)               # Check for secondary eyewalls
+    deltar = params['deltar']
+    timeresw = params['timeresw']
+    Htrop = params['Htrop']
+    radcity = params['radcity']
+    wprofile = params['wprofile']
+    se = np.max(vsestore)
     deltari = 1. / deltar
     timereswi = 1. / (3600 * timeresw)
     Hi = 1. / Htrop
@@ -573,63 +716,39 @@ def pointwfield(latstore, longstore, vstore, rmstore, vsestore,
     sx = len(plong)
     sy = len(plat)
 
-    ngrid = 0
-    if sx == sy:
-        ngrid = 1
+    ngrid = 1 if sx == sy else 0
+    sy = 1 if ngrid == 1 else np.max(np.shape(plat))
 
-    if ngrid == 1:
-        sy = 1
-    else:
-        sy = np.max(np.shape(plat))
+    plong = plong + 360 if plong[0] < 0 else plong
 
-    if plong[0] < 0:
-        plong = plong + 360
+    pifac = math.pi / 180
+    dfac = 60 * 1.852
+    sfac = 1 / (0.25 * 60 * 1852)
+    knotfac = 1852. / 3600
+    ut = ut * knotfac
+    vt = vt * knotfac
+    omega = math.pi / (6 * 3600)
+    latfac = latstore[0] / (abs(latstore[0]) + 1e-8) if latstore.ndim == 1 else latstore[0, 0] / (abs(latstore[0, 0]) + 1e-8)
 
-    pifac = math.acos(-1)/180           # pi number
-    dfac = 60 * 1.852                   # 1 nautical mile = 1/60 degree = 1.852 km
-    sfac = 1 / (0.25 * 60 * 1852)       # factor converting 0.25 degree to m
-    knotfac = 1852. / 3600              # 1 knots = 0.5144 m/s
-    ut = ut * knotfac                   # convert knots to m/s
-    vt = vt * knotfac                   # convert knots to m/s
-    omega = math.acos(-1) / (6 * 3600)  # Earth angular velocity parameter
-    if latstore.ndim == 1:
-        latfac = latstore[0] / (abs(latstore[0]) + 1e-8)
-    elif latstore.ndim == 2:
-        latfac = latstore[0, 0] / (abs(latstore[0, 0]) + 1e-8)
-
-    # Estimate Drag coeffs:
+    # Estimate Drag coefficients
     cdrag, cdx, cdy = tcr_tb.estimate_drag_coefficients(plat, plong, sfac)
-    cdrag = np.maximum(cdrag, 0.0015)   # To put lower bound on drag coefficeint over water
+    cdrag = np.maximum(cdrag, 0.0015)
 
-    rfull, dx, dy = tcr_tb.calculate_distance_to_track(
-        plat, plong, latstore, longstore, nn, m, sx, sy, ngrid, dfac)
+    rfull, dx, dy = tcr_tb.calculate_distance_to_track(plat, plong, latstore, longstore, nn, m, sx, sy, ngrid, dfac)
     rfull = np.maximum(rfull, 0.5)
     costhetafull = dx / rfull
     sinthetafull = dy / rfull
 
-    vfull = np.zeros((nn, 3, sx, sy))
-    rmfull = np.zeros((nn, 3, sx, sy))
-    vsefull = np.zeros((nn, 3, sx, sy))
-    rmsefull = np.zeros((nn, 3, sx, sy))
-    latfull = np.zeros((nn, 3, sx, sy))
-    longfull = np.zeros((nn, 3, sx, sy))
-    utfull = np.zeros((nn, 3, sx, sy))
-    vtfull = np.zeros((nn, 3, sx, sy))
-    usfull = np.zeros((nn, 3, sx, sy))
-    vsfull = np.zeros((nn, 3, sx, sy))
-    hfull = np.zeros((nn, 3, sx, sy))
-    hyfull = np.zeros((nn, 3, sx, sy))
-    hxfull = np.zeros((nn, 3, sx, sy))
-    cdfull = np.zeros((nn, 3, sx, sy))
-    cdyfull = np.zeros((nn, 3, sx, sy))
-    cdxfull = np.zeros((nn, 3, sx, sy))
+    # Initialize arrays
+    shape = (nn, 3, sx, sy)
+    vfull, rmfull, vsefull, rmsefull = (np.zeros(shape) for _ in range(4))
+    latfull, longfull, utfull, vtfull = (np.zeros(shape) for _ in range(4))
+    usfull, vsfull, hfull, hyfull, hxfull = (np.zeros(shape) for _ in range(5))
+    cdfull, cdyfull, cdxfull = (np.zeros(shape) for _ in range(3))
 
     for i in range(sx):
         for jj in range(sy):
-            if ngrid == 1:
-                j = i
-            else:
-                j = jj
+            j = i if ngrid == 1 else jj
             vfull[0, :, i, j] = vstore[:]
             rmfull[0, :, i, j] = rmstore[:]
             vsefull[0, :, i, j] = vsestore[:]
@@ -641,34 +760,31 @@ def pointwfield(latstore, longstore, vstore, rmstore, vsestore,
             usfull[0, :, i, j] = us[:]
             vsfull[0, :, i, j] = vs[:]
 
-    w, cp, V, Vd, Vrp, Vrm, u1temp, u2temp, Cdp, Cdm = \
-        calculate_wind_primary(utfull, vtfull, vfull, rfull, rmfull, vsefull, rmsefull, latfull,
-                               nn, 3, sx, sy, h, hx, hy, cdrag, hfull, hxfull, hyfull, cdfull, cdx,
-                               cdxfull, cdy, cdyfull, Hi, Htrop, omega, pifac, deltar, deltari,
-                               knotfac, latfac, timereswi, costhetafull, sinthetafull, 2, wprofile,
-                               adj_water=True)
+    w, cp, V, Vd, Vrp, Vrm, u1temp, u2temp, Cdp, Cdm = calculate_wind_primary(
+        utfull, vtfull, vfull, rfull, rmfull, vsefull, rmsefull, latfull,
+        nn, 3, sx, sy, h, hx, hy, cdrag, hfull, hxfull, hyfull, cdfull, cdx,
+        cdxfull, cdy, cdyfull, Hi, Htrop, omega, pifac, deltar, deltari,
+        knotfac, latfac, timereswi, costhetafull, sinthetafull, 2, wprofile,
+        adj_water=True
+    )
 
     # If secondary eyewalls present, add in their contribution to wind
     if se > 0:
-        w2, cp, V, Vd, Vrp, Vrm = calculate_wind_secondary(rfull, vsefull, rmsefull, latfull, nn, 3,
-                                                           sx, sy, Hi, Htrop, omega, pifac, deltar,
-                                                           deltari, knotfac, latfac, timereswi,
-                                                           u1temp, u2temp, Cdp, Cdm, wprofile)
+        w2, cp, V, Vd, Vrp, Vrm = calculate_wind_secondary(
+            rfull, vsefull, rmsefull, latfull, nn, 3, sx, sy, Hi, Htrop, omega, pifac, deltar,
+            deltari, knotfac, latfac, timereswi, u1temp, u2temp, Cdp, Cdm, wprofile
+        )
         w = np.maximum(w, w2)
 
-    # to include shear dotted with storm entropy
-    hxmod = -0.0005 * (cp + 2 * V / (0.1+rfull) + deltari * (Vrp-Vrm)) * vsfull
-    hymod = 0.0005 * (cp + 2 * V / (0.1+rfull) + deltari * (Vrp-Vrm)) * usfull
-    ufunc = (radcity - rfull) / 50
-    ufunc = np.minimum(ufunc, 1)
-    ufunc = np.maximum(ufunc, 0)
-    utfull = utfull * ufunc
-    vtfull = vtfull * ufunc
+    # Include shear dotted with storm entropy
+    hxmod = -0.0005 * (cp + 2 * V / (0.1 + rfull) + deltari * (Vrp - Vrm)) * vsfull
+    hymod = 0.0005 * (cp + 2 * V / (0.1 + rfull) + deltari * (Vrp - Vrm)) * usfull
+    ufunc = np.clip((radcity - rfull) / 50, 0, 1)
+    utfull *= ufunc
+    vtfull *= ufunc
     w[:, 1, :, :] = w[:, 1, :, :] \
-        + (vtfull[:, 1, :, :] + Vd[:, 1, :, :] * latfac * costhetafull[:, 1, :, :]) \
-        * hyfull[:, 1, :, :] \
-        + (utfull[:, 1, :, :] - Vd[:, 1, :, :] * latfac * sinthetafull[:, 1, :, :]) \
-        * hxfull[:, 1, :, :] \
+        + (vtfull[:, 1, :, :] + Vd[:, 1, :, :] * latfac * costhetafull[:, 1, :, :]) * hyfull[:, 1, :, :] \
+        + (utfull[:, 1, :, :] - Vd[:, 1, :, :] * latfac * sinthetafull[:, 1, :, :]) * hxfull[:, 1, :, :] \
         + Vd[:, 1, :, :] * costhetafull[:, 1, :, :] * hymod[:, 1, :, :] \
         - Vd[:, 1, :, :] * sinthetafull[:, 1, :, :] * hxmod[:, 1, :, :]
     w = np.minimum(w, 7)
@@ -698,10 +814,10 @@ def pointshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut, v
         - direction: wind direction
     """
 
-    timelength = params.timelength
-    wheight = params.wheight
-    wprofile = params.wprofile          # Wind profile
-    radcity = params.radcity
+    timelength = params['timelength']
+    wheight = params['wheight']
+    wprofile = params['wprofile']  # Wind profile
+    radcity = params['radcity']
 
     nsteps = round(2 / timeres)
     nstepsi = 1 / nsteps
@@ -853,46 +969,65 @@ def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
     """
     This function calculates time series of vertical velocity at the points of interest.
 
-    Inputs:
-    ------
-        - latstore, longstore: Latitudes and longitude along each track
-        - vstore: maximum circuslar wind along each track
-        - rmstore: the radius (km) of maximum circular wind of points along each track
-        - vsestore: maximum circular wind of any secondary eyewalls that may be present
-        - rmsestore: the radius (km) of maximum circular wind of any secondary eyewalls
-        - ut, vt: west-east, north-south component of the storm translation velocity
-        - us, vs: vertical shears (m/s) used to estimate the baroclinic components of
-                the vertical motion
-        - plat: latitude of point of interest
-        - plong: longitude of point of interest
-        - h: topographic heights
-        - hx, hy: derivatives of h in x and y
-        - timeres: time resolution
+    Parameters:
+    ----------
+    latstore : array-like
+        Latitudes along each track.
+    longstore : array-like
+        Longitudes along each track.
+    vstore : array-like
+        Maximum circular wind along each track.
+    rmstore : array-like
+        Radius (km) of maximum circular wind of points along each track.
+    vsestore : array-like
+        Maximum circular wind of any secondary eyewalls that may be present.
+    rmsestore : array-like
+        Radius (km) of maximum circular wind of any secondary eyewalls.
+    ut : array-like
+        West-east component of the storm translation velocity.
+    vt : array-like
+        North-south component of the storm translation velocity.
+    us : array-like
+        Vertical shears (m/s) used to estimate the baroclinic components of the vertical motion.
+    vs : array-like
+        Vertical shears (m/s) used to estimate the baroclinic components of the vertical motion.
+    plong : array-like
+        Longitude of point of interest.
+    plat : array-like
+        Latitude of point of interest.
+    h : array-like
+        Topographic heights.
+    hx : array-like
+        Derivatives of h in x.
+    hy : array-like
+        Derivatives of h in y.
+    timeres : float
+        Time resolution.
 
     Returns:
     -------
-        - wq: vertical velocity (m/s)
-        - date_record: Time in date format corresponding to rainrate
+    w : array-like
+        Vertical velocity (m/s).
     """
 
-    deltar = params.deltar
-    timelength = params.timelength
+    deltar = params['deltar']
+    timelength = params['timelength']
     timeresi = 1. / (3600 * timeres)
-    Htrop = params.Htrop
-    radcity = params.radcity
-    wprofile = params.wprofile
+    Htrop = params['Htrop']
+    radcity = params['radcity']
+    wprofile = params['wprofile']
 
     pifac = np.arccos(-1) / 180
     dfac = 60.0 * 1.852
     sfac = 1.0 / (0.25 * 60.0 * 1852)
     knotfac = 1852.0 / 3600.0
-    omega = math.acos(-1)/(6*3600)      # Earth angular velocity parameter
+    omega = np.arccos(-1) / (6 * 3600)  # Earth angular velocity parameter
 
-    se = np.max(vsestore)               # for secondary eyewalls
+    se = np.max(vsestore)  # for secondary eyewalls
     ntime = int(timelength / timeres + 1)
     nsteps = round(2.0 / timeres)
     nstepsi = 1.0 / nsteps
-    delj = np.floor(timelength/nsteps).astype(int)
+    delj = np.floor(timelength / nsteps).astype(int)
     deltari = 1.0 / deltar
     Hi = 1.0 / Htrop
 
@@ -911,14 +1046,11 @@ def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
     if plong[0] < 0:
         plong = plong + 360
 
-    latfac = latstore[0, 0] / (abs(latstore[0, 0])+1e-8)
+    latfac = latstore[0, 0] / (abs(latstore[0, 0]) + 1e-8)
     ut = ut * knotfac
     vt = vt * knotfac
 
     cdrag, cdx, cdy = tcr_tb.estimate_drag_coefficients(plat, plong, sfac)
-
-    # To put lower bound on drag coefficient over water
-    # cdrag = np.maximum(cdrag, 0.0015)
 
     # Reduce drag coefficient of near-coastal locations
     cdrag = np.minimum(cdrag, 1.5e-3 * (1 + np.maximum(h, 0) / 100))
@@ -931,8 +1063,7 @@ def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
 
     # Get index where the radius is smallest to start
     jmin = np.argmin(radius, axis=1)
-    jmin = np.maximum(jmin, 0+delj)
-    jmin = np.minimum(jmin, m-1-delj)
+    jmin = np.clip(jmin, delj, m - 1 - delj)
     jstart = jmin - delj
     jend = jmin + delj + 1
     jtot = 2 * delj + 1
@@ -960,7 +1091,7 @@ def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
                 rmseshort[n, :, i, j] = rmsestore[n, jstart[n, i, j]:jend[n, i, j]]
                 rshort[n, :, i, j] = radius[n, jstart[n, i, j]:jend[n, i, j], i, j]
                 latshort[n, :, i, j] = latstore[n, jstart[n, i, j]:jend[n, i, j]]
-                longshort[n, :, i, j] = longstore[n,  jstart[n, i, j]:jend[n, i, j]]
+                longshort[n, :, i, j] = longstore[n, jstart[n, i, j]:jend[n, i, j]]
                 utshort[n, :, i, j] = ut[n, jstart[n, i, j]:jend[n, i, j]]
                 vtshort[n, :, i, j] = vt[n, jstart[n, i, j]:jend[n, i, j]]
                 usshort[n, :, i, j] = us[n, jstart[n, i, j]:jend[n, i, j]]
@@ -988,26 +1119,16 @@ def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
     for j in range(jtot - 1):
         for n in range(nsteps):
             weight = n * nstepsi
-            vfine[:, k, :, :] = (1 - weight) * vshort[:, j, :, :] \
-                + weight * vshort[:, j + 1, :, :]
-            rmfine[:, k, :, :] = (1 - weight) * rmshort[:, j, :, :] \
-                + weight * rmshort[:, j + 1, :, :]
-            vsefine[:, k, :, :] = (1 - weight) * vseshort[:, j, :, :] \
-                + weight * vseshort[:, j + 1, :, :]
-            rmsefine[:, k, :, :] = (1 - weight) * rmseshort[:, j, :, :] \
-                + weight * rmseshort[:, j + 1, :, :]
-            latfine[:, k, :, :] = (1 - weight) * latshort[:, j, :, :] \
-                + weight * latshort[:, j + 1, :, :]
-            longfine[:, k, :, :] = (1 - weight) * longshort[:, j, :, :] \
-                + weight * longshort[:, j + 1, :, :]
-            utfine[:, k, :, :] = (1 - weight) * utshort[:, j, :, :] \
-                + weight * utshort[:, j + 1, :, :]
-            vtfine[:, k, :, :] = (1 - weight) * vtshort[:, j, :, :] \
-                + weight * vtshort[:, j + 1, :, :]
-            usfine[:, k, :, :] = (1 - weight) * usshort[:, j, :, :] \
-                + weight * usshort[:, j + 1, :, :]
-            vsfine[:, k, :, :] = (1 - weight) * vsshort[:, j, :, :] \
-                + weight * vsshort[:, j + 1, :, :]
+            vfine[:, k, :, :] = (1 - weight) * vshort[:, j, :, :] + weight * vshort[:, j + 1, :, :]
+            rmfine[:, k, :, :] = (1 - weight) * rmshort[:, j, :, :] + weight * rmshort[:, j + 1, :, :]
+            vsefine[:, k, :, :] = (1 - weight) * vseshort[:, j, :, :] + weight * vseshort[:, j + 1, :, :]
+            rmsefine[:, k, :, :] = (1 - weight) * rmseshort[:, j, :, :] + weight * rmseshort[:, j + 1, :, :]
+            latfine[:, k, :, :] = (1 - weight) * latshort[:, j, :, :] + weight * latshort[:, j + 1, :, :]
+            longfine[:, k, :, :] = (1 - weight) * longshort[:, j, :, :] + weight * longshort[:, j + 1, :, :]
+            utfine[:, k, :, :] = (1 - weight) * utshort[:, j, :, :] + weight * utshort[:, j + 1, :, :]
+            vtfine[:, k, :, :] = (1 - weight) * vtshort[:, j, :, :] + weight * vtshort[:, j + 1, :, :]
+            usfine[:, k, :, :] = (1 - weight) * usshort[:, j, :, :] + weight * usshort[:, j + 1, :, :]
+            vsfine[:, k, :, :] = (1 - weight) * vsshort[:, j, :, :] + weight * vsshort[:, j + 1, :, :]
             k += 1
 
     vfine[:, k, :, :] = vshort[:, jtot - 1, :, :]
@@ -1030,7 +1151,7 @@ def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
         utfine, vtfine, vfine, rfine, rmfine, vsefine, rmsefine, latfine,
         nn, jfine, sx, sy, h, hx, hy, cdrag, hfine, hxfine,
         hyfine, cdfine, cdx, cdxfine, cdy, cdyfine, Hi, Htrop, omega, pifac,
-        deltar, deltari, knotfac, latfac, timeresi, dx*rfinei, dy*rfinei, 10,
+        deltar, deltari, knotfac, latfac, timeresi, dx * rfinei, dy * rfinei, 10,
         wprofile, adj_water=False)
 
     if se > 0:  # If secondary eyewalls present, add in their contribution to wind
@@ -1046,16 +1167,12 @@ def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
     hymod = 0.0005 * (cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)) * usfine
 
     # Reduce effect of translation speed outside of radcity
-    ufunc = (radcity - rfine) / 50.0
-    ufunc = np.minimum(ufunc, 1)
-    ufunc = np.maximum(ufunc, 0)
+    ufunc = np.clip((radcity - rfine) / 50.0, 0, 1)
     utfine = utfine * ufunc
     vtfine = vtfine * ufunc
 
     # Reduce effect of orography outside of storm core
-    ufunc = (150 - rfine) / 30
-    ufunc = np.minimum(ufunc, 0.6)
-    ufunc = np.maximum(ufunc, 0.2)
+    ufunc = np.clip((150 - rfine) / 30, 0.2, 0.6)
     hxfine = hxfine * ufunc
     hyfine = hyfine * ufunc
 
@@ -1070,43 +1187,56 @@ def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
     return w
 
 
-def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestore, rmsestore,
-                    ut, vt, us, vs, plong, plat, h, hx, hy, timeres, wrad):
+def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestore, rmsestore, ut, vt, us, vs, plong, plat, h, hx, hy, timeres, wrad):
     """
-    This function calculates time series of vertical velocity at the points of interest.
+    Calculate the time series of vertical velocity at specified points of interest.
 
-    Inputs:
-    ------
-        - latstore, longstore: Latitudes and longitude along each track
-        - vstore: maximum circuslar wind along each track
-        - rmstore: the radius (km) of maximum circular wind of points along each track
-        - vsestore: maximum circular wind of any secondary eyewalls that may be present
-        - rmsestore: the radius (km) of maximum circular wind of any secondary eyewalls
-        - ut, vt: west-east, north-south component of the storm translation velocity
-        - us, vs: vertical shears (m/s) used to estimate the baroclinic components of
-                the vertical motion
-        - plat: latitude of point of interest
-        - plong: longitude of point of interest
-        - h: topographic heights
-        - hx, hy: gradients of h in x and y
-        - timeres: time resolution (hr)
-        - wrad: background subsidence velocity under radiative cooling
+    Parameters:
+    -----------
+    latstore, longstore : array-like
+        Latitudes and longitudes along each track.
+    vstore : array-like
+        Maximum circular wind along each track.
+    rmstore : array-like
+        Radius (km) of maximum circular wind along each track.
+    vsestore : array-like
+        Maximum circular wind of any secondary eyewalls that may be present.
+    rmsestore : array-like
+        Radius (km) of maximum circular wind of any secondary eyewalls.
+    ut, vt : array-like
+        West-east and north-south components of the storm translation velocity.
+    us, vs : array-like
+        Vertical shears (m/s) used to estimate the baroclinic components of the vertical motion.
+    plat : array-like
+        Latitudes of points of interest.
+    plong : array-like
+        Longitudes of points of interest.
+    h : array-like
+        Topographic heights.
+    hx, hy : array-like
+        Gradients of topographic heights in x and y directions.
+    timeres : float
+        Time resolution in hours.
+    wrad : float
+        Background subsidence velocity under radiative cooling.
 
     Returns:
-    -------
-        - wq: vertical velocity (m/s)
-        - date_record: Time in date format corresponding to rainrate
+    --------
+    wq : array-like
+        Vertical velocity (m/s).
+    date_record : array-like
+        Time in date format corresponding to the rain rate.
     """
 
-    deltar = params.deltar      # Delta radius (km) for calculating dM/dr
-    deltari = 1.0 / deltar      # inverse of Delta radius
-    timelength = params.timelength
+    deltar = params['deltar']  # Delta radius (km) for calculating dM/dr
+    deltari = 1.0 / deltar  # inverse of Delta radius
+    timelength = params['timelength']
     timeresi = 1.0 / (3600 * timeres)
-    Htrop = params.Htrop
-    wprofile = params.wprofile
-    radcity = params.radcity
+    Htrop = params['Htrop']
+    wprofile = params['wprofile']
+    radcity = params['radcity']
 
-    se = np.nanmax(vsestore)       # for secondary eyewalls
+    se = np.nanmax(vsestore)  # for secondary eyewalls
     ntime = int(timelength / timeres + 1)
     nsteps = round(2.0 / timeres)
     nstepsi = 1.0 / nsteps
@@ -1149,9 +1279,8 @@ def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestor
     jstart = jmin - delj                        # index start
     jend = jmin + delj + 1                      # index end
     jtot = 2 * delj + 1                         # total index?
-    jfine = 1 + nsteps * (jtot - 1)             # ???
+    jfine = 1 + nsteps * (jtot - 1)
 
-    # Create reduced length time series of each quantity
     vshort = np.zeros((nn, jtot, sx, sy))
     rmshort = np.zeros((nn, jtot, sx, sy))
     vseshort = np.zeros((nn, jtot, sx, sy))
@@ -1160,7 +1289,6 @@ def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestor
     latshort = np.zeros((nn, jtot, sx, sy))
     longshort = np.zeros((nn, jtot, sx, sy))
     dateshort = np.zeros((nn, jtot, sx, sy))
-    # dateshort = np.full((nn, jtot, sx, sy), "", dtype="U19")
     utshort = np.zeros((nn, jtot, sx, sy))
     vtshort = np.zeros((nn, jtot, sx, sy))
     usshort = np.zeros((nn, jtot, sx, sy))
@@ -1182,7 +1310,7 @@ def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestor
                 vtshort[n, :, i, j] = vt[n, jstart[n, i, j]: jend[n, i, j]]
                 usshort[n, :, i, j] = us[n, jstart[n, i, j]: jend[n, i, j]]
                 vsshort[n, :, i, j] = vs[n, jstart[n, i, j]: jend[n, i, j]]
-                dqshort[n, :, i, j] = dq[n, jstart[n, i, j]:jend[n, i, j]]
+                dqshort[n, :, i, j] = dq[n, jstart[n, i, j]: jend[n, i, j]]
 
     # Create high time-resolution series
     vfine = np.zeros((nn, jfine, sx, sy))
@@ -1196,20 +1324,20 @@ def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestor
     vtfine = np.zeros((nn, jfine, sx, sy))
     usfine = np.zeros((nn, jfine, sx, sy))
     vsfine = np.zeros((nn, jfine, sx, sy))
-    dqfine = np.zeros((nn, jfine, sx, sy))    
-
+    dqfine = np.zeros((nn, jfine, sx, sy))
     hfine = np.zeros((nn, jfine, sx, sy))
     hyfine = np.zeros((nn, jfine, sx, sy))
     hxfine = np.zeros((nn, jfine, sx, sy))
     cdfine = np.zeros((nn, jfine, sx, sy))
     cdyfine = np.zeros((nn, jfine, sx, sy))
-    cdxfine = np.zeros((nn, jfine, sx, sy))    
+    cdxfine = np.zeros((nn, jfine, sx, sy))
 
     k = 0
     for j in range(jtot - 1):
         for n in range(nsteps):
             weight = n * nstepsi
-            vfine[:, k, :, :] = (1 - weight) * vshort[:, j, :, :] + weight * vshort[:, j + 1, :, :]
+            vfine[:, k, :, :] = (1 - weight) * vshort[:, j, :, :] + \
+                weight * vshort[:, j + 1, :, :]
             rmfine[:, k, :, :] = (1 - weight) * rmshort[:, j, :, :] + \
                 weight * rmshort[:, j + 1, :, :]
             vsefine[:, k, :, :] = (1 - weight) * vseshort[:, j, :, :] + \
@@ -1255,23 +1383,27 @@ def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestor
     # for primary eyewalls
     w, cp, V, Vd, Vrp, Vrm, u1temp, u2temp, Cdp, Cdm = calculate_wind_primary(
         utfine, vtfine, vfine, rfine, rmfine, vsefine, rmsefine, latfine,
-        nn, jfine, sx, sy, h, hx, hy, cdrag, hfine, hxfine,
-        hyfine, cdfine, cdx, cdxfine, cdy, cdyfine, Hi, Htrop, omega, pifac,
-        deltar, deltari, knotfac, latfac, timeresi, dx*rfinei, dy*rfinei, 10,
-        wprofile, adj_water=False)
+        nn, jfine, sx, sy, h, hx, hy, cdrag, hfine, hxfine, hyfine,
+        cdfine, cdx, cdxfine, cdy, cdyfine, Hi, Htrop, omega, pifac,
+        deltar, deltari, knotfac, latfac, timeresi, dx * rfinei, dy * rfinei,
+        10, wprofile, adj_water=False)
 
     # if secondary eyewalls present
     if se > 0:
         w2, cp, V, Vd, Vrp, Vrm = calculate_wind_secondary(
-            rfine, vsefine, rmsefine, latfine, nn, jfine, sx, 1, Hi, Htrop, omega,
-            pifac, deltar, deltari, knotfac, latfac, timeresi, u1temp, u2temp,
-            Cdp, Cdm, wprofile)
+            rfine, vsefine, rmsefine, latfine, nn, jfine, sx, 1, Hi, Htrop,
+            omega, pifac, deltar, deltari, knotfac, latfac, timeresi, u1temp,
+            u2temp, Cdp, Cdm, wprofile)
         w = np.maximum(w, w2)
 
     # Now add in topographic and shear components
-    hxmod = -0.0005 * (cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)) * vsfine
+    hxmod = -0.0005 * (
+        cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)
+    ) * vsfine
     # to include shear dotted with storm entropy
-    hymod = 0.0005 * (cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)) * usfine
+    hymod = 0.0005 * (
+        cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)
+    ) * usfine
 
     # Reduce effect of translation speed outside of radcity
     ufunc = (radcity - rfine) / 50
@@ -1281,11 +1413,11 @@ def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestor
     vtfine = vtfine * ufunc
 
     # Reduce effect of orography outside of storm core
-    ufunc = (150 - rfine) / 30
+    ufunc = (150 - rfine) / 30.0
     ufunc = np.minimum(ufunc, 0.6)
     ufunc = np.maximum(ufunc, 0.2)
-    hxfine = hxfine * ufunc
-    hyfine = hyfine * ufunc
+    hxfine *= ufunc
+    hyfine *= ufunc
 
     w = (
         w
@@ -1297,36 +1429,46 @@ def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestor
     w = np.minimum(w, 7)
 
     # Add radiative cooling
-    wq = dqfine * np.maximum(w - wrad, 0)       # If w-wrad is negative (downward motion): wp = 0
+    # If w-wrad is negative (downward motion): wp = 0
+    wq = dqfine * np.maximum(w - wrad, 0)
     return wq, date_record
 
 
 def vouternew(vm, fc, ro, wc, CD, q):
     """
-    Numerical integration of the outer wind profile from simple ODE.
+    Numerically integrates the outer wind profile from a simple ordinary differential equation (ODE).
 
-    Inputs:
-    ------
-        vm: maximum wind (m/s)
-        f: Coriolis force (s^-1)
-        ro: outer radiusin (km)
-        wc: radiative subsidence rate (mm/s)
-        CD: drag coefficient
-        q: number of radial points
+    Parameters:
+    ----------
+    vm : float
+        Maximum wind speed (m/s).
+    fc : float
+        Coriolis parameter (s^-1).
+    ro : float
+        Outer radius (km).
+    wc : float
+        Radiative subsidence rate (mm/s).
+    CD : float
+        Drag coefficient.
+    q : int
+        Number of radial points.
 
     Returns:
     -------
-        v: potential intensity (m/s)
-        r: radius at maximum wind (km)
-        imin: minimum index for which V and r are defined
+    v : array of float
+        Potential intensity (m/s) at each radial point.
+    r : array of float
+        Radius at each radial point (km).
+    imin : int
+        Minimum index for which v and r are defined.
     """
 
     # Asselin filter coefficient
     assl = 0.2
 
     # Convert units
-    ro = ro * 1000.0  # Convert to meters
-    wc = wc * 0.001   # Convert to m/s
+    ro *= 1000.0  # Convert to meters
+    wc *= 0.001   # Convert to m/s
     chi = CD * fc * ro / wc  # Definition of chi
     rdim = vm / fc
     rond = ro / rdim
@@ -1344,17 +1486,16 @@ def vouternew(vm, fc, ro, wc, CD, q):
     r[q - 2] = rond - dr
 
     for i in range(q - 3, 0, -1):
-        r[i] = r[i+1] - dr
-        m[i] = m[i+2] - 2.0 * dr * \
-            (chi * m[i+1]**2 / (rond**2 - r[i+1]**2) - r[i+1])
-        m[i+1] = m[i+1] + assl * (m[i] + m[i+2] - 2.0 * m[i+1])
+        r[i] = r[i + 1] - dr
+        m[i] = m[i + 2] - 2.0 * dr * (chi * m[i + 1]**2 / (rond**2 - r[i + 1]**2) - r[i + 1])
+        m[i + 1] += assl * (m[i] + m[i + 2] - 2.0 * m[i + 1])
         v[i] = m[i] / r[i]
         if v[i] > 1.0:
             imin = i
             break
 
     # Fill in values inside radius where v = potential intensity
-    for i in range(imin-1):
+    for i in range(imin - 1):
         v[i] = 0.0
         r[i] = dr * i
 
@@ -1363,8 +1504,8 @@ def vouternew(vm, fc, ro, wc, CD, q):
         v[i] = vm * v[i]                # v in m/s
         r[i] = 0.001 * vm * r[i] / fc   # r in km
 
-    epa = (v[imin]-vm)/(v[imin]-v[imin+1])
-    rm = r[imin]+epa*(r[imin+1]-r[imin])
+    epa = (v[imin] - vm) / (v[imin] - v[imin + 1])
+    rm = r[imin] + epa * (r[imin + 1] - r[imin])
 
     return v, rm, imin
 
@@ -1373,18 +1514,25 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks, directory, fnam
     """
     Estimate the radius of maximum circular wind from maximum circular wind speed.
 
-    Inputs:
-    ------
-        ds: xarray dataset containing data
-        lat_tracks: latitude (degrees) for the wind tracks
-        vmax_tracks: maximum circular wind speed (m/s)
-        id_tracks: id of TC tracks
-        directory: folder containing the ds dataset
-        fname: filename of the dataset
+    Parameters:
+    -----------
+    ds : xarray.Dataset
+        Dataset containing the data.
+    lat_tracks : np.ndarray
+        Latitude (degrees) for the wind tracks.
+    vmax_tracks : np.ndarray
+        Maximum circular wind speed (m/s).
+    id_tracks : np.ndarray
+        IDs of the TC tracks.
+    directory : str
+        Folder containing the dataset.
+    fname : str
+        Filename of the dataset.
 
     Returns:
-    -------
-        rm_tracks: radius of maximum circular wind (km)
+    --------
+    np.ndarray
+        Radius of maximum circular wind (km).
     """
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1405,20 +1553,20 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks, directory, fnam
         for jnd in range(jmax):
             alats = lat_tracks[ind, jnd]
             vsin = vmax_tracks[ind, jnd]
-            # skip at equator (coriolis force fc = 0) or vs = 0
+            # Skip at equator (coriolis force fc = 0) or vs = 0
             if alats != 0 and vsin > 0:
                 fc1 = 1.45e-4 * np.abs(alats * 0.0175)
                 _, rm, _ = vouternew(vsin, fc1, ro, wc, cdouter, nouter)
             else:
                 rm = 0
             rm_tracks[ind, jnd] = rm
-        print(f"Tracks {ind}/{num_tcs} completed...", end='\r')
+        print(f"Tracks {ind + 1}/{num_tcs} completed...", end='\r')
         sys.stdout.flush()
     print('\nDone!')
 
     ds = ds.assign(rm_tracks=(['n_trk', 'time'], rm_tracks))
 
-    # remove old ds and save updated ds to disk
+    # Remove old dataset and save updated dataset to disk
     if os.path.exists(fullpathname):
         os.remove(fullpathname)
     ds.to_netcdf(fullpathname, mode='w')
@@ -1430,93 +1578,116 @@ def smoothb(x, nz, jmin, jmax):
     """
     Apply a 1-2-1 smoothing filter to a 2D array.
 
-    Inputs:
-    ------
-        - x (numpy.ndarray): Input 2D array to be smoothed.
-        - nz (int): Number of rows in the 2D array.
-        - jmin (int): Minimum column index to start smoothing.
-        - jmax (int): Maximum column index to end smoothing.
+    Parameters:
+    -----------
+    x : numpy.ndarray
+        Input 2D array to be smoothed.
+    nz : int
+        Number of rows in the 2D array.
+    jmin : int
+        Minimum column index to start smoothing.
+    jmax : int
+        Maximum column index to end smoothing.
 
     Returns:
-    -------
-        - xsmooth (numpy.ndarray): Smoothed 2D array.
+    --------
+    numpy.ndarray
+        Smoothed 2D array.
     """
     xsmooth = np.copy(x)  # Make a copy of the input array to avoid modifying it directly
 
     # Apply the 1-2-1 smoothing filter
     for i in range(1, nz):
         for j in range(jmin, jmax):
-            xsmooth[i, j] = 0.125 * (x[i - 1, j] + x[i + 1, j] +
-                                     x[i, j - 1] + x[i, j + 1]) + 0.5 * x[i, j]
+            xsmooth[i, j] = (0.125 * (x[i - 1, j] + x[i + 1, j] +
+                                      x[i, j - 1] + x[i, j + 1]) +
+                             0.5 * x[i, j])
 
     return xsmooth
 
 
 def windswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore, uinc, vinc):
     """
-    This script calculates the distribution of maximum point wind speed (knots) for a single storm.
+    Calculate the distribution of maximum point wind speed (knots) for a single storm.
 
-    Inputs:
-    ------
-        - nt: Track number of the storm
-        - latstore, longstore: Latitudes and longitudes along each track
-        - vstore: Maximum circular wind along each storm track
-        - rmstore: Radius (in km) of maximum circular wind along each track
-        - vsestore: maximum circular wind of any secondary eyewalls that may be present
-        - rmsestore: Radius (in km) of maximum circular wind of any secondary eyewalls
-        - ut: West-east component of the storm translation velocity
-        - u850store, v850store: Zonal & meridional components of the 850 hPa environmental
-            wind speed (knots)
+    Parameters:
+    -----------
+    nt : int
+        Track number of the storm.
+    latstore : numpy.ndarray
+        Latitudes along each track.
+    longstore : numpy.ndarray
+        Longitudes along each track.
+    rmstore : numpy.ndarray
+        Radius (in km) of maximum circular wind along each track.
+    vstore : numpy.ndarray
+        Maximum circular wind along each storm track.
+    rmsestore : numpy.ndarray
+        Radius (in km) of maximum circular wind of any secondary eyewalls.
+    vsestore : numpy.ndarray
+        Maximum circular wind of any secondary eyewalls that may be present.
+    uinc : numpy.ndarray
+        West-east component of the storm translation velocity.
+    vinc : numpy.ndarray
+        Zonal & meridional components of the 850 hPa environmental wind speed (knots).
+
     Returns:
     --------
-        - x, y: vectors containing the longitudes and latitudes of the grid
-        - maxwind: storm maximum wind speed (knots) at each point on the grid
+    x : numpy.ndarray
+        Longitudes of the grid.
+    y : numpy.ndarray
+        Latitudes of the grid.
+    maxwind : numpy.ndarray
+        Storm maximum wind speed (knots) at each point on the grid.
     """
-    magfac = params.magfac              # overall scale factor for storm size
-    deltax = params.deltax              # longitudinal distance of map boundaries from storm center
-    deltay = params.deltay              # latitudinal distance of map boundaries from storm center
-    bxmin = params.bxmin                # minimum longitude of map (degree)
-    bxmax = params.bxmax                # maximum longitude of map (degree)
-    bymin = params.bymin                # minimum latitude of map (degree)
-    bymax = params.bymax                # maximum latitude of map (degree)
-    dellatlongs = params.dellatlongs    # horizontal resolution of field maps
-    timeres = params.timeres            # time resolution for time series at fixed points
+    # Extract parameters from the params dictionary
+    magfac = params['magfac']              # Overall scale factor for storm size
+    deltax = params['deltax']              # Longitudinal distance of map boundaries from storm center
+    deltay = params['deltay']              # Latitudinal distance of map boundaries from storm center
+    bxmin = params['bxmin']                # Minimum longitude of map (degrees)
+    bxmax = params['bxmax']                # Maximum longitude of map (degrees)
+    bymin = params['bymin']                # Minimum latitude of map (degrees)
+    bymax = params['bymax']                # Maximum latitude of map (degrees)
+    dellatlongs = params['dellatlongs']    # Horizontal resolution of field maps
+    timeres = params['timeres']            # Time resolution for time series at fixed points
 
+    # Apply the overall scale factor to the radius of maximum circular wind
     rmstore1 = rmstore * magfac
     rmsestore1 = rmsestore * magfac
 
     # Find the index q where latstore is closest to 0
     q = np.argmin(np.abs(latstore[nt, :])) - 1
 
-    # Extract non-zero elements
-    utd = np.transpose(uinc[nt, :][uinc[nt, :] != 0])[np.newaxis, :]
-    vtd = np.transpose(vinc[nt, :][vinc[nt, :] != 0])[np.newaxis, :]
-    lat = np.transpose(latstore[nt, :][latstore[nt, :] != 0])[np.newaxis, :]
-    long = np.transpose(longstore[nt, :][longstore[nt, :] != 0])[np.newaxis, :]
-    v = np.transpose(vstore[nt, :][vstore[nt, :] != 0])[np.newaxis, :]
+    # Extract non-zero elements and transpose them
+    utd = uinc[nt, :][uinc[nt, :] != 0][np.newaxis, :].T
+    vtd = vinc[nt, :][vinc[nt, :] != 0][np.newaxis, :].T
+    lat = latstore[nt, :][latstore[nt, :] != 0][np.newaxis, :].T
+    long = longstore[nt, :][longstore[nt, :] != 0][np.newaxis, :].T
+    v = vstore[nt, :][vstore[nt, :] != 0][np.newaxis, :].T
 
     qv = np.max(v.shape)
-    rm = np.transpose(rmstore1[nt, :][rmstore1[nt, :] != 0])[np.newaxis, :]
-    vse = np.transpose(vsestore[nt, :qv])[np.newaxis, :]
-    rmse = np.transpose(rmsestore1[nt, :qv])[np.newaxis, :]
+    rm = rmstore1[nt, :][rmstore1[nt, :] != 0][np.newaxis, :].T
+    vse = vsestore[nt, :qv][np.newaxis, :].T
+    rmse = rmsestore1[nt, :qv][np.newaxis, :].T
 
+    # Adjust longitudes crossing the 0/360 boundary
     for i in range(q):
         if long[0, 0] > 200 and long[0, i] < 50:
             long[0, i] += 360
 
+    # Calculate map boundaries
     bxmin = np.min(long[np.nonzero(long)]) - deltax
     bxmax = np.max(long[np.nonzero(long)]) + deltax
     bymin = np.min(lat[np.nonzero(lat)]) - deltay
     bymax = np.max(lat[np.nonzero(lat)]) + deltay
 
     # Create x and y grid
-    x = np.arange(bxmin, bxmax+1e-10, dellatlongs)
-    y = np.arange(bymin, bymax+1e-10, dellatlongs)
+    x = np.arange(bxmin, bxmax + 1e-10, dellatlongs)
+    y = np.arange(bymin, bymax + 1e-10, dellatlongs)
 
-    sx = x.size
-    sy = y.size
+    sx, sy = x.size, y.size
 
-    # Adjust x and y sizes if needed
+    # Adjust x size if needed
     if sx == sy:
         x = np.append(x, bxmax + dellatlongs)
         sx += 1
@@ -1527,6 +1698,7 @@ def windswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore, ui
     vs1, _ = pointshortn(lat, long, v, rm, vse, rmse, utd, vtd, y, x, timeres)
     maxwind[:, :] = np.max(vs1[0, :, :, :], axis=0)
 
+    # Smooth the maxwind array
     maxwind = smoothb(maxwind, sx - 1, 1, sy - 1)
     maxwind = np.transpose(maxwind)
 

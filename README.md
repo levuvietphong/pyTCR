@@ -26,7 +26,7 @@
 - [Contacts](#mailbox-contacts)
 
 ## :books: Overview
-**pyTCR** is a physics-based model designed for estimating rainfall driven by tropical cylones (TC) ([Zhu *et al.*, 2013](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2013GL058284); [Lu *et al.*, 2018](https://journals.ametsoc.org/view/journals/atsc/75/7/jas-d-17-0264.1.xml)). The PyTCR simulates convective TC rainfall by relating the precipitation rate to the total upward velocity within the TC vortex. The `PyTCR` seamlessly integrates with outputs from [a tropical cylone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) (see [Lin *et al.,* 2023](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023MS003686)) to produce detailed spatial-temporal rainfall patterns aligned with hurricane tracks.
+**pyTCR** is a physics-based model developed to estimate rainfall induced by tropical cyclones (TCs; see [Zhu *et al.*, 2013](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2013GL058284); [Lu *et al.*, 2018](https://journals.ametsoc.org/view/journals/atsc/75/7/jas-d-17-0264.1.xml)). It simulates convective TC rainfall by correlating the precipitation rate with the total upward velocity within the TC vortex. The PyTCR integrates seamlessly with outputs from [a tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) (see [Lin *et al.,* 2023](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023MS003686)) to generate detailed spatial-temporal rainfall patterns that align with hurricane tracks.
 
 ## :wrench: Installation
 
@@ -51,11 +51,14 @@
     ```
 
 ## :arrow_forward: Getting Started
-This repository provides several [`jupyter notebooks`](https://github.com/levuvietphong/pyTCR/tree/main/notebooks) to help you get started with PyTCR for generating and visualizing tropical cyclone-driven rainfall. The notebooks demonstrate different use cases and data sources:
-1. **Tropical Cyclone Tracks:** This notebook plots tropical cyclone tracks and density based on observations and outputs obtained from the tropical cyclone downscaling model -- View it [here](./notebooks/ex1_tropical_cyclone_tracks.ipynb).
+This repository provides a collection of [`Jupyter notebooks`](https://github.com/levuvietphong/pyTCR/tree/main/notebooks) designed to facilitate the use of PyTCR for generating and visualizing rainfall induced by TCs. These notebooks cover various use cases and data sources, providing comprehensive guidance for users.
 
-2. **Rainfall Generation:** This notebook utilizes outputs from [a tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) to generate rainfall driven by tropical cyclones. The tropical cyclone downscaling model was modified to work with CMIP6 datasets -- Check it out [here](./notebooks/ex2_rainfall_generation.ipynb).
+1. **Tropical Cyclone Tracks:** This notebook visualizes tropical cyclone tracks and density using observational data and outputs from the [tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk). Access it [here](./notebooks/ex1_tropical_cyclone_tracks.ipynb).
 
+2. **Rainfall Generation:** This notebook leverages outputs from [the tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) to simulate rainfall driven by tropical cyclones. The downscaling model has been adapted to work with CMIP6 datasets. Explore it [here](./notebooks/ex2_rainfall_generation.ipynb).
+
+> [!NOTE]
+> Downscaled tropical cyclone tracks for various CMIP6 models (including `historical` and `ssp585` experiments) are available for download [here](https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks).
 
 ## :framed_picture: Gallery
 The following figures illustrate the inputs used in pyTCR and results obtained from PyTCR:
