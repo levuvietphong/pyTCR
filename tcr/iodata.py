@@ -56,16 +56,21 @@ def load_Matlab_data(directory, filename):
         raise RuntimeError(f"An error occurred while loading the Matlab file: {e}") from e
 
 
-def load_netcdf_track_data(directory, filename):
+def load_netcdf_track_data(data_directory='../data/downscaled/',
+                           model='E3SM-1-0', basin='NA', expmnt='historical'):
     """
     Load data in NetCDF format from Tropical cyclone downscaling.
 
     Parameters:
     -----------
-    directory : str
-        Name of the directory where data is stored.
-    filename : str
-        Name of the NetCDF file.
+    data_directory : str
+        Path to the data directory.
+    model : str
+        Name of the CMIP6 model.
+    basin : str
+        Name of the ocean basin.
+    expmnt : str
+        Name of the model experiment.
 
     Returns:
     --------
@@ -92,25 +97,29 @@ def load_netcdf_track_data(directory, filename):
     tc_time : numpy.ndarray
         Array of tropical cyclone times.
     """
-
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    data_folder = os.path.join(current_dir, directory)
-    file_path = os.path.join(data_folder, filename)
-
-    ds = xr.open_dataset(file_path)
-    lat_trks = np.nan_to_num(ds['lat_trks'].values)
-    lon_trks = np.nan_to_num(ds['lon_trks'].values)
-    n_trk = np.nan_to_num(ds['n_trk'].values)
-    v_trks = np.nan_to_num(ds['v_trks'].values)
-    vmax_trks = np.nan_to_num(ds['vmax_trks'].values)
-    u850_trks = np.nan_to_num(ds['u850_trks'].values)
-    v850_trks = np.nan_to_num(ds['v850_trks'].values)
-    tc_month = np.nan_to_num(ds['tc_month'].values)
-    tc_years = np.nan_to_num(ds['tc_years'].values)
-    tc_time = np.nan_to_num(ds['time'].values)
+    try:
+        ncfile = glob.glob(f"{data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc")[0]
+        ds = xr.open_dataset(ncfile)
+        lat_trks = np.nan_to_num(ds['lat_trks'].values)
+        lon_trks = np.nan_to_num(ds['lon_trks'].values)
+        n_trk = np.nan_to_num(ds['n_trk'].values)
+        v_trks = np.nan_to_num(ds['v_trks'].values)
+        vmax_trks = np.nan_to_num(ds['vmax_trks'].values)
+        u850_trks = np.nan_to_num(ds['u850_trks'].values)
+        v850_trks = np.nan_to_num(ds['v850_trks'].values)
+        tc_month = np.nan_to_num(ds['tc_month'].values)
+        tc_years = np.nan_to_num(ds['tc_years'].values)
+        tc_time = np.nan_to_num(ds['time'].values)
+    except IndexError as exc:
+        raise FileNotFoundError(f"No files found for the given path: \
+            {data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc") from exc
+    except KeyError as e:
+        raise KeyError(f"Missing expected data in the dataset: {e}") from e
+    except Exception as e:
+        raise RuntimeError(f"An error occurred while loading the dataset: {e}") from e
 
     return (
-        ds, lat_trks, lon_trks, n_trk, v_trks, vmax_trks, 
+        ds, lat_trks, lon_trks, n_trk, v_trks, vmax_trks,
         u850_trks, v850_trks, tc_month, tc_years, tc_time
     )
 
@@ -201,13 +210,14 @@ def load_best_tracks_obs(fname, year_start, year_end):
     return lat_tc, lon_tc, time_tc, ind_tc, name_tc, basin_tc, wind_tc, speed_tc
 
 
-def load_tracks_GCMs(pathdir, model='E3SM-1-0', basin='NA', expmnt='historical'):
+def load_tracks_GCMs(data_directory='../data/downscaled/',
+                     model='E3SM-1-0', basin='NA', expmnt='historical'):
     """
     Load the downscaled tracks of tropical cyclones from CMIP6 models.
 
     Parameters:
     -----------
-    pathdir : str
+    data_directory : str
         Path to the data directory.
     model : str
         Name of the CMIP6 model.
@@ -230,7 +240,7 @@ def load_tracks_GCMs(pathdir, model='E3SM-1-0', basin='NA', expmnt='historical')
         Maximum wind speeds of tropical cyclones.
     """
     try:
-        ncfile = glob.glob(f"{pathdir}/{expmnt}/tracks_{basin}_{model}_*.nc")[0]
+        ncfile = glob.glob(f"{data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc")[0]
         ds = xr.open_dataset(ncfile)
         lon_trks = ds['lon_trks'].values
         lat_trks = ds['lat_trks'].values
@@ -238,7 +248,7 @@ def load_tracks_GCMs(pathdir, model='E3SM-1-0', basin='NA', expmnt='historical')
         year_trks = ds['year'].values
         id_trks = ds['n_trk'].values
     except IndexError as exc:
-        raise FileNotFoundError(f"No files found for the given path: {pathdir}/{expmnt}/tracks_{basin}_{model}_*.nc") from exc
+        raise FileNotFoundError(f"No files found for the given path: {data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc") from exc
     except KeyError as e:
         raise KeyError(f"Missing expected data in the dataset: {e}") from e
     except Exception as e:
