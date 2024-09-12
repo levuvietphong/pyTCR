@@ -6,6 +6,7 @@ Functions for wind in PyTCR
 import os
 import sys
 import math
+import glob
 import numpy as np
 from tcr import terrain_boundary as tcr_tb
 from tcr import iodata as tcr_io
@@ -1510,7 +1511,9 @@ def vouternew(vm, fc, ro, wc, CD, q):
     return v, rm, imin
 
 
-def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks, directory, fname):
+def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
+                         data_directory='../data/downscaled/', model='E3SM-1-0',
+                         basin='NA', expmnt='historical'):
     """
     Estimate the radius of maximum circular wind from maximum circular wind speed.
 
@@ -1534,10 +1537,6 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks, directory, fnam
     np.ndarray
         Radius of maximum circular wind (km).
     """
-
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    data_folder = os.path.join(current_dir, directory)
-    fullpathname = os.path.join(data_folder, fname)
 
     ro = 1000.          # Outer radius
     wc = 3.0            # Radiative subsidence rate
@@ -1567,9 +1566,10 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks, directory, fnam
     ds = ds.assign(rm_tracks=(['n_trk', 'time'], rm_tracks))
 
     # Remove old dataset and save updated dataset to disk
-    if os.path.exists(fullpathname):
-        os.remove(fullpathname)
-    ds.to_netcdf(fullpathname, mode='w')
+    ncfile = glob.glob(f"{data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc")[0]
+    if os.path.exists(ncfile):
+        os.remove(ncfile)
+    ds.to_netcdf(ncfile, mode='w')
 
     return rm_tracks
 

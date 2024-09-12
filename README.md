@@ -57,7 +57,7 @@ This repository provides a collection of [`Jupyter notebooks`](https://github.co
 
 2. **Rainfall Generation:** This notebook leverages outputs from [the tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) to simulate rainfall driven by tropical cyclones. The downscaling model has been adapted to work with CMIP6 datasets. Explore it [here](./notebooks/ex2_rainfall_generation.ipynb).
 
-> [!NOTE]
+> [!IMPORTANT]
 > Downscaled tropical cyclone tracks for various CMIP6 models (including `historical` and `ssp585` experiments) are available for download [here](https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks).
 
 ## :framed_picture: Gallery
