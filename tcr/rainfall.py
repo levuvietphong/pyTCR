@@ -9,11 +9,12 @@ import numpy as np
 from tcr import wind as tcr_wind
 from tcr import terrain_boundary as tcr_tb
 from tcr import iodata as tcr_io
-from tcr import params
+from tcr.params import params
 
 
-def rainfieldx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore, ut, vt,
-               u850store, v850store, monthstore, daystore, hourstore, monthplot, dayplot, hourplot):
+def rainfieldx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore,
+               ut, vt, u850store, v850store, monthstore, daystore, hourstore,
+               monthplot, dayplot, hourplot):
     """
     Calculates the distribution of surface rain rate (mm/hr) for a given storm at a specified time.
 
@@ -43,19 +44,19 @@ def rainfieldx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore, ut
 
     """
 
-    magfac = params.magfac
-    deltax = params.deltax
-    deltay = params.deltay
-    bxmin = params.bxmin                # boundary in x-y direction
-    bxmax = params.bxmax
-    bymin = params.bymin
-    bymax = params.bymax
-    dellatlong = params.dellatlong
-    q900 = params.q900
-    eprecip = params.eprecip            # Precipitation efficiency
-    wrad = params.wrad                  # Background subsidence velocity
+    magfac = params['magfac']
+    deltax = params['deltax']
+    deltay = params['deltay']
+    bxmin = params['bxmin']
+    bxmax = params['bxmax']
+    bymin = params['bymin']
+    bymax = params['bymax']
+    dellatlong = params['dellatlong']
+    q900 = params['q900']
+    eprecip = params['eprecip']   # Precipitation efficiency
+    wrad = params['wrad']  # Background subsidence velocity
 
-    m_to_mm = 1000                      # convert unit from meter to milimeter 
+    m_to_mm = 1000                      # convert unit from meter to milimeter
     rhoa_over_rhol = 0.00117            # ratio of air density over water density
 
     nrm, mrm = np.shape(rmstore)
@@ -154,15 +155,15 @@ def rainswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore,
         Storm total rainfall (unit: mm) at each point on the grid
     """
     # Load parameters
-    magfac = params.magfac
-    deltax, deltay = params.deltax, params.deltay
-    bxmin, bxmax = params.bxmin, params.bxmax
-    bymin, bymax = params.bymin, params.bymax
-    dellatlongs = params.dellatlongs
-    q900 = params.q900
-    timeres = params.timeres
-    wrad = params.wrad
-    eprecip = params.eprecip
+    magfac = params['magfac']
+    deltax, deltay = params['deltax'], params['deltay']
+    bxmin, bxmax = params['bxmin'], params['bxmax']
+    bymin, bymax = params['bymin'], params['bymax']
+    dellatlongs = params['dellatlongs']
+    q900 = params['q900']
+    timeres = params['timeres']
+    wrad = params['wrad']
+    eprecip = params['eprecip']
 
     # Constants
     M_TO_MM = 1000
@@ -230,10 +231,12 @@ def rainswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore,
     return x, y, netrain.T
 
 
-def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsestore, rmsestore,
-            u850store, v850store, utrans, vtrans, T600=None):
+def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore,
+            vsestore, rmsestore, u850store, v850store, utrans, vtrans,
+            T600=None):
     """
-    Calculate accumulated rain and rainrates at specified locations for the active event set.
+    Calculate accumulated rain and rainrates at specified locations 
+    for the active event set.
 
     Parameters:
     -----------
@@ -283,16 +286,17 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore, vsesto
     plong = np.array([plong])
 
     # Load parameters
-    magfac = params.magfac                  # overall scale factor for storm size
-    q900_default = params.q900              # specific humidity at 900 hPa
-    timeres = params.timeres                # time resolution for time series at fixed points
-    wrad = params.wrad                      # background subsidence velocity under radiative cooling
-    eprecip = params.eprecip                # precipitation efficiency
-
-    sx = plong.size                         # get number of points
+    magfac = params['magfac']  # overall scale factor for storm size
+    q900_default = params['q900']  # specific humidity at 900 hPa
+    timeres = params['timeres']  # time resolution for time series at fixed points
+    wrad = params['wrad']  # background subsidence velocity under radiative cooling
+    eprecip = params['eprecip']  # precipitation efficiency
+    sx = plong.size  # get number of points
 
     # Load high-resolution bathymetry from netcdf
-    bathy = tcr_io.load_netcdf_2d_parameters('../data', 'surface_data.nc', 'bathymetry')
+    bathy = tcr_io.load_netcdf_2d_parameters(
+        '../data', 'surface_data.nc', 'bathymetry'
+    )
 
     ntopo, _ = np.shape(bathy)
     topores = 360. / ntopo                  # topo resolution in degree

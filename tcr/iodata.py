@@ -1,5 +1,5 @@
 """
-Functions for I/O in PyTCR
+Input/Output functions for PyTCR
 """
 
 import os
@@ -201,7 +201,7 @@ def load_best_tracks_obs(fname, year_start, year_end):
     return lat_tc, lon_tc, time_tc, ind_tc, name_tc, basin_tc, wind_tc, speed_tc
 
 
-def load_tracks_GCMs(pathdir, modelid, basin, expmnt):
+def load_tracks_GCMs(pathdir, model='E3SM-1-0', basin='NA', expmnt='historical'):
     """
     Load the downscaled tracks of tropical cyclones from CMIP6 models.
 
@@ -209,7 +209,7 @@ def load_tracks_GCMs(pathdir, modelid, basin, expmnt):
     -----------
     pathdir : str
         Path to the data directory.
-    modelid : str
+    model : str
         Name of the CMIP6 model.
     basin : str
         Name of the ocean basin.
@@ -229,13 +229,19 @@ def load_tracks_GCMs(pathdir, modelid, basin, expmnt):
     vmax_trks : numpy.ndarray
         Maximum wind speeds of tropical cyclones.
     """
-
-    ncfile = glob.glob(f"{pathdir}/{expmnt}/tracks_{basin}_{modelid}_*.nc")[0]
-    ds = xr.open_dataset(ncfile)
-    lon_trks = ds['lon_trks'].values
-    lat_trks = ds['lat_trks'].values
-    vmax_trks = ds['vmax_trks'].values
-    year_trks = ds['year'].values
-    id_trks = ds['n_trk'].values
+    try:
+        ncfile = glob.glob(f"{pathdir}/{expmnt}/tracks_{basin}_{model}_*.nc")[0]
+        ds = xr.open_dataset(ncfile)
+        lon_trks = ds['lon_trks'].values
+        lat_trks = ds['lat_trks'].values
+        vmax_trks = ds['vmax_trks'].values
+        year_trks = ds['year'].values
+        id_trks = ds['n_trk'].values
+    except IndexError as exc:
+        raise FileNotFoundError(f"No files found for the given path: {pathdir}/{expmnt}/tracks_{basin}_{model}_*.nc") from exc
+    except KeyError as e:
+        raise KeyError(f"Missing expected data in the dataset: {e}") from e
+    except Exception as e:
+        raise RuntimeError(f"An error occurred while loading the dataset: {e}") from e
 
     return lat_trks, lon_trks, year_trks, id_trks, vmax_trks
