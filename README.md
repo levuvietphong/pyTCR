@@ -1,6 +1,6 @@
 <p float="left">
-<img src="notebooks/images/logo.png" alt="Logo" width="45">
-<img src="notebooks/images/pyTCR.png" alt="pyTCR logo" width="220px">
+<img src="images/logo.gif" alt="Logo" height="45">
+<img src="images/pyTCR.png" alt="pyTCR logo" width="220px">
 </p>
 
 # A tropical cyclone rainfall model for python
@@ -12,7 +12,7 @@
 ![](https://img.shields.io/github/downloads/levuvietphong/pyTCR/total)
 ![](https://img.shields.io/github/v/release/levuvietphong/pyTCR)
 
-![](notebooks/images/Intro-hurricane.gif)
+![](images/Intro-hurricane.gif)
 
 
 ## Table of Contents
@@ -65,15 +65,15 @@ The following figures illustrate the inputs used in pyTCR and results obtained f
 
 - **Tropical cyclone tracks:** The figure below shows the tracks of tropical cyclones downscaled from outputs from E3SM v1.0 model, Reanalysis ERA5, and best track observations.
 
-![](notebooks/images/hurricane_tracks.gif)
+![](images/hurricane_tracks.gif)
 
 - **Spatial Distribution of Total Rainfall:** The image below shows the spatial distribution of total rainfall along three storm tracks that made landfall in the Southeast Texas (SETx) region.
 
-![](notebooks/images/cumulative_rain_3storms.png)
+![](images/cumulative_rain_3storms.png)
 
 - **Time Series of Precipitation:** The figure below depicts the time series of precipitation at a specific location (29°N, 95°W) within the SETx region.
 
-![](notebooks/images/rainfall_timeseries.png)
+![](images/rainfall_timeseries.png)
 
 
 ## :page_facing_up: License
