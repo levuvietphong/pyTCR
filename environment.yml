@@ -13,6 +13,8 @@ dependencies:
   - jupyter
   - shapely
   - xarray
+  - libtiff
   - pip
   - pip:
     # Add any additional pip packages if needed
+    pyproj
