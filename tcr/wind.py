@@ -613,21 +613,21 @@ def utrans(latstore, longstore):
     return ut, vt, jmax
 
 
-def utransfull(latstore, longstore, vstore=None, u850store=None, v850store=None):
+def utransfull(lats, longs, vs=None, u850=None, v850=None):
     """
     Calculate Calculate translation speed and apply corrections to circular wind speed.
 
     Parameters:
     -----------
-    latstore : array-like
+    lats : array-like
         Latitude values along the storm track.
-    longstore : array-like
+    longs : array-like
         Longitude values along the storm track.
-    vstore : array-like, optional
+    vs : array-like, optional
         Circular wind speed values along the storm track.
-    u850store : array-like, optional
+    u850 : array-like, optional
         Zonal component of the environmental 850 hPa wind.
-    v850store : array-like, optional
+    v850 : array-like, optional
         Meridional component of the environmental 850 hPa wind.
 
     Returns:
@@ -642,30 +642,30 @@ def utransfull(latstore, longstore, vstore=None, u850store=None, v850store=None)
         Corrected meridional wind speed.
     """
     # Calculate translation velocity
-    ut, vt, _ = utrans(latstore, longstore)
+    ut, vt, _ = utrans(lats, longs)
 
     # Add latitude-dependent fraction of translation speed to circular wind
-    transfunc = transfunction(latstore)
+    transfunc = transfunction(lats)
     uinc = transfunc * ut
     vinc = transfunc * vt
 
     # If environmental 850 hPa wind available, add baroclinic factor to wind speed
-    if u850store is not None and v850store is not None:
+    if u850 is not None and v850 is not None:
         udrift = -0.9 * 3600 / 1852
         vdrift = 1.4 * 3600 / 1852
-        vdrift = vdrift * latstore / (np.abs(latstore) + 1e-8)
+        vdrift = vdrift * lats / (np.abs(lats) + 1e-8)
 
         # Apply baroclinic correction
-        uinc += 0.5 * (ut - udrift - u850store) * (vstore / 15)
-        vinc += 0.5 * (vt - vdrift - v850store) * (vstore / 15)
+        uinc += 0.5 * (ut - udrift - u850) * (vs / 15)
+        vinc += 0.5 * (vt - vdrift - v850) * (vs / 15)
 
     # Do not allow wind speed increments to exceed circular gradient wind
-    if vstore is not None:
-        ufrac = vstore / (0.1 + np.abs(uinc))
+    if vs is not None:
+        ufrac = vs / (0.1 + np.abs(uinc))
         ufrac = np.minimum(ufrac, 1)
         uinc *= ufrac
 
-        vfrac = vstore / (0.1 + np.abs(vinc))
+        vfrac = vs / (0.1 + np.abs(vinc))
         vfrac = np.minimum(vfrac, 1)
         vinc *= vfrac
 
@@ -841,10 +841,10 @@ def pointshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut, v
     logfac = np.log(wheight / 500) / 0.35
 
     # Load bathymetry
-    bathy = tcr_io.load_netcdf_2d_parameters('data', 'surface_data.nc', 'bathy')
+    bathy = tcr_io.load_netcdf_2d_parameters('../data', 'surface_data.nc', 'bathymetry')
 
     # Load neutral drag coefficients
-    cd = tcr_io.load_netcdf_2d_parameters('data', 'surface_data.nc', 'cd')
+    cd = tcr_io.load_netcdf_2d_parameters('../data', 'surface_data.nc', 'cdrag')
     mincd = np.min(cd)
     cd[bathy < 0] = mincd
     rat = 1 / (1 + np.sqrt(mincd) * logfac)
@@ -1188,7 +1188,9 @@ def pointwshortn(latstore, longstore, vstore, rmstore, vsestore, rmsestore, ut,
     return w
 
 
-def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, vsestore, rmsestore, ut, vt, us, vs, plong, plat, h, hx, hy, timeres, wrad):
+def pointwshortnqdx(latstore, longstore, datestore, dq, vstore, rmstore, 
+                    vsestore, rmsestore, ut, vt, us, vs, plong, plat, 
+                    h, hx, hy, timeres, wrad):
     """
     Calculate the time series of vertical velocity at specified points of interest.
 
@@ -1659,16 +1661,16 @@ def windswathx(nt, latstore, longstore, rmstore, vstore, rmsestore, vsestore, ui
     q = np.argmin(np.abs(latstore[nt, :])) - 1
 
     # Extract non-zero elements and transpose them
-    utd = uinc[nt, :][uinc[nt, :] != 0][np.newaxis, :].T
-    vtd = vinc[nt, :][vinc[nt, :] != 0][np.newaxis, :].T
-    lat = latstore[nt, :][latstore[nt, :] != 0][np.newaxis, :].T
-    long = longstore[nt, :][longstore[nt, :] != 0][np.newaxis, :].T
-    v = vstore[nt, :][vstore[nt, :] != 0][np.newaxis, :].T
+    utd = uinc[nt, :][uinc[nt, :] != 0][np.newaxis, :]
+    vtd = vinc[nt, :][vinc[nt, :] != 0][np.newaxis, :]
+    lat = latstore[nt, :][latstore[nt, :] != 0][np.newaxis, :]
+    long = longstore[nt, :][longstore[nt, :] != 0][np.newaxis, :]
+    v = vstore[nt, :][vstore[nt, :] != 0][np.newaxis, :]
 
     qv = np.max(v.shape)
-    rm = rmstore1[nt, :][rmstore1[nt, :] != 0][np.newaxis, :].T
-    vse = vsestore[nt, :qv][np.newaxis, :].T
-    rmse = rmsestore1[nt, :qv][np.newaxis, :].T
+    rm = rmstore1[nt, :][rmstore1[nt, :] != 0][np.newaxis, :]
+    vse = vsestore[nt, :qv][np.newaxis, :]
+    rmse = rmsestore1[nt, :qv][np.newaxis, :]
 
     # Adjust longitudes crossing the 0/360 boundary
     for i in range(q):

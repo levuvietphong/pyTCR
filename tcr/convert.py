@@ -32,7 +32,7 @@ def to_datetime_from_Matlab(years1d, months, days, hours):
 
     # Create a 2D array of years by repeating the 1D array across columns
     _, n = months.shape
-    years = np.tile(years1d[:, np.newaxis], (1, n))
+    years = np.tile(years1d.T, (1, n))
 
     # Flatten the 2D arrays to work with pandas DataFrame
     years_flat = years.flatten()

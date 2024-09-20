@@ -351,7 +351,9 @@ def raingen(plat, plong, latstore, longstore, datestore, vstore, rmstore,
         plong, plat, h, hx, hy, timeres, wrad)
 
     # Convert date_record to pandas format
-    datetimes = pd.to_datetime(date_record.flatten(), unit='s')
+    datetimes = pd.to_datetime(np.where(date_record.flatten() < 0,
+                                        np.nan, date_record.flatten()),
+                               unit='s')
     datetimes_numpy = np.array(
         [
             (
