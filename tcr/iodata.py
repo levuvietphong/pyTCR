@@ -7,6 +7,8 @@ import glob
 import numpy as np
 import scipy.io as sio
 import xarray as xr
+import requests
+from bs4 import BeautifulSoup
 
 
 def convert_to_mps(values, conversion_factor=0.514444):
@@ -255,3 +257,120 @@ def load_tracks_GCMs(data_directory='../data/downscaled/',
         raise RuntimeError(f"An error occurred while loading the dataset: {e}") from e
 
     return lat_trks, lon_trks, year_trks, id_trks, vmax_trks
+
+
+def fetch_directory_tree(
+    url="https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks/",
+    depth=0,
+    max_depth=2,
+):
+    """
+    Fetch and print the directory tree from a specified URL up to a given depth.
+
+    Parameters:
+    -----------
+    depth : int, optional
+        Current depth of the directory tree (default is 0).
+    max_depth : int, optional
+        Maximum depth to traverse the directory tree (default is 2).
+
+    Returns:
+    --------
+    None
+    """
+    # Make a GET request to fetch the HTML content
+    response = requests.get(url, timeout=10)
+    if response.status_code != 200:
+        print(f"Failed to retrieve contents of {url}")
+        return
+
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Find all links in the directory page
+    links = soup.find_all('a')
+
+    # Iterate through the links
+    for link in links:
+        href = link.get('href')
+
+        # Ignore parent directory links and base URL itself
+        if href == "../" or href == "/":
+            continue
+
+        # Define colors for different depths
+        colors = ["\033[1m\033[94m", "\033[93m", "\033[92m", "\033[91m", "\033[95m", "\033[96m"]
+        color = colors[depth % len(colors)]
+
+        # Indent for subdirectory depth
+        print(f"{color}{'    ' * depth + '|-- ' + link.text}\033[0m")
+
+        # If it's a directory (ends with '/') and within max_depth, fetch its contents recursively
+        if href.endswith('/') and depth < max_depth - 1:
+            fetch_directory_tree(os.path.join(url, href), depth + 1, max_depth)
+
+
+def download_tracks_data_cmip6(
+    url="https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks/",
+    experiments=None,
+    models=None,
+    target_directory="../data/downscaled/",
+):
+    """
+    Download the downscaled tropical cyclone tracks from CMIP6 models.
+
+    Parameters:
+    -----------
+    experiment : str, optional
+        Name of the model experiment (default is 'historical').
+    model : str, optional
+        Name of the CMIP6 model (default is 'E3SM-1-0').
+    target_directory : str, optional
+        Path to the target directory to save the downloaded files (default is '../data/downscaled/').
+
+    Returns:
+    --------
+    None
+    """
+    if isinstance(experiments, str):
+        experiments = [experiments]
+    if isinstance(models, str):
+        models = [models]
+
+    for experiment in experiments:
+        for model in models:
+            # Create a local directory to save the downloaded files
+            os.makedirs(f'{target_directory}/{experiment}', exist_ok=True)
+
+            # Get the list of netcdf files in the folder
+            response = requests.get(f'{url}/{experiment}/{model}/', timeout=10)
+            if response.status_code != 200:
+                print(
+                    f"Error: Unable to access the directory for model '{model}' in experiment '{experiment}'. Please check the model name and try again."
+                )
+                continue
+            soup = BeautifulSoup(response.text, 'html.parser')
+
+            # Extract the links to the netcdf files
+            links = soup.find_all('a')
+
+            for link in links:
+                href = link.get('href')
+                if href.endswith('.nc'):
+                    print(f"Downloading {href}...")
+                    # Download the file
+                    file_url = f'{url}/{experiment}/{model}/{href}'
+                    response = requests.get(file_url, stream=True, timeout=10)
+                    total_size = int(response.headers.get('content-length', 0))
+                    block_size = 1024  # 1 Kibibyte
+                    downloaded_size = 0
+                    # Save the file to the target_directory/experiment folder
+                    with open(f'{target_directory}/{experiment}/{href}', 'wb') as f:
+                        for data in response.iter_content(block_size):
+                            downloaded_size += len(data)
+                            f.write(data)
+                            mb_downloaded = downloaded_size / (1024 * 1024)
+                            mb_total = total_size / (1024 * 1024)
+                            percentage = (downloaded_size / total_size) * 100
+                            print(f"{mb_downloaded:.2f} MB of {mb_total:.2f} MB ({percentage:.2f}%)", end='\r')
+                    print()  # Move to the next line after download is complete

@@ -53,9 +53,13 @@
 ## :arrow_forward: Getting Started
 This repository provides a collection of [`Jupyter notebooks`](https://github.com/levuvietphong/pyTCR/tree/main/notebooks) designed to facilitate the use of PyTCR for generating and visualizing rainfall induced by TCs. These notebooks cover various use cases and data sources, providing comprehensive guidance for users.
 
+0. **Download Tropical Cyclone Data:** This notebook shows how to download CMIP6 downscaled tropical cyclone tracks obtained from the [tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk). Access it [here](./notebooks/ex0_download_tracks_from_cmip6.ipynb).
+
 1. **Tropical Cyclone Tracks:** This notebook visualizes tropical cyclone tracks and density using observational data and outputs from the [tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk). Access it [here](./notebooks/ex1_tropical_cyclone_tracks.ipynb).
 
 2. **Rainfall Generation:** This notebook leverages outputs from [the tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) to simulate rainfall driven by tropical cyclones. The downscaling model has been adapted to work with CMIP6 datasets. Explore it [here](./notebooks/ex2_rainfall_generation.ipynb).
+
+3. **Wind Speed Generation:** This notebook shows how to generate spatially and temporally varying wind speed from outputs from the [tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk). Access it [here](./notebooks/ex3_wind_speed_generation.ipynb).
 
 > [!IMPORTANT]
 > Downscaled tropical cyclone tracks for various CMIP6 models (including `historical` and `ssp585` experiments) are available for download [here](https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks).
