@@ -17,7 +17,8 @@ dependencies = [
     "cartopy",
     "shapely",
     "xarray",
-    "netcdf4"
+    "netcdf4",
+    "pyproj"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
