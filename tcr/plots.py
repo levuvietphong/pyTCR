@@ -15,24 +15,29 @@ import cartopy.feature as cfeature
 from shapely.geometry import Point
 
 
-def format_mapping(ax, extent=(-180, 180, -90, 90, 10, 10), shapefile=None, show_gridlabel=False):
+def format_mapping(ax, extent=(-180, 180, -90, 90, 10, 10),
+                   shapefile=None, show_gridlabel=False, show_coastlines=True,
+                   add_features=True):
     """
-    Format and decorate the map by setting extent, grid spacing, and optional shapefile overlay.
+    Format and decorate the map by setting extent, grid spacing, and optional
+    shapefile overlay.
 
     Parameters:
     -----------
     ax : matplotlib.axes.Axes
         The axis object on which to format the map.
     extent : tuple, optional
-        Bounding box and spacing in data coordinates (left, right, bottom, top, dx, dy).
-        Defines the spatial extent of the map. Default is (-180, 180, -90, 90, 10, 10).
+        Bounding box and spacing in data coordinates (left, right, bottom, 
+        top, dx, dy). Defines the spatial extent of the map. Default is 
+        (-180, 180, -90, 90, 10, 10).
     shapefile : str or shapefile-like object, optional
-        A shapefile to overlay on the map. Provides additional geographic context.
+        A shapefile to overlay on the map. Provides additional geographic 
+        context.
     show_gridlabel : bool, optional
-        Whether to display grid labels on the map. Controls the visibility of gridline labels.
-        Default is False.
+        Whether to display grid labels on the map. Controls the visibility of 
+        gridline labels. Default is False.
     """
-    
+
     xmin, xmax, ymin, ymax, dx, dy = extent
 
     n = 60
@@ -43,11 +48,14 @@ def format_mapping(ax, extent=(-180, 180, -90, 90, 10, 10), shapefile=None, show
         list(zip(np.full(n, xmin), np.linspace(ymin, ymax, n)))
     )
 
-    ax.coastlines(lw=1)
     ax.set_extent((xmin, xmax, ymin, ymax))
-    ax.add_feature(cfeature.LAND, zorder=1, edgecolor='k', lw=0.5, alpha=0.75)
     ax.set_boundary(aoi, transform=ccrs.PlateCarree())
 
+    if show_coastlines:
+        ax.coastlines(lw=1)
+    if add_features:
+        ax.add_feature(cfeature.LAND, zorder=1, edgecolor='k', lw=0.5, alpha=0.75)
+    
     if show_gridlabel:
         # Find the smallest multiple of 10 greater than or equal to xmin
         xstart = np.ceil(xmin / 10) * 10
@@ -67,9 +75,12 @@ def format_mapping(ax, extent=(-180, 180, -90, 90, 10, 10), shapefile=None, show
         ax.add_feature(shapereg, facecolor='none', zorder=4, lw=0.75)
 
 
-def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1.0,
-                 cmap='viridis', logscale=False, show_gridlabel=False, shapefile=None,
-                 title=None, title_ypos=0.95, title_fontcolor='k', title_fontstyle='regular'):
+def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
+                 cmap='viridis', logscale=False, show_gridlabel=False,
+                 show_coastlines=True, add_features=True,
+                 shapefile=None, title=None, title_ypos=1,
+                 title_fontcolor='k', title_fontstyle='regular', 
+                 method='contourf'):
     """
     Plot the density of tropical cyclone (TC) tracks.
 
@@ -86,14 +97,15 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1.0,
     levels : array-like
         Contour levels for plotting density.
     extent : tuple, optional
-        Bounding box and spacing in data coordinates (left, right, bottom, top, dx, dy).
-        Defines the spatial extent of the map. Default is None.
+        Bounding box and spacing in data coordinates (left, right, bottom, 
+        top, dx, dy). Defines the spatial extent of the map. Default is None.
     alpha : float, optional
         Transparency level of the density plot. Default is 1.0.
     cmap : str or Colormap, optional
         Colormap to use for visualizing density values. Default is 'viridis'.
     logscale : bool, optional
-        Whether to use a logarithmic scale for density values. Default is False.
+        Whether to use a logarithmic scale for density values. Default is 
+        False.
     show_gridlabel : bool, optional
         Whether to display grid labels on the map. Default is False.
     shapefile : str or shapefile-like object, optional
@@ -101,7 +113,7 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1.0,
     title : str, optional
         Title of the plot. Default is None.
     title_ypos : float, optional
-        Y-coordinate for the title position. Default is 0.95.
+        Y-coordinate for the title position. Default is 1.0.
     title_fontcolor : str, optional
         Color of the plot title. Default is 'k'.
     title_fontstyle : str, optional
@@ -109,7 +121,10 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1.0,
     """
 
     # Format the map
-    format_mapping(ax, extent=extent, shapefile=shapefile, show_gridlabel=show_gridlabel)
+    format_mapping(
+        ax, extent=extent, shapefile=shapefile, show_gridlabel=show_gridlabel,
+        show_coastlines=show_coastlines, add_features=add_features
+    )
 
     # Contour fill map
     if logscale:
@@ -119,9 +134,16 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1.0,
         norm = None
         locator = None
 
-    im = ax.contourf(lon, lat, density, alpha=alpha, cmap=cmap,
-                     levels=levels, norm=norm, locator=locator,
-                     extend='both', transform=ccrs.PlateCarree())
+    if method == 'contourf':
+        im = ax.contourf(lon, lat, density, alpha=alpha, cmap=cmap,
+                         levels=levels, norm=norm, locator=locator,
+                         extend='both', transform=ccrs.PlateCarree())
+    elif method == 'pcolormesh':
+        im = ax.pcolormesh(lon, lat, density, alpha=alpha, cmap=cmap,
+                           vmin=levels[0], vmax=levels[-1], norm=norm,
+                           transform=ccrs.PlateCarree())
+    else:
+        raise ValueError(f"Invalid method: {method}")
 
     # Set plot title if provided
     if title:
@@ -131,9 +153,12 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1.0,
     return im
 
 
-def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1, wind_speed_threshold=0, extent=None,
-                alpha=1.0, cmap='viridis', show_gridlabel=False, shapefile=None, title=None,
-                title_ypos=0.95, wind_color=False, title_fontcolor='k', title_fontstyle='regular',
+def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
+                wind_speed_threshold=0, extent=None, alpha=1,
+                cmap='viridis', show_gridlabel=False, show_coastlines=True,
+                add_features=True, shapefile=None, title=None,
+                title_ypos=1, wind_color=False, title_fontcolor='k',
+                title_fontstyle='regular',
                 norm=plt.Normalize(0, 100)):
     """
     Plot the tracks of tropical cyclones (TCs).
@@ -155,8 +180,8 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1, wind_speed_thresh
     wind_speed_threshold : float, optional
         Minimum wind speed required to plot a track. Default is 0.
     extent : tuple, optional
-        Bounding box and spacing in data coordinates (left, right, bottom, top, dx, dy).
-        Defines the spatial extent of the map. Default is None.
+        Bounding box and spacing in data coordinates (left, right, bottom, top,
+        dx, dy). Defines the spatial extent of the map. Default is None.
     alpha : float, optional
         Transparency level of the plot. Default is 1.0.
     cmap : str or Colormap, optional
@@ -168,7 +193,7 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1, wind_speed_thresh
     title : str, optional
         Title of the plot. Default is None.
     title_ypos : float, optional
-        Y-coordinate for the title position. Default is 0.95.
+        Y-coordinate for the title position. Default is 1.0.
     wind_color : bool, optional
         Whether to color the tracks based on wind speed. Default is False.
     title_fontcolor : str, optional
@@ -176,7 +201,7 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1, wind_speed_thresh
     title_fontstyle : str, optional
         Font style of the plot title. Default is 'regular'.
     norm : matplotlib.colors.Normalize, optional
-        Normalization for the colormap scaling. Default is plt.Normalize(0, 100).
+        Normalization for the colormap scaling.
 
     Returns:
     --------
@@ -185,7 +210,10 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1, wind_speed_thresh
     """
 
     # Format the map
-    format_mapping(ax, extent=extent, shapefile=shapefile, show_gridlabel=show_gridlabel)
+    format_mapping(
+        ax, extent=extent, shapefile=shapefile, show_gridlabel=show_gridlabel,
+        show_coastlines=show_coastlines, add_features=add_features
+    )
 
     # Plot hurricane tracks
     for i in track_inds:
@@ -199,15 +227,24 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1, wind_speed_thresh
             lat = lat[ind]
             lon = lon[ind]
             vs = vs[ind]
-            points = np.array([lon, lat]).T.reshape(-1, 1, 2)
+            # points = np.array([lon, lat]).T.reshape(-1, 1, 2)
+            points = np.column_stack((lon, lat)).reshape(-1, 1, 2)
             segments = np.concatenate([points[:-1], points[1:]], axis=1)
-            lc = LineCollection(segments, cmap=cmap if wind_color else plt.cm.gray, norm=norm,
-                                alpha=alpha if wind_color else 0.25, transform=ccrs.PlateCarree())
+            lc = LineCollection(
+                segments,
+                cmap=cmap if wind_color else plt.cm.gray,
+                norm=norm,
+                alpha=alpha if wind_color else 0.25,
+                transform=ccrs.PlateCarree(),
+            )
             lc.set_array(vs)
             lc.set_linewidth(1)
             line = ax.add_collection(lc)
-            ax.plot(lon[0], lat[0], 'ok', ms=3, alpha=alpha if wind_color else 0.25,
-                    transform=ccrs.PlateCarree(), zorder=1)
+            ax.plot(
+                lon[0], lat[0], "ok", ms=3,
+                alpha=alpha if wind_color else 0.25,
+                transform=ccrs.PlateCarree(), zorder=1,
+            )
 
     if title:
         ax.set_title(title, y=title_ypos, color=title_fontcolor,
@@ -223,9 +260,9 @@ def get_tracks_landfall_region(lat_tracks, lon_tracks, num_tracks, polygon):
     Parameters:
     -----------
     lat_tracks : numpy.ndarray
-        2D array of latitudes for each track. Shape is (num_tracks, num_points).
+        2D array of latitudes for each track [num_tracks, num_points].
     lon_tracks : numpy.ndarray
-        2D array of longitudes for each track. Shape is (num_tracks, num_points).
+        2D array of longitudes for each track [num_tracks, num_points].
     num_tracks : int
         Number of tracks to sample and check for landfall.
     polygon : shapely.geometry.Polygon
@@ -238,7 +275,9 @@ def get_tracks_landfall_region(lat_tracks, lon_tracks, num_tracks, polygon):
     """
 
     num_tcs = lat_tracks.shape[0]
-    ind_tracks = np.random.choice(np.arange(num_tcs), num_tracks, replace=False)
+    ind_tracks = np.random.choice(
+        np.arange(num_tcs), num_tracks, replace=False
+    )
     ind_poly = []
 
     for tc_id in ind_tracks:

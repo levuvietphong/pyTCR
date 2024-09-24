@@ -8,7 +8,7 @@ import pandas as pd
 
 def to_datetime_from_Matlab(years1d, months, days, hours):
     """
-    Convert year, month, day, and hour from integer format to Python datetime format.
+    Convert year, month, day, and hour from integer format to Python datetime
 
     Parameters:
     -----------
@@ -28,7 +28,9 @@ def to_datetime_from_Matlab(years1d, months, days, hours):
     """
     # Ensure the input arrays have compatible shapes
     if months.shape != days.shape or months.shape != hours.shape:
-        raise ValueError("Input arrays 'months', 'days', and 'hours' must have the same shape.")
+        raise ValueError(
+            "Input arrays 'months', 'days', and 'hours' must have the same shape."
+        )
 
     # Create a 2D array of years by repeating the 1D array across columns
     _, n = months.shape
@@ -41,16 +43,15 @@ def to_datetime_from_Matlab(years1d, months, days, hours):
     hours_flat = hours.flatten()
 
     # Create a DataFrame from the flattened arrays
-    df = pd.DataFrame({
-        'year': years_flat,
-        'month': months_flat,
-        'day': days_flat,
-        'hour': hours_flat
-    })
+    df = pd.DataFrame(
+        {"year": years_flat, "month": months_flat, "day": days_flat, "hour": hours_flat}
+    )
 
     # Convert to datetime, handling NaN values
-    datetimes_flat = pd.to_datetime(df, errors='coerce')
-    datetime_numeric = datetimes_flat.view('int64') // 10**9  # Convert to seconds since the epoch
+    datetimes_flat = pd.to_datetime(df, errors="coerce")
+    datetime_numeric = (
+        datetimes_flat.view("int64") // 10**9
+    )  # Convert to seconds since the epoch
     datetime_array = datetime_numeric.to_numpy()
 
     # Reshape back to the original 2D structure
@@ -100,13 +101,10 @@ def to_datetime_from_netcdf(years, months, times):
     hours_flat = hours_2d.flatten()
 
     # Create a DataFrame and convert to datetime, handling NaN values
-    df = pd.DataFrame({
-        'year': years_flat,
-        'month': months_flat,
-        'day': days_flat,
-        'hour': hours_flat
-    })
-    datetimes_flat = pd.to_datetime(df, errors='coerce')
+    df = pd.DataFrame(
+        {"year": years_flat, "month": months_flat, "day": days_flat, "hour": hours_flat}
+    )
+    datetimes_flat = pd.to_datetime(df, errors="coerce")
     datetime_numeric = datetimes_flat.astype(int) / 10**9  # Convert to seconds
     datetime_array = datetime_numeric.to_numpy()
 

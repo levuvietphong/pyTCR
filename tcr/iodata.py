@@ -8,6 +8,7 @@ import numpy as np
 import scipy.io as sio
 import xarray as xr
 import requests
+import shapefile
 from bs4 import BeautifulSoup
 
 
@@ -357,6 +358,10 @@ def download_tracks_data_cmip6(
             for link in links:
                 href = link.get('href')
                 if href.endswith('.nc'):
+                    file_path = f'{target_directory}/{experiment}/{href}'
+                    if os.path.exists(file_path):
+                        print(f"File {href} already exists. Skipping download.")
+                        continue
                     print(f"Downloading {href}...")
                     # Download the file
                     file_url = f'{url}/{experiment}/{model}/{href}'
@@ -365,7 +370,7 @@ def download_tracks_data_cmip6(
                     block_size = 1024  # 1 Kibibyte
                     downloaded_size = 0
                     # Save the file to the target_directory/experiment folder
-                    with open(f'{target_directory}/{experiment}/{href}', 'wb') as f:
+                    with open(file_path, 'wb') as f:
                         for data in response.iter_content(block_size):
                             downloaded_size += len(data)
                             f.write(data)
@@ -374,3 +379,22 @@ def download_tracks_data_cmip6(
                             percentage = (downloaded_size / total_size) * 100
                             print(f"{mb_downloaded:.2f} MB of {mb_total:.2f} MB ({percentage:.2f}%)", end='\r')
                     print()  # Move to the next line after download is complete
+
+
+def get_bbox_from_shapefile(shapefile_path):
+    """
+    Get the bounding box from a shapefile.
+
+    Parameters:
+    -----------
+    shapefile_path : str
+        Path to the shapefile.
+
+    Returns:
+    --------
+    bbox : tuple
+        Bounding box in the format (xmin, xmax, ymin, ymax).
+    """
+    sf = shapefile.Reader(shapefile_path)
+    bbox = sf.bbox  # returns [xmin, ymin, xmax, ymax]
+    return bbox[0], bbox[2], bbox[1], bbox[3]

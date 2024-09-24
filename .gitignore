@@ -11,3 +11,4 @@ pyTCR.egg-info/
 /miscellaneous/
 /data/MIROC6_20th_Atlantic.mat
 /data/*.mat
+/data/test/
