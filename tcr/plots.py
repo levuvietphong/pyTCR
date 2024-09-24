@@ -16,7 +16,8 @@ from shapely.geometry import Point
 
 
 def format_mapping(ax, extent=(-180, 180, -90, 90, 10, 10),
-                   shapefile=None, show_gridlabel=False):
+                   shapefile=None, show_gridlabel=False, show_coastlines=True,
+                   add_features=True):
     """
     Format and decorate the map by setting extent, grid spacing, and optional
     shapefile overlay.
@@ -47,11 +48,14 @@ def format_mapping(ax, extent=(-180, 180, -90, 90, 10, 10),
         list(zip(np.full(n, xmin), np.linspace(ymin, ymax, n)))
     )
 
-    ax.coastlines(lw=1)
     ax.set_extent((xmin, xmax, ymin, ymax))
-    ax.add_feature(cfeature.LAND, zorder=1, edgecolor='k', lw=0.5, alpha=0.75)
     ax.set_boundary(aoi, transform=ccrs.PlateCarree())
 
+    if show_coastlines:
+        ax.coastlines(lw=1)
+    if add_features:
+        ax.add_feature(cfeature.LAND, zorder=1, edgecolor='k', lw=0.5, alpha=0.75)
+    
     if show_gridlabel:
         # Find the smallest multiple of 10 greater than or equal to xmin
         xstart = np.ceil(xmin / 10) * 10
@@ -73,8 +77,10 @@ def format_mapping(ax, extent=(-180, 180, -90, 90, 10, 10),
 
 def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
                  cmap='viridis', logscale=False, show_gridlabel=False,
+                 show_coastlines=True, add_features=True,
                  shapefile=None, title=None, title_ypos=1,
-                 title_fontcolor='k', title_fontstyle='regular'):
+                 title_fontcolor='k', title_fontstyle='regular', 
+                 method='contourf'):
     """
     Plot the density of tropical cyclone (TC) tracks.
 
@@ -116,7 +122,8 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
 
     # Format the map
     format_mapping(
-        ax, extent=extent, shapefile=shapefile, show_gridlabel=show_gridlabel
+        ax, extent=extent, shapefile=shapefile, show_gridlabel=show_gridlabel,
+        show_coastlines=show_coastlines, add_features=add_features
     )
 
     # Contour fill map
@@ -127,9 +134,16 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
         norm = None
         locator = None
 
-    im = ax.contourf(lon, lat, density, alpha=alpha, cmap=cmap,
-                     levels=levels, norm=norm, locator=locator,
-                     extend='both', transform=ccrs.PlateCarree())
+    if method == 'contourf':
+        im = ax.contourf(lon, lat, density, alpha=alpha, cmap=cmap,
+                         levels=levels, norm=norm, locator=locator,
+                         extend='both', transform=ccrs.PlateCarree())
+    elif method == 'pcolormesh':
+        im = ax.pcolormesh(lon, lat, density, alpha=alpha, cmap=cmap,
+                           vmin=levels[0], vmax=levels[-1], norm=norm,
+                           transform=ccrs.PlateCarree())
+    else:
+        raise ValueError(f"Invalid method: {method}")
 
     # Set plot title if provided
     if title:
@@ -141,9 +155,10 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
 
 def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
                 wind_speed_threshold=0, extent=None, alpha=1,
-                cmap='viridis', show_gridlabel=False, shapefile=None,
-                title=None, title_ypos=1, wind_color=False,
-                title_fontcolor='k', title_fontstyle='regular',
+                cmap='viridis', show_gridlabel=False, show_coastlines=True,
+                add_features=True, shapefile=None, title=None,
+                title_ypos=1, wind_color=False, title_fontcolor='k',
+                title_fontstyle='regular',
                 norm=plt.Normalize(0, 100)):
     """
     Plot the tracks of tropical cyclones (TCs).
@@ -196,7 +211,8 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
 
     # Format the map
     format_mapping(
-        ax, extent=extent, shapefile=shapefile, show_gridlabel=show_gridlabel
+        ax, extent=extent, shapefile=shapefile, show_gridlabel=show_gridlabel,
+        show_coastlines=show_coastlines, add_features=add_features
     )
 
     # Plot hurricane tracks

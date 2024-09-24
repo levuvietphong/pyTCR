@@ -96,7 +96,7 @@ def estimate_pdi(lat_trks, lon_trks, vmax_trks, num_trks, cellsize, dt):
         2D array representing the PDI of TC tracks in each grid cell.
     """
     num_tc = lat_trks.shape[0]
-    ind_trks = np.random.choice(np.arange(num_tc), num_trks, replace=False)
+    ind_trks = np.random.choice(num_tc, num_trks, replace=False)
 
     x0, x1 = cellsize / 2, 360 - cellsize / 2
     y0, y1 = cellsize / 2, 180 - cellsize / 2
@@ -107,20 +107,19 @@ def estimate_pdi(lat_trks, lon_trks, vmax_trks, num_trks, cellsize, dt):
     pdi_all = np.zeros((nrows, ncols))
 
     for tc_id in ind_trks:
-        pdi = np.zeros((nrows, ncols))
         temp = lat_trks[tc_id, :]
         indmax = np.where(temp > -90)[0][-1] + 1
-        lat = lat_trks[tc_id, 0:indmax]
-        lon = lon_trks[tc_id, 0:indmax]
-        vmax = vmax_trks[tc_id, 0:indmax]
+        lat = lat_trks[tc_id, :indmax]
+        lon = lon_trks[tc_id, :indmax]
+        vmax = vmax_trks[tc_id, :indmax]
         lon[lon >= 360] -= 360
 
-        for k in range(indmax):
-            jrow = np.floor(lat[k] / cellsize).astype(int)
-            icol = np.floor(lon[k] / cellsize).astype(int)
-            if np.isnan(vmax[k]) or vmax[k] < 0:
-                vmax[k] = 0
-            pdi[jrow, icol] += vmax[k]**3 * dt * 3600  # unit L^3/L^2
-        pdi_all += pdi
+        valid_indices = ~np.isnan(vmax) & (vmax >= 0)
+        lat, lon = lat[valid_indices], lon[valid_indices]
+        vmax = vmax[valid_indices]
+
+        jrows = np.floor(lat / cellsize).astype(int)
+        icols = np.floor(lon / cellsize).astype(int)
+        np.add.at(pdi_all, (jrows, icols), vmax**3 * dt * 3600)  # unit L^3/L^2
 
     return latitude, longitude, pdi_all

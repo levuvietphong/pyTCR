@@ -163,10 +163,11 @@ def rainfieldx(nt, latitude, longitude, radius_storm, velocity,
         vsh = 5 * knotfac * (vtstorm - vdrift * np.cos(pifac * latstorm) -
                              v850storm)
 
-    bxmin = np.floor(longstorm[1] - deltax)
-    bxmax = np.ceil(longstorm[1] + deltax)
-    bymin = np.floor(latstorm[1] - deltay)
-    bymax = np.ceil(latstorm[1] + deltay)
+    if extent is None and shapefile is None:
+        bxmin = np.floor(longstorm[1] - deltax)
+        bxmax = np.ceil(longstorm[1] + deltax)
+        bymin = np.floor(latstorm[1] - deltay)
+        bymax = np.ceil(latstorm[1] + deltay)
 
     h, hx, hy, x, y = tcr_tb.estimate_topographic_height(
         bxmin, bxmax, bymin, bymax, dellatlong
