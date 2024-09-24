@@ -30,7 +30,7 @@
 
 ## :wrench: Installation
 
-1. Clone the pyTCR repo
+1. Clone the pyTCR repository
     ```sh
     git clone https://github.com/levuvietphong/pyTCR.git
     ```
@@ -49,6 +49,8 @@
     ```sh
     pip install -e .
     ```
+> [!NOTE]
+> If you pull latest changes from the repository, simply run `git pull` in the `pyTCR` directory. Reinstallation is not required.
 
 ## :arrow_forward: Getting Started
 This repository provides a collection of [jupyter notebooks](https://github.com/levuvietphong/pyTCR/tree/main/notebooks) designed to facilitate the use of PyTCR for generating and visualizing rainfall and wind speedinduced by TCs. These notebooks cover various use cases and data sources, providing comprehensive guidance for users.
