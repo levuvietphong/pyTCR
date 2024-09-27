@@ -12,12 +12,12 @@ from matplotlib.colors import LogNorm, LinearSegmentedColormap
 from cartopy.feature import ShapelyFeature
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
-from shapely.geometry import Point
+from shapely.geometry import Point, Polygon
 
 
 def format_mapping(ax, extent=(-180, 180, -90, 90, 10, 10),
                    shapefile=None, show_gridlabel=False, show_coastlines=True,
-                   add_features=True):
+                   add_features=True, utm=False):
     """
     Format and decorate the map by setting extent, grid spacing, and optional
     shapefile overlay.
@@ -48,26 +48,38 @@ def format_mapping(ax, extent=(-180, 180, -90, 90, 10, 10),
         list(zip(np.full(n, xmin), np.linspace(ymin, ymax, n)))
     )
 
-    ax.set_extent((xmin, xmax, ymin, ymax))
-    ax.set_boundary(aoi, transform=ccrs.PlateCarree())
+    if not utm:
+        ax.set_extent((xmin, xmax, ymin, ymax))
+        ax.set_boundary(aoi, transform=ccrs.PlateCarree())
 
     if show_coastlines:
         ax.coastlines(lw=1)
     if add_features:
-        ax.add_feature(cfeature.LAND, zorder=1, edgecolor='k', lw=0.5, alpha=0.75)
-    
+        ax.add_feature(cfeature.LAND, zorder=1, edgecolor='k', lw=0.5,
+                       alpha=0.75)
+
     if show_gridlabel:
-        # Find the smallest multiple of 10 greater than or equal to xmin
-        xstart = np.ceil(xmin / 10) * 10
-        ystart = np.ceil(ymin / 10) * 10
+        if utm:
+            ax.gridlines(draw_labels=True, rotate_labels=False,
+                         x_inline=False, y_inline=False, lw=0.25, ls='--',
+                         crs=ccrs.PlateCarree())
+        else:  # lat-lon grid
+            # Find the smallest multiple of 10 greater than or equal to xmin
+            xstart = np.ceil(xmin / 10) * 10
+            ystart = np.ceil(ymin / 10) * 10
 
-        # Find the largest multiple of 10 less than or equal to xmax
-        xend = np.floor(xmax / 10) * 10 + 1
-        yend = np.floor(ymax / 10) * 10 + 1
+            # Find the largest multiple of 10 less than or equal to xmax
+            xend = np.floor(xmax / 10) * 10 + 1
+            yend = np.floor(ymax / 10) * 10 + 1
 
-        ax.gridlines(draw_labels=True, xlocs=np.arange(xstart, xend, dx),
-                     ylocs=np.arange(ystart, yend, dy), rotate_labels=False,
-                     x_inline=False, y_inline=False, lw=0.25, ls='--')
+            ax.gridlines(
+                draw_labels=True,
+                xlocs=np.arange(xstart, xend, dx),
+                ylocs=np.arange(ystart, yend, dy),
+                rotate_labels=False,
+                x_inline=False, y_inline=False,
+                lw=0.25, ls='--'
+            )
 
     if shapefile is not None:
         shapereg = ShapelyFeature(shapefile.geometries(), ccrs.PlateCarree(),
@@ -80,7 +92,7 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
                  show_coastlines=True, add_features=True,
                  shapefile=None, title=None, title_ypos=1,
                  title_fontcolor='k', title_fontstyle='regular', 
-                 method='contourf'):
+                 method='contourf', utm=False):
     """
     Plot the density of tropical cyclone (TC) tracks.
 
@@ -123,7 +135,7 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
     # Format the map
     format_mapping(
         ax, extent=extent, shapefile=shapefile, show_gridlabel=show_gridlabel,
-        show_coastlines=show_coastlines, add_features=add_features
+        show_coastlines=show_coastlines, add_features=add_features, utm=utm,
     )
 
     # Contour fill map
@@ -253,7 +265,43 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
     return line
 
 
-def get_tracks_landfall_region(lat_tracks, lon_tracks, num_tracks, polygon):
+def plot_exceedance_probability(
+    data, ax, ylabel="Value", xlabel="Exceedance Probability", title=None,
+    fontweight='regular', fontsize=12
+):
+    """
+    Plots the exceedance probability of the given data.
+
+    Parameters:
+    - data: array-like, the data for which to plot the exceedance probability
+    - xlabel: str, label for the x-axis (default is 'Value')
+    - ylabel: str, label for the y-axis (default is 'Exceedance Probability')
+    - title: str, title of the plot
+    """
+    # Ensure data is a NumPy array
+    data = np.array(data)
+    num_storms = len(data)
+
+    # Sort the data in descending order
+    sorted_data = np.sort(data)[::-1]
+
+    # Calculate exceedance probability
+    n = len(sorted_data)
+    exceedance_prob = np.arange(1, n + 1) / n  # Ranks divided by total count
+
+    ax.plot(exceedance_prob, sorted_data, "o", color="tab:blue",
+            ms=3, label="Exceedance Probability")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(f'{title} (# storms: {num_storms})', fontweight=fontweight,
+                 fontsize=fontsize)
+    ax.set_xscale('log')
+    ax.set_xlim([1e-3, 1e0])
+    ax.set_ylim(bottom=0)
+    ax.grid(True, linestyle='--', alpha=0.5, color='k')
+
+
+def get_tracks_landfall_region(lat_tracks, lon_tracks, polygon, num_tracks=None):
     """
     Get the indices of tracks that make landfall within a specified polygon.
 
@@ -275,9 +323,13 @@ def get_tracks_landfall_region(lat_tracks, lon_tracks, num_tracks, polygon):
     """
 
     num_tcs = lat_tracks.shape[0]
-    ind_tracks = np.random.choice(
-        np.arange(num_tcs), num_tracks, replace=False
-    )
+    if num_tracks is not None:
+        ind_tracks = np.sort(
+            np.random.choice(np.arange(num_tcs), num_tracks, replace=False)
+        )
+    else:
+        ind_tracks = np.arange(num_tcs)
+
     ind_poly = []
 
     for tc_id in ind_tracks:
@@ -330,3 +382,34 @@ def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
     )
 
     return new_cmap
+
+
+def create_buffer_around_POI(lat_poi, lon_poi, radius=1.0):
+    """
+    Creates a buffer zone around a Point of Interest (POI) defined by its
+    latitude and longitude.
+
+    Parameters:
+    -----------
+    lat_poi : float
+        Latitude of the Point of Interest.
+    lon_poi : float
+        Longitude of the Point of Interest.
+    radius : float, optional
+        Radius of the buffer zone in degrees. Default is 1.0.
+
+    Returns:
+    --------
+    Polygon
+        A Polygon object representing the buffer zone around the POI.
+
+    Raises:
+    ------
+    ValueError
+        If radius is not a positive number.
+    """
+    if radius <= 0:
+        raise ValueError("Radius must be a positive number.")
+    point = Point(lon_poi, lat_poi)
+    buffer = point.buffer(radius)
+    return Polygon(buffer.exterior.coords)
