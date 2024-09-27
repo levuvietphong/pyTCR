@@ -26,7 +26,7 @@
 - [Contacts](#mailbox-contacts)
 
 ## :books: Overview
-**pyTCR** is a physics-based model developed to estimate rainfall induced by tropical cyclones (TCs; see [Zhu *et al.*, 2013](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2013GL058284); [Lu *et al.*, 2018](https://journals.ametsoc.org/view/journals/atsc/75/7/jas-d-17-0264.1.xml)). It simulates convective TC rainfall by correlating the precipitation rate with the total upward velocity within the TC vortex. The PyTCR integrates seamlessly with outputs from [a tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) (see [Lin *et al.,* 2023](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023MS003686)) to generate detailed spatial-temporal rainfall patterns that align with hurricane tracks.
+**pyTCR** is a physics-based model developed in python to estimate rainfall induced by tropical cyclones (TCs). PyTCR is based on the TCR model described by [Zhu *et al.*, 2013](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2013GL058284) and [Lu *et al.*, 2018](https://journals.ametsoc.org/view/journals/atsc/75/7/jas-d-17-0264.1.xml). It simulates convective TC rainfall by correlating the precipitation rate with the total upward velocity within the TC vortex. The PyTCR integrates seamlessly with outputs from [a tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) (see [Lin *et al.,* 2023](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023MS003686)) to generate detailed spatial-temporal rainfall patterns that align with hurricane tracks.
 
 ## :wrench: Installation
 

@@ -86,7 +86,7 @@ def to_datetime_from_netcdf(years, months, times):
 
     # Calculate days and hours from times
     hours = (times / 3600) % 24
-    days = (times / 3600) // 24
+    days = (times / 3600) // 24 + 1
 
     # Create 2D arrays for years, months, days, and hours
     years_2d = np.tile(years[:, np.newaxis], (1, num_times))

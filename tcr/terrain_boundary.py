@@ -7,18 +7,10 @@ import numpy as np
 from tcr import iodata as tcr_io
 
 
-def calculate_distance_to_track(
-    point_lat,
-    point_lon,
-    track_lats,
-    track_lons,
-    num_storms,
-    storm_length,
-    num_x_points,
-    num_y_points,
-    num_grid_points,
-    degree_to_km_factor,
-):
+def calculate_distance_to_track(point_lat, point_lon, track_lats, track_lons,
+                                num_storms, storm_length, num_x_points,
+                                num_y_points, num_grid_points,
+                                degree_to_km_factor):
     """
     Calculate the distances of points of interest (POI) from the track.
 
@@ -90,17 +82,9 @@ def calculate_distance_to_track(
     return radius, dx, dy
 
 
-def calculate_spatial_derivatives(
-    bathymetry,
-    x_coords,
-    y_coords,
-    x_size,
-    y_size,
-    scale_factor,
-    pi_factor,
-    num_topo_rows,
-    topo_resolution_inv,
-):
+def calculate_spatial_derivatives(bathymetry, x_coords, y_coords, x_size,
+                                  y_size, scale_factor, pi_factor,
+                                  num_topo_rows, topo_resolution_inv):
     """
     Compute the spatial derivatives of a given topography.
 

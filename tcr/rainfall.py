@@ -478,5 +478,6 @@ def raingen(plat, plong, latitude, longitude, datearray, velocity,
     rainrate = eprecip * 1000 * 3600 * RHOA_OVER_RHOL * wq
     rainrate = np.nan_to_num(rainrate)
     rain = timeres * np.sum(rainrate, axis=1).reshape(-1, 1)
+    rain = rain.flatten()
 
     return rain, rainrate, date_record
