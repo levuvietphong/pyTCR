@@ -65,7 +65,7 @@ This repository provides a collection of [jupyter notebooks](https://github.com/
 
 4. **Rainfall within a Polygon:** This notebook outlines the process of generating total rainfall within polygons loaded from shapefiles. [Explore it here](./notebooks/ex4_rainfall_polygons_generation.ipynb).
 
-5. **Multiple Rainfall Events within a Polygon:** This notebook generates multiple total rainfall events from multiple tropical cyclone tracks within a polygon. [View it here](./notebooks/ex5_multiple_rainfall_events.ipynb).
+5. **Multiple Rainfall Events within a Polygon:** This notebook generates multiple total rainfall events from multiple tropical cyclone tracks within a polygon. [View it here](./notebooks/ex5_multiple_rainfall_event_polygon.ipynb).
 
 > [!IMPORTANT]
 > Downscaled tropical cyclone tracks for various CMIP6 models (including `historical` and `ssp585` experiments) are available for download [here](https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks).
