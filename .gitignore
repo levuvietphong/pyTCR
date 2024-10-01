@@ -8,7 +8,10 @@ pyTCR.egg-info/
 /notebooks/figures/
 /notebooks/hidden_*.ipynb
 /notebooks/*_dev.ipynb
+/notebooks/*.py
+/notebooks/outputs/
 /miscellaneous/
 /data/MIROC6_20th_Atlantic.mat
 /data/*.mat
 /data/test/
+/data/reanalysis/

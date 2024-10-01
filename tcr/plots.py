@@ -15,70 +15,90 @@ import cartopy.feature as cfeature
 from shapely.geometry import Point, Polygon
 
 
-def format_mapping(ax, extent=(-180, 180, -90, 90, 10, 10),
-                   shapefile=None, show_gridlabel=False, show_coastlines=True,
-                   add_features=True, utm=False):
+def format_mapping(ax, extent=(-180, 180, -90, 90), projection=None,
+                   shapefile=None, gridlabel=False, gridspace=10,
+                   coastlines=True, add_features=True):
     """
-    Format and decorate the map by setting extent, grid spacing, and optional
-    shapefile overlay.
+    Customizes the map by setting its spatial extent, grid spacing, and
+    optionally overlays a shapefile.
 
     Parameters:
     -----------
     ax : matplotlib.axes.Axes
-        The axis object on which to format the map.
+        The axis object where the map will be formatted.
     extent : tuple, optional
-        Bounding box and spacing in data coordinates (left, right, bottom, 
-        top, dx, dy). Defines the spatial extent of the map. Default is 
-        (-180, 180, -90, 90, 10, 10).
+        Specifies the map's spatial extent in data coordinates (left, right,
+        bottom, top). Defaults to (-180, 180, -90, 90).
     shapefile : str or shapefile-like object, optional
-        A shapefile to overlay on the map. Provides additional geographic 
-        context.
-    show_gridlabel : bool, optional
-        Whether to display grid labels on the map. Controls the visibility of 
-        gridline labels. Default is False.
+        Path to a shapefile or shapefile object to overlay on the map.
+    gridlabel : bool, optional
+        Toggles the display of grid labels on the map.
+        Default is False, hiding gridline labels.
+    projection : cartopy.crs, optional
+        The projection to use for the map. Defaults to None, which implies a
+        PlateCarree projection.
+    coastlines : bool, optional
+        Toggles the display of coastlines on the map.
+        Default is True, showing coastlines.
+    add_features : bool, optional
+        Toggles the display of additional geographical features.
+        Default is True, showing these features.
+    gridspace : int, optional
+        Specifies the spacing between gridlines. Defaults to 10 degrees.
     """
 
-    xmin, xmax, ymin, ymax, dx, dy = extent
+    xmin, xmax, ymin, ymax = extent
+    if isinstance(projection, ccrs.UTM):
+        utm = True
+    else:
+        utm = False
 
-    n = 60
-    aoi = mpath.Path(
-        list(zip(np.linspace(xmin, xmax, n), np.full(n, ymax))) +
-        list(zip(np.full(n, xmax), np.linspace(ymax, ymin, n))) +
-        list(zip(np.linspace(xmax, xmin, n), np.full(n, ymin))) +
-        list(zip(np.full(n, xmin), np.linspace(ymin, ymax, n)))
-    )
-
-    if not utm:
+    if utm:
+        utm_extent = projection.transform_points(
+            ccrs.PlateCarree(), np.array([xmin, xmax]), np.array([ymin, ymax])
+        )
+        ax.set_extent(
+            (utm_extent[0, 0], utm_extent[1, 0], utm_extent[0, 1], utm_extent[1, 1]),
+            crs=projection,
+        )
+    else:
         ax.set_extent((xmin, xmax, ymin, ymax))
+        n = 60
+        aoi = mpath.Path(
+            list(zip(np.linspace(xmin, xmax, n), np.full(n, ymax))) +
+            list(zip(np.full(n, xmax), np.linspace(ymax, ymin, n))) +
+            list(zip(np.linspace(xmax, xmin, n), np.full(n, ymin))) +
+            list(zip(np.full(n, xmin), np.linspace(ymin, ymax, n)))
+        )
         ax.set_boundary(aoi, transform=ccrs.PlateCarree())
 
-    if show_coastlines:
+    if coastlines:
         ax.coastlines(lw=1)
+
     if add_features:
         ax.add_feature(cfeature.LAND, zorder=1, edgecolor='k', lw=0.5,
                        alpha=0.75)
 
-    if show_gridlabel:
+    if gridlabel:
         if utm:
             ax.gridlines(draw_labels=True, rotate_labels=False,
                          x_inline=False, y_inline=False, lw=0.25, ls='--',
                          crs=ccrs.PlateCarree())
         else:  # lat-lon grid
             # Find the smallest multiple of 10 greater than or equal to xmin
-            xstart = np.ceil(xmin / 10) * 10
-            ystart = np.ceil(ymin / 10) * 10
+            xstart = np.floor(xmin / gridspace) * gridspace
+            ystart = np.floor(ymin / gridspace) * gridspace
 
-            # Find the largest multiple of 10 less than or equal to xmax
-            xend = np.floor(xmax / 10) * 10 + 1
-            yend = np.floor(ymax / 10) * 10 + 1
+            # Find the largest multiple of gridspace less than or equal to xmax
+            xend = np.ceil(xmax / gridspace) * gridspace + gridspace/2.
+            yend = np.ceil(ymax / gridspace) * gridspace + gridspace/2.
 
             ax.gridlines(
                 draw_labels=True,
-                xlocs=np.arange(xstart, xend, dx),
-                ylocs=np.arange(ystart, yend, dy),
-                rotate_labels=False,
-                x_inline=False, y_inline=False,
-                lw=0.25, ls='--'
+                xlocs=np.arange(xstart, xend, gridspace),
+                ylocs=np.arange(ystart, yend, gridspace),
+                rotate_labels=False, x_inline=False, y_inline=False,
+                lw=0.25, ls='--', transform=ccrs.PlateCarree()
             )
 
     if shapefile is not None:
@@ -87,12 +107,12 @@ def format_mapping(ax, extent=(-180, 180, -90, 90, 10, 10),
         ax.add_feature(shapereg, facecolor='none', zorder=4, lw=0.75)
 
 
-def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
-                 cmap='viridis', logscale=False, show_gridlabel=False,
-                 show_coastlines=True, add_features=True,
+def plot_density(ax, lat, lon, density, levels, extent=None, projection=None,
+                 alpha=1, cmap='viridis', logscale=False, gridlabel=False,
+                 gridspace=10, coastlines=True, add_features=True,
                  shapefile=None, title=None, title_ypos=1,
-                 title_fontcolor='k', title_fontstyle='regular', 
-                 method='contourf', utm=False):
+                 title_fontcolor='k', title_fontstyle='regular',
+                 method='contourf'):
     """
     Plot the density of tropical cyclone (TC) tracks.
 
@@ -111,6 +131,8 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
     extent : tuple, optional
         Bounding box and spacing in data coordinates (left, right, bottom, 
         top, dx, dy). Defines the spatial extent of the map. Default is None.
+    projection : str or Cartopy projection, optional
+        The projection to use for the map. Default is None, which implies a PlateCarree projection.
     alpha : float, optional
         Transparency level of the density plot. Default is 1.0.
     cmap : str or Colormap, optional
@@ -118,8 +140,14 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
     logscale : bool, optional
         Whether to use a logarithmic scale for density values. Default is 
         False.
-    show_gridlabel : bool, optional
+    gridlabel : bool, optional
         Whether to display grid labels on the map. Default is False.
+    gridspace : int, optional
+        The spacing between gridlines. Default is 10.
+    coastlines : bool, optional
+        Whether to display coastlines on the map. Default is True.
+    add_features : bool, optional
+        Whether to add additional features to the map. Default is True.
     shapefile : str or shapefile-like object, optional
         A shapefile to overlay on the map. Default is None.
     title : str, optional
@@ -134,8 +162,9 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
 
     # Format the map
     format_mapping(
-        ax, extent=extent, shapefile=shapefile, show_gridlabel=show_gridlabel,
-        show_coastlines=show_coastlines, add_features=add_features, utm=utm,
+        ax, extent=extent, projection=projection, shapefile=shapefile,
+        gridlabel=gridlabel, gridspace=gridspace, coastlines=coastlines,
+        add_features=add_features
     )
 
     # Contour fill map
@@ -155,7 +184,7 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
                            vmin=levels[0], vmax=levels[-1], norm=norm,
                            transform=ccrs.PlateCarree())
     else:
-        raise ValueError(f"Invalid method: {method}")
+        raise ValueError(f"Invalid plotting method: {method}")
 
     # Set plot title if provided
     if title:
@@ -166,11 +195,11 @@ def plot_density(ax, lat, lon, density, levels, extent=None, alpha=1,
 
 
 def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
-                wind_speed_threshold=0, extent=None, alpha=1,
-                cmap='viridis', show_gridlabel=False, show_coastlines=True,
-                add_features=True, shapefile=None, title=None,
-                title_ypos=1, wind_color=False, title_fontcolor='k',
-                title_fontstyle='regular',
+                wind_speed_threshold=0, extent=None, projection=None,
+                alpha=1, cmap='viridis', gridlabel=False, gridspace=10,
+                coastlines=True, add_features=True, shapefile=None,
+                title=None, title_ypos=1, wind_color=False,
+                title_fontcolor='k', title_fontstyle='regular',
                 norm=plt.Normalize(0, 100)):
     """
     Plot the tracks of tropical cyclones (TCs).
@@ -194,11 +223,14 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
     extent : tuple, optional
         Bounding box and spacing in data coordinates (left, right, bottom, top,
         dx, dy). Defines the spatial extent of the map. Default is None.
+    projection : str, optional
+        Projection to use for the map.  Default is None, which implies a
+        PlateCarree projection.        
     alpha : float, optional
         Transparency level of the plot. Default is 1.0.
     cmap : str or Colormap, optional
         Colormap to use for the plot. Default is 'viridis'.
-    show_gridlabel : bool, optional
+    gridlabel : bool, optional
         Whether to display grid labels on the map. Default is False.
     shapefile : str or shapefile-like object, optional
         A shapefile to overlay on the map. Default is None.
@@ -214,6 +246,15 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
         Font style of the plot title. Default is 'regular'.
     norm : matplotlib.colors.Normalize, optional
         Normalization for the colormap scaling.
+    coastlines : bool, optional
+        Whether to display coastlines on the map. Default is True.
+    add_features : bool, optional
+        Whether to add additional features such as country borders and lakes.
+        Default is True.
+    gridlines : bool, optional
+        Whether to display gridlines on the map. Default is False.
+    gridspaces : list, optional
+        List of grid spacings for the x and y axes. Default is [10, 10].
 
     Returns:
     --------
@@ -223,8 +264,9 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
 
     # Format the map
     format_mapping(
-        ax, extent=extent, shapefile=shapefile, show_gridlabel=show_gridlabel,
-        show_coastlines=show_coastlines, add_features=add_features
+        ax, extent=extent, projection=projection, shapefile=shapefile,
+        gridlabel=gridlabel, gridspace=gridspace, coastlines=coastlines,
+        add_features=add_features
     )
 
     # Plot hurricane tracks
@@ -239,7 +281,6 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
             lat = lat[ind]
             lon = lon[ind]
             vs = vs[ind]
-            # points = np.array([lon, lat]).T.reshape(-1, 1, 2)
             points = np.column_stack((lon, lat)).reshape(-1, 1, 2)
             segments = np.concatenate([points[:-1], points[1:]], axis=1)
             lc = LineCollection(
@@ -274,9 +315,12 @@ def plot_exceedance_probability(
 
     Parameters:
     - data: array-like, the data for which to plot the exceedance probability
-    - xlabel: str, label for the x-axis (default is 'Value')
-    - ylabel: str, label for the y-axis (default is 'Exceedance Probability')
+    - ax: matplotlib axes object, the axes on which to plot
+    - xlabel: str, label for the x-axis (default is 'Exceedance Probability')
+    - ylabel: str, label for the y-axis (default is 'Value')
     - title: str, title of the plot
+    - fontweight: str, font weight for the title (default is 'regular')
+    - fontsize: int, font size for the title (default is 12)
     """
     # Ensure data is a NumPy array
     data = np.array(data)
@@ -402,11 +446,6 @@ def create_buffer_around_POI(lat_poi, lon_poi, radius=1.0):
     --------
     Polygon
         A Polygon object representing the buffer zone around the POI.
-
-    Raises:
-    ------
-    ValueError
-        If radius is not a positive number.
     """
     if radius <= 0:
         raise ValueError("Radius must be a positive number.")

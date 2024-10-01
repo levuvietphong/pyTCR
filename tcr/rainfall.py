@@ -273,6 +273,7 @@ def rainswathx(nt, latitude, longitude, radius_storm, velocity,
     latdata = latitude[nt, :]
     latdata = latdata[(latdata != 0) & ~np.isnan(latdata)]
     latsize = len(latdata)
+    latsize = max(latsize, 193)
 
     utd = ut[nt, :latsize].reshape((1, latsize))
     vtd = vt[nt, :latsize].reshape((1, latsize))
@@ -327,7 +328,7 @@ def rainswathx(nt, latitude, longitude, radius_storm, velocity,
                               hx, hy, timeres)
     wq = np.maximum(w - wrad, 0) * q900
     netrain = (eprecip * 1000 * timeres * 3600 * RHOA_OVER_RHOL *
-               np.sum(wq, axis=(0, 1)))  # mm/hr
+               np.nansum(wq, axis=(0, 1)))  # mm/hr
 
     return x, y, netrain.T
 
