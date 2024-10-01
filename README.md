@@ -26,7 +26,7 @@
 - [Contacts](#mailbox-contacts)
 
 ## :books: Overview
-**pyTCR** is a physics-based model developed in python to estimate rainfall induced by tropical cyclones (TCs). PyTCR is based on the TCR model described by [Zhu *et al.*, 2013](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2013GL058284) and [Lu *et al.*, 2018](https://journals.ametsoc.org/view/journals/atsc/75/7/jas-d-17-0264.1.xml). It simulates convective TC rainfall by correlating the precipitation rate with the total upward velocity within the TC vortex. The PyTCR integrates seamlessly with outputs from [a tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) (see [Lin *et al.,* 2023](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023MS003686)) to generate detailed spatial-temporal rainfall patterns that align with hurricane tracks.
+**pyTCR** is a physics-based model developed in python to estimate rainfall induced by tropical cyclones (TCs). It is largely based on the TCR model described by [Zhu *et al.*, 2013](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2013GL058284) and [Lu *et al.*, 2018](https://journals.ametsoc.org/view/journals/atsc/75/7/jas-d-17-0264.1.xml). PyTCR simulates convective TC rainfall by correlating the precipitation rate with the total upward velocity within the TC vortex. It integrates seamlessly with outputs from [a tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) (see [Lin *et al.,* 2023](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023MS003686)) to generate detailed spatial-temporal rainfall patterns that align with hurricane tracks.
 
 ## :wrench: Installation
 
@@ -55,13 +55,17 @@
 ## :arrow_forward: Getting Started
 This repository provides a collection of [jupyter notebooks](https://github.com/levuvietphong/pyTCR/tree/main/notebooks) designed to facilitate the use of PyTCR for generating and visualizing rainfall and wind speedinduced by TCs. These notebooks cover various use cases and data sources, providing comprehensive guidance for users.
 
-0. **Download Tropical Cyclone Data:** This notebook demonstrates how to download CMIP6 tropical cyclone tracks that have been downscaled using the [tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk). [Access it here](./notebooks/ex0_download_tracks_from_cmip6.ipynb).
+0. **Downloading Tropical Cyclone Data:** This notebook illustrates the process of downloading CMIP6 tropical cyclone tracks that have undergone downscaling using the [tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk). [View it here](./notebooks/ex0_download_tracks_from_cmip6.ipynb).
 
-1. **Visualize Tropical Cyclone Tracks:** This notebook visualizes tropical cyclone tracks and their density using both observational data and downscaled CMIP6 outputs. [Access it here](./notebooks/ex1_tropical_cyclone_tracks.ipynb).
+1. **Visualizing Tropical Cyclone Tracks:** This notebook showcases the visualization of tropical cyclone tracks and their density, utilizing both observational data and downscaled CMIP6 outputs. [View it here](./notebooks/ex1_tropical_cyclone_tracks.ipynb).
 
-2. **Generate Rainfall:** This notebook use outputs from [the tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) to simulate rainfall driven by tropical cyclones. [Explore it here](./notebooks/ex2_rainfall_generation.ipynb).
+2. **Rainfall Simulation:** This notebook use outputs from [the tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) to simulate rainfall driven by tropical cyclones. This includes rainfall at a specific location and over the entire domain of the tropical cyclone tracks. [Explore it here](./notebooks/ex2_rainfall_generation.ipynb).
 
-3. **Generate Wind Speed:** This notebook demonstrates how to generate spatially and temporally varying wind speeds from downscaled CMIP6 outputs. [Access it here](./notebooks/ex3_wind_speed_generation.ipynb).
+3. **Wind Speed Generation:** This notebook demonstrates the generation of spatially and temporally varying wind speeds from downscaled CMIP6 outputs. [View it here](./notebooks/ex3_wind_speed_generation.ipynb).
+
+4. **Rainfall within a Polygon:** This notebook outlines the process of generating total rainfall within polygons loaded from shapefiles. [Explore it here](./notebooks/ex4_rainfall_polygons_generation.ipynb).
+
+5. **Multiple Rainfall Events within a Polygon:** This notebook generates multiple total rainfall events from multiple tropical cyclone tracks within a polygon. [View it here](./notebooks/ex5_multiple_rainfall_events.ipynb).
 
 > [!IMPORTANT]
 > Downscaled tropical cyclone tracks for various CMIP6 models (including `historical` and `ssp585` experiments) are available for download [here](https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks).
