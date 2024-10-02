@@ -1,0 +1,20 @@
+name: pyTCR
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - numpy
+  - matplotlib
+  - colorcet
+  - scipy
+  - cartopy
+  - ipykernel
+  - jupyter
+  - shapely
+  - xarray
+  - libtiff
+  - pip
+  - pip:
+    # Add any additional pip packages if needed
+    pyproj
