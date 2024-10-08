@@ -1,0 +1,15 @@
+{
+  "name": "pytcr",
+  "version": "1.0.0",
+  "description": "<p float=\"left\"> <img src=\"images/logo.gif\" alt=\"Logo\" height=\"45\"> <img src=\"images/pyTCR.png\" alt=\"pyTCR logo\" width=\"220px\"> </p>",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
