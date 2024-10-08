@@ -1,5 +1,6 @@
 .DS_Store
 .vscode/
+.chglog/
 __pycache__/
 pyTCR.egg-info/
 
