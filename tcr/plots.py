@@ -58,7 +58,12 @@ def format_mapping(ax, extent=(-180, 180, -90, 90), projection=None,
             ccrs.PlateCarree(), np.array([xmin, xmax]), np.array([ymin, ymax])
         )
         ax.set_extent(
-            (utm_extent[0, 0], utm_extent[1, 0], utm_extent[0, 1], utm_extent[1, 1]),
+            (
+                utm_extent[0, 0],
+                utm_extent[1, 0],
+                utm_extent[0, 1],
+                utm_extent[1, 1],
+            ),
             crs=projection,
         )
     else:
@@ -129,16 +134,17 @@ def plot_density(ax, lat, lon, density, levels, extent=None, projection=None,
     levels : array-like
         Contour levels for plotting density.
     extent : tuple, optional
-        Bounding box and spacing in data coordinates (left, right, bottom, 
-        top, dx, dy). Defines the spatial extent of the map. Default is None.
+        Bounding box and spacing in data coordinates (left, right, bottom,
+        top). Defines the spatial extent of the map. Default is None.
     projection : str or Cartopy projection, optional
-        The projection to use for the map. Default is None, which implies a PlateCarree projection.
+        The projection to use for the map. Default is None, which implies a
+        PlateCarree projection.
     alpha : float, optional
         Transparency level of the density plot. Default is 1.0.
     cmap : str or Colormap, optional
         Colormap to use for visualizing density values. Default is 'viridis'.
     logscale : bool, optional
-        Whether to use a logarithmic scale for density values. Default is 
+        Whether to use a logarithmic scale for density values. Default is
         False.
     gridlabel : bool, optional
         Whether to display grid labels on the map. Default is False.
@@ -225,7 +231,7 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
         dx, dy). Defines the spatial extent of the map. Default is None.
     projection : str, optional
         Projection to use for the map.  Default is None, which implies a
-        PlateCarree projection.        
+        PlateCarree projection.
     alpha : float, optional
         Transparency level of the plot. Default is 1.0.
     cmap : str or Colormap, optional
@@ -345,7 +351,8 @@ def plot_exceedance_probability(
     ax.grid(True, linestyle='--', alpha=0.5, color='k')
 
 
-def get_tracks_landfall_region(lat_tracks, lon_tracks, polygon, num_tracks=None):
+def get_tracks_landfall_region(lat_tracks, lon_tracks, polygon, buffer=0,
+                               num_tracks=None):
     """
     Get the indices of tracks that make landfall within a specified polygon.
 
@@ -357,6 +364,8 @@ def get_tracks_landfall_region(lat_tracks, lon_tracks, polygon, num_tracks=None)
         2D array of longitudes for each track [num_tracks, num_points].
     num_tracks : int
         Number of tracks to sample and check for landfall.
+    buffer : float, optional
+        Buffer distance around the polygon (degrees). Default is 0.
     polygon : shapely.geometry.Polygon
         Polygon representing the region to check for landfall.
 
@@ -374,6 +383,7 @@ def get_tracks_landfall_region(lat_tracks, lon_tracks, polygon, num_tracks=None)
     else:
         ind_tracks = np.arange(num_tcs)
 
+    polygon_buffer = polygon.buffer(buffer)
     ind_poly = []
 
     for tc_id in ind_tracks:
@@ -388,7 +398,7 @@ def get_tracks_landfall_region(lat_tracks, lon_tracks, polygon, num_tracks=None)
 
         for i in range(indmax):
             point = Point(lon[i], lat[i])
-            if point.within(polygon):
+            if point.within(polygon_buffer):
                 ind_poly.append(tc_id)
                 break
 

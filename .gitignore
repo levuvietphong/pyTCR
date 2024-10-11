@@ -11,6 +11,7 @@ pyTCR.egg-info/
 /notebooks/*_dev.ipynb
 /notebooks/*.py
 /notebooks/outputs/
+/notebooks/hidden/
 /miscellaneous/
 /data/MIROC6_20th_Atlantic.mat
 /data/*.mat
