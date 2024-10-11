@@ -30,27 +30,31 @@
 
 ## :wrench: Installation
 
-1. Clone the pyTCR repository
+It is recommended to use mamba for a faster and more reliable installation process. If you haven't installed mamba yet, you can do so by running:
+1. Install `mamba` (skip if you already have `mamba`)
+    ```sh
+    conda install -n base -c conda-forge mamba
+    ```
+
+2. Clone the pyTCR repository
     ```sh
     git clone https://github.com/levuvietphong/pyTCR.git
     ```
 
-2. Navigate to the pyTCR directory and create a `conda` virtual environment using the provided `environment.yml` file
+3. Navigate to the pyTCR directory and create a `conda` virtual environment using the provided `environment.yml` file
     ```sh
-    conda env create -f environment.yml
+    mamba env create -f environment.yml
     ```
 
-3. Activate the environment:
+4. Activate the environment:
     ```sh
     conda activate pyTCR
     ```
 
-4. Install the PyTCR package:
+5. Install the PyTCR package:
     ```sh
     pip install -e .
     ```
-> [!NOTE]
-> If you pull latest changes from the repository, simply run `git pull` in the `pyTCR` directory. Reinstallation is not required.
 
 ## :arrow_forward: Getting Started
 This repository provides a collection of [jupyter notebooks](https://github.com/levuvietphong/pyTCR/tree/main/notebooks) designed to facilitate the use of PyTCR for generating and visualizing rainfall and wind speedinduced by TCs. These notebooks cover various use cases and data sources, providing comprehensive guidance for users.

@@ -7,6 +7,7 @@ pyTCR.egg-info/
 *.mp4
 /notebooks/animations/
 /notebooks/figures/
+/notebooks/hidden/
 /notebooks/hidden_*.ipynb
 /notebooks/*_dev.ipynb
 /notebooks/*.py
