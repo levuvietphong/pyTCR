@@ -144,6 +144,7 @@ def rainfieldx(nt, latitude, longitude, radius_storm, velocity,
 
     latstorm = latitude[nt, jplot - 1:jplot + 2]
     longstorm = longitude[nt, jplot - 1:jplot + 2]
+    longstorm[longstorm < 0] += 360
     vstorm = velocity[nt, jplot - 1:jplot + 2]
     rmstorm = rfac[nt, jplot - 1:jplot + 2] * radius_storm[nt, jplot - 1:jplot + 2]
     vsestorm = velocity_secondary[nt, jplot - 1:jplot + 2]
@@ -270,13 +271,13 @@ def rainswathx(nt, latitude, longitude, radius_storm, velocity,
     bxmin = (bxmin + 360) if bxmin < 0 else bxmin
     bxmax = (bxmax + 360) if bxmax < 0 else bxmax
 
-    latdata = latitude[nt, :]
+    latdata = latitude[nt, :].copy()
     latdata = latdata[(latdata != 0) & ~np.isnan(latdata)]
     latsize = len(latdata)
     latsize = max(latsize, 193)
 
-    utd = ut[nt, :latsize].reshape((1, latsize))
-    vtd = vt[nt, :latsize].reshape((1, latsize))
+    utd = ut[nt, :latsize].copy().reshape((1, latsize))
+    vtd = vt[nt, :latsize].copy().reshape((1, latsize))
     ush = np.zeros_like(utd)
     vsh = np.zeros_like(vtd)
 
@@ -293,13 +294,13 @@ def rainswathx(nt, latitude, longitude, radius_storm, velocity,
             )
         )
 
-    lat = latitude[nt, :latsize].reshape((1, latsize))
-    long = longitude[nt, :latsize].reshape((1, latsize))
+    lat = latitude[nt, :latsize].copy().reshape((1, latsize))
+    long = longitude[nt, :latsize].copy().reshape((1, latsize))
 
     # Convert longitude to 0 to 360 degree east
     long[long < 0] += 360
-    v = velocity[nt, :latsize].reshape((1, latsize))
-    vse = velocity_secondary[nt, :latsize].reshape((1, latsize))
+    v = velocity[nt, :latsize].copy().reshape((1, latsize))
+    vse = velocity_secondary[nt, :latsize].copy().reshape((1, latsize))
 
     # Scale radii of maximum wind
     rm = (magfac * rfac[nt, :] * radius_storm[nt, :])[:latsize].reshape(
@@ -309,7 +310,7 @@ def rainswathx(nt, latitude, longitude, radius_storm, velocity,
         :latsize].reshape((1, latsize))
 
     # Adjust longitudes for date line crossing
-    long[0, (long[0, 0] > 200) & (long[0, :] < 50)] += 360
+    long[0, (long[0, 0] > 200) & (long[0, :] < 50) & (long[0, :] != 0)] += 360
 
     # Calculate map boundaries if not specified
     if extent is None and shapefile is None:

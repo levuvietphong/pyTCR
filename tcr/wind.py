@@ -212,13 +212,14 @@ def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
     return w, cp, V, Vd, Vrp, Vrm, u1temp, u2temp, Cdp, Cdm
 
 
-def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop, omega, pifac,
-                             deltar, deltari, knotfac, latfac, timereswi, u1temp, u2temp, Cdp,
-                             Cdm, wprofile):
+def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop,
+                             omega, pifac, deltar, deltari, knotfac, latfac,
+                             timereswi, u1temp, u2temp, Cdp, Cdm, wprofile):
     """
     Calculate wind for secondary eyewalls in tropical cyclones.
-    This function computes various wind-related parameters for secondary eyewalls,
-    including vertical velocity, wind profiles, and Coriolis parameters.
+    This function computes various wind-related parameters for secondary
+    eyewalls, including vertical velocity, wind profiles, and Coriolis
+    parameters.
 
     Parameters:
     -----------
@@ -394,14 +395,16 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
     r : float
         Distance of each event from the point of interest (POI) (km).
     wp : float
-        Wind profile shape parameter, typically used to adjust the wind decay rate.
+        Wind profile shape parameter, used to adjust the wind decay rate.
     vm2 : float, optional
-        Secondary maximum circular wind speed (knots), if a secondary eyewall is present.
-        Default is 0, indicating no secondary eyewall.
+        Secondary maximum circular wind speed (knots), if a secondary eyewall
+        is present. Default is 0, indicating no secondary eyewall.
     rm2 : float, optional
-        Secondary radius of maximum wind (km). Default is 0, indicating no secondary eyewall.
+        Secondary radius of maximum wind (km). Default is 0, indicating no
+        secondary eyewall.
     opt : bool, optional
-        Option to include additional scaling for the Emanuel wind profile (default is True).
+        Option to include additional scaling for the Emanuel wind profile
+        (default is True).
 
     Returns:
     --------
@@ -410,7 +413,7 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
 
     Notes:
     ------
-    - The function assumes vm2 and rm2 are set to 0 if no secondary eyewall is present.
+    - The function assumes vm2 and rm2 are set to 0 if no secondary eyewall.
     """
 
     wprofile = wp  # Use holland (1) or emanuel (2) or er2011 (3) wind profile
@@ -443,8 +446,8 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
     elif wprofile == 2:
         r0 = 1000  # Outer radius (km)
 
-        # Re-scale radius of maximum winds by random number drawn from log-normal distribution
-        # Shape parameters
+        # Re-scale radius of maximum winds by random number drawn from
+        # log-normal distribution
         b = 0.25
         nb = 0.9
         mb = 1.6
@@ -602,7 +605,7 @@ def utrans(latitude, longitude):
         # the distance that storms move during this time period, thus the
         # translation speed in x & y direction.
 
-        # Handle spatial difference in longitude when track crosses the prime meridian
+        # Handle longitude difference when track crosses the prime meridian
         longdif = long[2:jm] - long[0:jm-2]
         for j in range(jm-2):
             if longdif[j] < -300:
@@ -671,7 +674,7 @@ def utransfull(lats, longs, vs=None, u850=None, v850=None):
     uinc = transfunc * ut
     vinc = transfunc * vt
 
-    # If environmental 850 hPa wind available, add baroclinic factor to wind speed
+    # If env 850 hPa wind available, add baroclinic factor to wind speed
     if u850 is not None and v850 is not None:
         udrift = -0.9 * 3600 / 1852
         vdrift = 1.4 * 3600 / 1852
@@ -981,7 +984,8 @@ def pointshortn(latitude, longitude, velocity, radius_storm,
     for j in range(jtot - 1):
         for n in range(nsteps):
             weight = n * nstepsi
-            vfine[:, k, :, :] = (1 - weight) * vshort[:, j, :, :] + weight * vshort[:, j + 1, :, :]
+            vfine[:, k, :, :] = (1 - weight) * vshort[:, j, :, :] + \
+                weight * vshort[:, j + 1, :, :]
             rmfine[:, k, :, :] = (1 - weight) * rmshort[:, j, :, :] + \
                 weight * rmshort[:, j + 1, :, :]
             vsefine[:, k, :, :] = (1 - weight) * vseshort[:, j, :, :] + \
@@ -1010,7 +1014,8 @@ def pointshortn(latitude, longitude, velocity, radius_storm,
     rfine, dx, dy = tcr_tb.calculate_distance_to_track(
         plat, plong, latfine, longfine, nn, jfine, sx, sy, ngrid, dfac)
 
-    V = windprofiles(vfine, rmfine, rfine, wprofile, vsefine, rmsefine, opt=True)
+    V = windprofiles(vfine, rmfine, rfine, wprofile, vsefine, rmsefine,
+                    opt=True)
     V = V * latfine / (np.abs(latfine)+1e-8)
 
     # Calculate cdfac and update V
@@ -1668,7 +1673,9 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
         ds = ds.assign(rm_tracks=(['n_trk', 'time'], rm_tracks))
 
         # Remove old dataset and save updated dataset to disk
-        ncfile = glob.glob(f"{data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc")[0]
+        ncfile = glob.glob(
+            f"{data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc"
+        )[0]
         if os.path.exists(ncfile):
             os.remove(ncfile)
         ds.to_netcdf(ncfile, mode='w')
@@ -1740,18 +1747,20 @@ def windswathx(nt, latitude, longitude, radius_storm, velocity,
     uinc : numpy.ndarray
         West-east component of the storm translation velocity.
     vinc : numpy.ndarray
-        Zonal & meridional components of the 850 hPa environmental wind speed (knots).
+        Zonal & meridional components of the 850 hPa env wind speed (knots).
     extent : tuple, optional
-        Bounding box and spacing in data coordinates (left, right, bottom, top, dx, dy).
+        Bounding box and spacing in data coordinates (left, right, bottom, top)
         Defines the spatial extent of the map. Default is None.
     shapefile : str or shapefile-like object, optional
-        A shapefile to overlay on the map. Provides additional geographic context.
+        A shapefile to overlay on the map..
     magfac : float, optional
         Overall scale factor for storm size. Default is 1.0.
     deltax : float, optional
-        Longitudinal distance of map boundaries from storm center (degrees). Default is 5.
+        Longitudinal distance of map boundaries from storm center (degrees).
+        Default is 5.
     deltay : float, optional
-        Latitudinal distance of map boundaries from storm center (degrees). Default is 4.
+        Latitudinal distance of map boundaries from storm center (degrees).
+        Default is 4.
     dellatlongs : float, optional
         Horizontal resolution of swath maps (degrees). Default is 0.15.
     timeres : float, optional
@@ -1798,7 +1807,7 @@ def windswathx(nt, latitude, longitude, radius_storm, velocity,
 
     # Adjust longitudes crossing the 0/360 boundary
     for i in range(q):
-        if long[0, 0] > 200 and long[0, i] < 50:
+        if long[0, 0] > 200 and long[0, i] < 50 and long[0, i] != 0:
             long[0, i] += 360
 
     # Calculate map boundaries
