@@ -390,8 +390,8 @@ def get_tracks_landfall_region(lat_tracks, lon_tracks, polygon, buffer=0,
         temp = lat_tracks[tc_id, :]
         indmax = np.where(temp > -90)[0][-1] + 1
 
-        lat = lat_tracks[tc_id, :indmax]
-        lon = lon_tracks[tc_id, :indmax]
+        lat = np.array(lat_tracks[tc_id, :indmax])
+        lon = np.array(lon_tracks[tc_id, :indmax])
 
         # Convert longitudes to [-180, 180] range
         lon[lon > 180] -= 360

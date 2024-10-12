@@ -1095,18 +1095,20 @@ def pointwshortn(latitude, longitude, velocity, radius_storm,
     """
 
     timeresi = 1.0 / (3600 * timeres)
+    
+    # convert degree to km (1 nautical mile = 1/60 degree = 1.852 km)
     pifac = np.arccos(-1) / 180
     dfac = 60.0 * 1.852
     sfac = 1.0 / (0.25 * 60.0 * 1852)
     knotfac = 1852.0 / 3600.0
     omega = np.arccos(-1) / (6 * 3600)  # Earth angular velocity parameter
 
-    se = np.max(velocity_secondary)  # for secondary eyewalls
+    se = np.nanmax(velocity_secondary)  # for secondary eyewalls
     ntime = int(timelength / timeres + 1)
     nsteps = round(2.0 / timeres)
     nstepsi = 1.0 / nsteps
     delj = np.floor(timelength / nsteps).astype(int)
-    deltari = 1.0 / deltar
+    deltari = 1.0 / deltar  # inverse of Delta radius
     Hi = 1.0 / Htrop
 
     nn, m = ut.shape
@@ -1121,13 +1123,13 @@ def pointwshortn(latitude, longitude, velocity, radius_storm,
     w = np.zeros((nn, ntime, sx, sy))
     w2 = np.zeros((nn, ntime, sx, sy))
 
-    if plong[0] < 0:
-        plong = plong + 360
+    plong = np.where(plong < 0, plong + 360, plong)
 
     latfac = latitude[0, 0] / (abs(latitude[0, 0]) + 1e-8)
     ut = ut * knotfac
     vt = vt * knotfac
 
+    # Estimate Drag coefficients:
     cdrag, cdx, cdy = tcr_tb.estimate_drag_coefficients(plat, plong, sfac)
 
     # Reduce drag coefficient of near-coastal locations
@@ -1271,8 +1273,8 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
                     deltar=2, timelength=96, Htrop=4000, wprofile=3,
                     radcity=300):
     """
-    Calculate the time series of vertical velocity at specified points of
-    interest (POI)
+    Calculate the time series of vertical velocity multiplied by saturation specific humidity 
+    at specified points of interest (POI)
 
     Parameters:
     -----------
@@ -1333,15 +1335,21 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
         Time in date format corresponding to the rain rate.
     """
 
-    deltari = 1.0 / deltar  # inverse of Delta radius
     timeresi = 1.0 / (3600 * timeres)
+    
+    # convert degree to km (1 nautical mile = 1/60 degree = 1.852 km)
+    pifac = math.acos(-1) / 180  # pi number
+    dfac = 60 * 1.852
+    sfac = 1 / (0.25 * dfac)
+    knotfac = 1852.0 / 3600  # convert knots to m/s (1 knots = 0.5144 m/s)    
+    omega = math.acos(-1) / (6 * 3600)  # Earth angular velocity parameter
 
     se = np.nanmax(velocity_secondary)  # for secondary eyewalls
     ntime = int(timelength / timeres + 1)
     nsteps = round(2.0 / timeres)
     nstepsi = 1.0 / nsteps
-    delj = np.floor(timelength / 4).astype(int)
-
+    delj = np.floor(timelength / nsteps).astype(int)
+    deltari = 1.0 / deltar  # inverse of Delta radius
     Hi = 1.0 / Htrop
 
     nn, m = ut.shape
@@ -1349,21 +1357,16 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
     sy = 1
     w = np.zeros((nn, ntime, sx, sy))
 
-    knotfac = 1852.0 / 3600  # convert knots to m/s (1 knots = 0.5144 m/s)
+    plong = np.where(plong < 0, plong + 360, plong)
+
+    latfac = latitude[0, 0] / (abs(latitude[0, 0]) + 1e-8)
     ut = ut * knotfac  # in m/s
     vt = vt * knotfac  # in m/s
 
-    # convert degree to km (1 nautical mile = 1/60 degree = 1.852 km)
-    dfac = 60 * 1.852
-    sfac = 1 / (0.25 * dfac)
-    pifac = math.acos(-1) / 180  # pi number
-    latfac = latitude[0, 0] / (abs(latitude[0, 0]) + 1e-8)
-    omega = math.acos(-1) / (6 * 3600)  # Earth angular velocity parameter
-
-    plong = np.where(plong < 0, plong + 360, plong)
-
     # Estimate Drag coefficients:
     cdrag, cdx, cdy = tcr_tb.estimate_drag_coefficients(plat, plong, sfac)
+    
+    # Reduce drag coefficient of near-coastal locations
     cdrag = np.minimum(cdrag, 1.5e-3 * (1 + np.maximum(h, 0) / 100))
     cdx = cdx * 0.01 * np.minimum(np.maximum(h, 0), 100)
     cdy = cdy * 0.01 * np.minimum(np.maximum(h, 0), 100)
@@ -1373,7 +1376,8 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
         plat, plong, latitude, longitude, nn, m, sx, sy, 0, dfac)
     radius = np.maximum(radius, 0.5)
 
-    jmin = np.argmin(radius, axis=1)  # where the radius of the storm smallest
+    # Get index where the radius is smallest to start
+    jmin = np.argmin(radius, axis=1)  # where the radius of the storm smallest (peak of the storm)
     jmin = np.maximum(jmin, 0 + delj)  # cut off delj steps at the begining
     jmin = np.minimum(jmin, m - 1 - delj)  # cut off delj steps at the end
     jstart = jmin - delj  # index start
@@ -1381,6 +1385,7 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
     jtot = 2 * delj + 1  # total index?
     jfine = 1 + nsteps * (jtot - 1)
 
+    # Create arrays for reduced length time series of each quantity
     vshort = np.zeros((nn, jtot, sx, sy))
     rmshort = np.zeros((nn, jtot, sx, sy))
     vseshort = np.zeros((nn, jtot, sx, sy))
