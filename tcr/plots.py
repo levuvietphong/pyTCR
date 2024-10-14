@@ -314,7 +314,7 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
 
 def plot_exceedance_probability(
     data, ax, ylabel="Value", xlabel="Exceedance Probability", title=None,
-    fontweight='regular', fontsize=12
+    fontweight='regular', fontsize=12, color="tab:blue"
 ):
     """
     Plots the exceedance probability of the given data.
@@ -339,7 +339,7 @@ def plot_exceedance_probability(
     n = len(sorted_data)
     exceedance_prob = np.arange(1, n + 1) / n  # Ranks divided by total count
 
-    ax.plot(exceedance_prob, sorted_data, "o", color="tab:blue",
+    ax.plot(exceedance_prob, sorted_data, "o", color=color,
             ms=3, label="Exceedance Probability")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)

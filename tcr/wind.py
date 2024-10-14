@@ -1656,7 +1656,7 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
 
     if 'rm_trks' not in ds.keys() or force_recompute:
         print('Estimating the radius of maximum circular wind... ')
-        rm_tracks = np.zeros(vmax_tracks.shape)
+        rm_trks = np.zeros(vmax_tracks.shape)
         for ind in range(num_tcs):
             vmax = vmax_tracks[ind, :]
             vmax = vmax[~np.isnan(vmax)]
@@ -1670,12 +1670,12 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
                     _, rm, _ = vouternew(vsin, fc1, ro, wc, cdouter, nouter)
                 else:
                     rm = 0
-                rm_tracks[ind, jnd] = rm
+                rm_trks[ind, jnd] = rm
             print(f"Tracks {ind + 1}/{num_tcs} completed...", end='\r')
             sys.stdout.flush()
         print('\nDone!')
 
-        ds = ds.assign(rm_tracks=(['n_trk', 'time'], rm_tracks))
+        ds = ds.assign(rm_trks=(['n_trk', 'time'], rm_trks))
 
         # Remove old dataset and save updated dataset to disk
         ncfile = glob.glob(
@@ -1687,9 +1687,9 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
     else:
         print('The radius of maximum circular wind was found in file!')
         print('Loading rm_trks...')
-        rm_tracks = ds['rm_trks'].values
+        rm_trks = ds['rm_trks'].values
 
-    return rm_tracks
+    return rm_trks
 
 
 def smoothb(x, nz, jmin, jmax):
