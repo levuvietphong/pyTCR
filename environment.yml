@@ -16,3 +16,4 @@ dependencies:
   - libtiff
   - geopandas
   - pyproj
+  - netcdf4
