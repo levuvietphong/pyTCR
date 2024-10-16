@@ -150,10 +150,10 @@ def calculate_spatial_derivatives(bathymetry, x_coords, y_coords, x_size,
             jb = np.floor(topo_resolution_inv * (latitude + 90)).astype(int)
             jbs = np.floor(topo_resolution_inv * (latitude + 90) - 0.5).astype(int)
             b1, b2, b3, b4 = (
-                bathymetry[ib, jb],
-                bathymetry[ib, jb + 1],
-                bathymetry[ibp, jb],
-                bathymetry[ibp, jb + 1],
+                np.float32(bathymetry[ib, jb]),
+                np.float32(bathymetry[ib, jb + 1]),
+                np.float32(bathymetry[ibp, jb]),
+                np.float32(bathymetry[ibp, jb + 1]),
             )
             dely, delx = (
                 topo_resolution_inv * (latitude + 90) - jb,
@@ -166,12 +166,12 @@ def calculate_spatial_derivatives(bathymetry, x_coords, y_coords, x_size,
                 delx * dely,
             )
             h[i, j] = (
-                np.exp(
+                np.float32(np.exp(
                     d1 * np.log(b1 + 11)
                     + d2 * np.log(b2 + 11)
                     + d3 * np.log(b3 + 11)
                     + d4 * np.log(b4 + 11)
-                )
+                ))
                 - 11
             )
 
@@ -259,15 +259,8 @@ def estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlong):
         x = np.append(x, bxmax + dellatlong)
 
     h, hx, hy = calculate_spatial_derivatives(
-        bathymetry,
-        x,
-        y,
-        x_size,
-        y_size,
-        scale_factor,
-        pi_factor,
-        ntopo,
-        topo_resolution_inv,
+        bathymetry, x, y, x_size, y_size, scale_factor, 
+        pi_factor, ntopo, topo_resolution_inv,
     )
 
     return h, hx, hy, x, y

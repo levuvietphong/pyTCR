@@ -477,9 +477,9 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
         f = 5.0e-5 * 1000  # converts from kms to meters
 
         if opt:
-            Mm = rm * vm
-        else:
             Mm = rm * vm + 0.5 * f * rm ** 2
+        else:
+            Mm = rm * vm
         rn = r / np.where(rm == 0, 1e-32, rm)
 
         if crat == 1:
