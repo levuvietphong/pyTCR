@@ -193,7 +193,7 @@ def rainfieldx(nt, latitude, longitude, radius_storm, velocity,
 def rainswathx(nt, latitude, longitude, radius_storm, velocity,
                radius_storm_secondary, velocity_secondary, ut, vt, u850, v850,
                extent=None, shapefile=None, magfac=1, deltax=5, deltay=4,
-               dellatlongs=0.15, q900=0.01, timeres=2, wrad=0.005,
+               dellatlongs=0.15, q900=0.01, timeres=0.5, wrad=0.005,
                eprecip=0.9):
     """
     Calculate the distribution of accumulated precipitation for a given
@@ -274,7 +274,7 @@ def rainswathx(nt, latitude, longitude, radius_storm, velocity,
     latdata = latitude[nt, :].copy()
     latdata = latdata[(latdata != 0) & ~np.isnan(latdata)]
     latsize = len(latdata)
-    latsize = max(latsize, 193)
+    # latsize = max(latsize, 193)
 
     utd = ut[nt, :latsize].copy().reshape((1, latsize))
     vtd = vt[nt, :latsize].copy().reshape((1, latsize))
@@ -406,7 +406,7 @@ def raingen(plat, plong, latitude, longitude, datearray, velocity,
 
     # Load high-resolution bathymetry from netcdf
     bathy = tcr_io.load_netcdf_2d_parameters(
-        '../data', 'surface_data.nc', 'bathymetry'
+        '../data', 'surface_data.nc', 'bathymetry_high'
     )
 
     ntopo, _ = np.shape(bathy)

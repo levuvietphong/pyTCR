@@ -102,7 +102,7 @@ def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
 
     # Calculate wind profiles
     V = windprofiles(vf, rmf, rf, wprofile)
-    Vd = windprofiles(vf, rmf, rf, wprofile, vsef, rmsef)
+    Vd = windprofiles(vf, rmf, rf, wprofile, vsef, rmsef, opt=False)
     Vpp[:, 1:jf - 1, :, :] = windprofiles(
         vf[:, 2:jf, :, :], rmf[:, 2:jf, :, :], rf[:, 1:jf - 1, :, :] + deltar, wprofile)
     Vpm[:, 1:jf - 1, :, :] = windprofiles(
@@ -264,13 +264,12 @@ def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop,
         Vertical velocity for secondary eyewalls.
     cp : array-like
         Coriolis parameter.
-    V, Vd, Vrp, Vrm : array-like
+    V, Vrp, Vrm : array-like
         Wind profiles for secondary eyewalls.
     """
 
     # Initialize arrays
     V = np.zeros((nn, jf, sx, sy))
-    Vd = np.zeros((nn, jf, sx, sy))
     Vpp = np.zeros((nn, jf, sx, sy))
     Vmp = np.zeros((nn, jf, sx, sy))
     Vpm = np.zeros((nn, jf, sx, sy))
@@ -312,7 +311,6 @@ def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop,
 
     # Convert to meters per second
     V = knotfac * V
-    Vd = knotfac * Vd
     Vpp = knotfac * Vpp
     Vpm = knotfac * Vpm
     Vmp = knotfac * Vmp
@@ -377,7 +375,7 @@ def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop,
         / np.maximum(rf[:, 1:jf-1, :, :], 1)
     )
 
-    return w2, cp, V, Vd, Vrp, Vrm
+    return w2, cp, V, Vrp, Vrm
 
 
 def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
@@ -806,7 +804,7 @@ def pointwfield(latitude, longitude, velocity, radius_storm,
 
     # If secondary eyewalls present, add in their contribution to wind
     if se > 0:
-        w2, cp, V, Vd, Vrp, Vrm = calculate_wind_secondary(
+        w2, cp, V, Vrp, Vrm = calculate_wind_secondary(
             rfull, vsefull, rmsefull, latfull, nn, 3, sx, sy, Hi, Htrop,
             omega, pifac, deltar, deltari, knotfac, latfac, timereswi,
             u1temp, u2temp, Cdp, Cdm, wprofile)
@@ -1095,7 +1093,7 @@ def pointwshortn(latitude, longitude, velocity, radius_storm,
     """
 
     timeresi = 1.0 / (3600 * timeres)
-    
+
     # convert degree to km (1 nautical mile = 1/60 degree = 1.852 km)
     pifac = np.arccos(-1) / 180
     dfac = 60.0 * 1.852
@@ -1235,7 +1233,7 @@ def pointwshortn(latitude, longitude, velocity, radius_storm,
         wprofile, adj_water=False)
 
     if se > 0:  # If secondary eyewalls present, add in their contribution to wind
-        w2, cp, V, Vd, Vrp, Vrm = calculate_wind_secondary(
+        w2, cp, V, Vrp, Vrm = calculate_wind_secondary(
             rfine, vsefine, rmsefine, latfine, nn, jfine, sx, sy, Hi, Htrop, omega,
             pifac, deltar, deltari, knotfac, latfac, timeresi, u1temp, u2temp, Cdp,
             Cdm, wprofile)
@@ -1325,7 +1323,8 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
     wprofile : int, optional
         Wind profile (1=Holland, 2=Emanuel, 3=Emanuel & Rotunno 2011). Default is 3.
     radcity : int, optional
-        Distance from point of interest beyond which storm influence is ignored (km). Default is 300.
+        Distance from point of interest beyond which storm influence is ignored (km).
+        Default is 300.
 
     Returns:
     --------
@@ -1336,11 +1335,10 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
     """
 
     timeresi = 1.0 / (3600 * timeres)
-    
     # convert degree to km (1 nautical mile = 1/60 degree = 1.852 km)
     pifac = math.acos(-1) / 180  # pi number
     dfac = 60 * 1.852
-    sfac = 1 / (0.25 * dfac)
+    sfac = 1.0 / (0.25 * 60.0 * 1852)
     knotfac = 1852.0 / 3600  # convert knots to m/s (1 knots = 0.5144 m/s)    
     omega = math.acos(-1) / (6 * 3600)  # Earth angular velocity parameter
 
@@ -1365,7 +1363,7 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
 
     # Estimate Drag coefficients:
     cdrag, cdx, cdy = tcr_tb.estimate_drag_coefficients(plat, plong, sfac)
-    
+
     # Reduce drag coefficient of near-coastal locations
     cdrag = np.minimum(cdrag, 1.5e-3 * (1 + np.maximum(h, 0) / 100))
     cdx = cdx * 0.01 * np.minimum(np.maximum(h, 0), 100)
@@ -1486,17 +1484,16 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
     rfinei = 1 / np.maximum(rfine, 1)
 
     # for primary eyewalls
-    w, cp, V, Vd, Vrp, Vrm, u1temp, u2temp, Cdp, Cdm = \
-        calculate_wind_primary(
-            utfine, vtfine, vfine, rfine, rmfine, vsefine, rmsefine,
-            latfine, nn, jfine, sx, sy, h, hx, hy, cdrag, hfine, hxfine,
-            hyfine, cdfine, cdx, cdxfine, cdy, cdyfine, Hi, Htrop, omega,
-            pifac, deltar, deltari, knotfac, latfac, timeresi, dx * rfinei,
-            dy * rfinei, 10, wprofile, adj_water=False)
+    w, cp, V, Vd, Vrp, Vrm, u1temp, u2temp, Cdp, Cdm = calculate_wind_primary(
+        utfine, vtfine, vfine, rfine, rmfine, vsefine, rmsefine,
+        latfine, nn, jfine, sx, sy, h, hx, hy, cdrag, hfine, hxfine,
+        hyfine, cdfine, cdx, cdxfine, cdy, cdyfine, Hi, Htrop, omega,
+        pifac, deltar, deltari, knotfac, latfac, timeresi, dx * rfinei,
+        dy * rfinei, 10, wprofile, adj_water=False)
 
     # if secondary eyewalls present
     if se > 0:
-        w2, cp, V, Vd, Vrp, Vrm = calculate_wind_secondary(
+        w2, cp, V, Vrp, Vrm = calculate_wind_secondary(
             rfine, vsefine, rmsefine, latfine, nn, jfine, sx, 1, Hi, Htrop,
             omega, pifac, deltar, deltari, knotfac, latfac, timeresi,
             u1temp, u2temp, Cdp, Cdm, wprofile)

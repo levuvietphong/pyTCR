@@ -463,6 +463,12 @@ def create_buffer_around_POI(lat_poi, lon_poi, radius=1.0):
     """
     if radius <= 0:
         raise ValueError("Radius must be a positive number.")
+
+    if lon_poi > 180:
+        lon_poi -= 360
+    elif lon_poi < -180:
+        raise ValueError("Longitude must be greater than or equal to -180 degrees.")
+
     point = Point(lon_poi, lat_poi)
     buffer = point.buffer(radius)
     return Polygon(buffer.exterior.coords)

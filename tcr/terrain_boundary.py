@@ -289,6 +289,14 @@ def estimate_drag_coefficients(plat, plong, sfac):
         Array of drag coefficient gradients in the y direction.
     """
 
+    def _interpolate(data, ix, iy, dx, dy):
+        """Helper function for bilinear interpolation"""
+        weights = [(1 - dx) * (1 - dy), dy * (1 - dx), dx * (1 - dy), dx * dy]
+        return (weights[0] * data[ix, iy] +
+                weights[1] * data[ix, iy + 1] +
+                weights[2] * data[(ix + 1) % 1440, iy] +
+                weights[3] * data[(ix + 1) % 1440, iy + 1])
+
     pi_factor = math.pi / 180  # pi number
 
     # Load neutral drag coefficients
@@ -312,52 +320,19 @@ def estimate_drag_coefficients(plat, plong, sfac):
         for j in range(sy):
             # Calculate indices for interpolation
             ib = int(np.floor(4 * plong[i])) % 1440
-            ibp = (ib + 1) % 1440
             ibs = int(np.floor(4 * plong[i] - 0.5)) % 1440
-            ibsp = (ibs + 1) % 1440
             jb = int(np.floor(4 * (plat[j] + 90)))
             jbs = int(np.floor(4 * (plat[j] + 90) - 0.5))
 
             # Interpolate drag coefficient and its gradients
             delx = 4 * plong[i] - ib
             dely = 4 * (plat[j] + 90) - jb
-            weights = [
-                (1 - delx) * (1 - dely),
-                dely * (1 - delx),
-                delx * (1 - dely),
-                delx * dely,
-            ]
-
-            cdrag[i, j] = (
-                weights[0] * cd[ib, jb]
-                + weights[1] * cd[ib, jb + 1]
-                + weights[2] * cd[ibp, jb]
-                + weights[3] * cd[ibp, jb + 1]
-            )
+            cdrag[i, j] = _interpolate(cd, ib, jb, delx, dely)
 
             delx = -0.5 + 4 * plong[i] - ibs
             dely = -0.5 + 4 * (plat[j] + 90) - jbs
-            weights = [
-                (1 - delx) * (1 - dely),
-                dely * (1 - delx),
-                delx * (1 - dely),
-                delx * dely,
-            ]
-
-            cdx[i, j] = (
-                weights[0] * dcddx[ibs, jbs]
-                + weights[1] * dcddx[ibs, jbs + 1]
-                + weights[2] * dcddx[ibsp, jbs]
-                + weights[3] * dcddx[ibsp, jbs + 1]
-            ) / np.cos(pi_factor * plat[j])
-
-            cdy[i, j] = (
-                weights[0] * dcddy[ibs, jbs]
-                + weights[1] * dcddy[ibs, jbs + 1]
-                + weights[2] * dcddy[ibsp, jbs]
-                + weights[3] * dcddy[ibsp, jbs + 1]
-            )
-
+            cdx[i, j] = _interpolate(dcddx, ibs, jbs, delx, dely) / np.cos(pi_factor * plat[j])
+            cdy[i, j] = _interpolate(dcddy, ibs, jbs, delx, dely)
     return cdrag, cdx, cdy
 
 
@@ -380,32 +355,28 @@ def calculate_qs900(T600, vmax):
     q600 : numpy.ndarray
         Saturation specific humidity at 600 hPa.
     """
-    pref = 950  # Pressure to find qs at (hPa)
-
     # Constants
-    cp = 1005  # Specific heat capacity of dry air at constant pressure (J/(kg·K))
-    Rv = 491  # Gas constant for water vapor (J/(kg·K))
-    Rd = 287  # Gas constant for dry air (J/(kg·K))
-    Lv = 2.5e6  # Latent heat of vaporization (J/kg)
+    CONSTANTS = {
+        'pref': 950,  # Pressure to find qs at (hPa)
+        'cp': 1005,  # Specific heat capacity of dry air at constant pressure (J/(kg·K))
+        'Rv': 491,  # Gas constant for water vapor (J/(kg·K))
+        'Rd': 287,  # Gas constant for dry air (J/(kg·K))
+        'Lv': 2.5e6,  # Latent heat of vaporization (J/kg)
+    }
 
-    c1 = Lv / Rv
-    c2 = Rd * np.log(pref / 600)
+    def calc_es_qs(T, p):
+        Tc = np.clip(T - 273.15, -50, None)
+        es = 6.112 * np.exp(17.67 * Tc / (243.5 + Tc))
+        q600 = 0.622 * es / (p - es)
+        return es, q600
+
+    c1 = CONSTANTS['Lv'] / CONSTANTS['Rv']
+    c2 = CONSTANTS['Rd'] * np.log(CONSTANTS['pref'] / 600)
     c3 = 1.6 / 100
 
     # Convert vmax from knots to m/s
     vmax = vmax * 1852 / 3600
-
-    # Ensure Tc is not below -50°C
-    Tc = np.clip(T600 - 273.15, -50, None)
-
-    # Calculate es (saturation vapor pressure)
-    es = 6.112 * np.exp(17.67 * Tc / (243.5 + Tc))
-
-    # Calculate q600 (saturation specific humidity at 600 hPa)
-    q600 = 0.622 * es / (600 - es)
-
-    # Initialize q900
-    q900 = np.zeros_like(q600)
+    _, q600 = calc_es_qs(T600, 600)
 
     # First guess for T
     T = T600 + 20
@@ -415,32 +386,15 @@ def calculate_qs900(T600, vmax):
 
     # Only compute for valid entries
     for _ in range(5):  # Iterative refinement (5 iterations)
-        Tc_valid = T[valid_mask] - 273.15
-        es_valid = 6.112 * np.exp(17.67 * Tc_valid / (243.5 + Tc_valid))
-        qs_valid = 0.622 * es_valid / (pref - es_valid)
-        er = (
-            cp * np.log(T[valid_mask] / T600[valid_mask])
-            + Lv * (qs_valid / T[valid_mask] - q600[valid_mask] / T600[valid_mask])
-            - c2
-            - c3 * vmax[valid_mask] ** 2
-        )
-        derdT = (cp * T[valid_mask] + Lv * qs_valid * (c1 / T[valid_mask] - 1)) / T[
-            valid_mask
-        ] ** 2
+        _, qs = calc_es_qs(T[valid_mask], CONSTANTS['pref'])
+        er = (CONSTANTS['cp'] * np.log(T[valid_mask] / T600[valid_mask])
+              + CONSTANTS['Lv'] * (qs / T[valid_mask] - q600[valid_mask] / T600[valid_mask])
+              - c2 - c3 * vmax[valid_mask] ** 2)
+        derdT = (CONSTANTS['cp'] * T[valid_mask] +
+                 CONSTANTS['Lv'] * qs * (c1 / T[valid_mask] - 1)) / T[valid_mask] ** 2
         T[valid_mask] -= er / derdT
 
-    # Update q900 only for valid entries
-    q900[valid_mask] = (
-        0.622
-        * 6.112
-        * np.exp(17.67 * (T[valid_mask] - 273.15) / (243.5 + (T[valid_mask] - 273.15)))
-        / (
-            pref
-            - 6.112
-            * np.exp(
-                17.67 * (T[valid_mask] - 273.15) / (243.5 + (T[valid_mask] - 273.15))
-            )
-        )
-    )
+    q900 = np.zeros_like(q600)
+    _, q900[valid_mask] = calc_es_qs(T[valid_mask], CONSTANTS['pref'])
 
     return q900, q600
