@@ -106,11 +106,16 @@ def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
     Vpp[:, 1:jf - 1, :, :] = windprofiles(
         vf[:, 2:jf, :, :], rmf[:, 2:jf, :, :], rf[:, 1:jf - 1, :, :] + deltar, wprofile)
     Vpm[:, 1:jf - 1, :, :] = windprofiles(
-        vf[:, 2:jf, :, :], rmf[:, 2:jf, :, :], np.maximum(rf[:, 1:jf - 1, :, :] - deltar, 0), wprofile)
+        vf[:, 2:jf, :, :], rmf[:, 2:jf, :, :],
+        np.maximum(rf[:, 1:jf - 1, :, :] - deltar, 0), wprofile)
     Vmp[:, 1:jf - 1, :, :] = windprofiles(
         vf[:, 0:jf - 2, :, :], rmf[:, 0:jf - 2, :, :], rf[:, 1:jf - 1, :, :] + deltar, wprofile)
     Vmm[:, 1:jf - 1, :, :] = windprofiles(
-        vf[:, 0:jf - 2, :, :], rmf[:, 0:jf - 2, :, :], np.maximum(rf[:, 1:jf - 1, :, :] - deltar, 0), wprofile)
+        vf[:, 0:jf - 2, :, :],
+        rmf[:, 0:jf - 2, :, :],
+        np.maximum(rf[:, 1:jf - 1, :, :] - deltar, 0),
+        wprofile
+    )
     Vrp[:, :, :, :] = windprofiles(
         vf[:, :, :, :], rmf[:, :, :, :], rf[:, :, :, :] + deltar, wprofile)
     Vrm[:, :, :, :] = windprofiles(
@@ -558,7 +563,7 @@ def utrans(latitude, longitude):
     Calculate translation speeds (knots) and smooth the results.
 
     This function reads in track data, calculates the translation speeds in the
-    west-east (ut) and north-south (vt) directions, and applies smoothing to 
+    west-east (ut) and north-south (vt) directions, and applies smoothing to
     the results.
 
     Parameters:
@@ -761,7 +766,7 @@ def pointwfield(latitude, longitude, velocity, radius_storm,
     ut = ut * knotfac
     vt = vt * knotfac
     omega = math.pi / (6 * 3600)
-    latfac = (latitude[0] / (abs(latitude[0]) + 1e-8) if latitude.ndim == 1 
+    latfac = (latitude[0] / (abs(latitude[0]) + 1e-8) if latitude.ndim == 1
               else latitude[0, 0] / (abs(latitude[0, 0]) + 1e-8))
 
     # Estimate Drag coefficients
@@ -1271,7 +1276,7 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
                     deltar=2, timelength=96, Htrop=4000, wprofile=3,
                     radcity=300):
     """
-    Calculate the time series of vertical velocity multiplied by saturation specific humidity 
+    Calculate the time series of vertical velocity multiplied by saturation specific humidity
     at specified points of interest (POI)
 
     Parameters:
@@ -1339,7 +1344,7 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
     pifac = math.acos(-1) / 180  # pi number
     dfac = 60 * 1.852
     sfac = 1.0 / (0.25 * 60.0 * 1852)
-    knotfac = 1852.0 / 3600  # convert knots to m/s (1 knots = 0.5144 m/s)    
+    knotfac = 1852.0 / 3600  # convert knots to m/s (1 knots = 0.5144 m/s)
     omega = math.acos(-1) / (6 * 3600)  # Earth angular velocity parameter
 
     se = np.nanmax(velocity_secondary)  # for secondary eyewalls

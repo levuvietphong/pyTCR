@@ -10,7 +10,7 @@ from tcr import iodata as tcr_io
 def calculate_distance_to_track(point_lat, point_lon, track_lats, track_lons,
                                 num_storms, storm_length, num_x_points,
                                 num_y_points, num_grid_points,
-                                degree_to_km_factor):
+                                degree_to_km):
     """
     Calculate the distances of points of interest (POI) from the track.
 
@@ -34,7 +34,7 @@ def calculate_distance_to_track(point_lat, point_lon, track_lats, track_lons,
         Number of points in the y direction.
     num_grid_points : int
         Number of grid points.
-    degree_to_km_factor : float
+    degree_to_km : float
         Factor for converting degrees to kilometers.
 
     Returns:
@@ -46,38 +46,28 @@ def calculate_distance_to_track(point_lat, point_lon, track_lats, track_lons,
     dy : numpy.ndarray
         Distance components in the y direction.
     """
-    pi_factor = math.acos(-1) / 180
-    dx = np.zeros((num_storms, storm_length, num_x_points, num_y_points))
-    dy = np.zeros((num_storms, storm_length, num_x_points, num_y_points))
+    pi_factor = np.pi / 180  # Use numpy's pi constant
+    shape = (num_storms, storm_length, num_x_points, num_y_points)
+    dx = np.zeros(shape)
+    dy = np.zeros(shape)
 
     for i in range(num_x_points):
         for jj in range(num_y_points):
             j = i if num_grid_points == 1 else jj
 
             if np.ndim(track_lons) == 1 and np.ndim(track_lats) == 1:
-                dx[:, :, i, j] = (
-                    degree_to_km_factor
-                    * np.cos(pi_factor * point_lat[j])
-                    * (point_lon[i] - track_lons)
-                )
-                dy[:, :, i, j] = degree_to_km_factor * (point_lat[j] - track_lats)
+                dx[:, :, i, j] = np.cos(pi_factor * point_lat[j]) * (point_lon[i] - track_lons)
+                dy[:, :, i, j] = point_lat[j] - track_lats
             elif np.ndim(track_lons) == 2 and np.ndim(track_lats) == 2:
-                dx[:, :, i, j] = (
-                    degree_to_km_factor
-                    * np.cos(pi_factor * point_lat[j])
-                    * (point_lon[i] - track_lons)
-                )
-                dy[:, :, i, j] = degree_to_km_factor * (point_lat[j] - track_lats)
+                dx[:, :, i, j] = np.cos(pi_factor * point_lat[j]) * (point_lon[i] - track_lons)
+                dy[:, :, i, j] = point_lat[j] - track_lats
             elif np.ndim(track_lons) == 4 and np.ndim(track_lats) == 4:
-                dx[:, :, i, j] = (
-                    degree_to_km_factor
-                    * np.cos(pi_factor * point_lat[j])
-                    * (point_lon[i] - track_lons[:, :, i, jj])
-                )
-                dy[:, :, i, j] = degree_to_km_factor * (
-                    point_lat[j] - track_lats[:, :, i, jj]
-                )
+                dx[:, :, i, j] = (np.cos(pi_factor * point_lat[j]) *
+                                  (point_lon[i] - track_lons[:, :, i, jj]))
+                dy[:, :, i, j] = point_lat[j] - track_lats[:, :, i, jj]
 
+    dx *= degree_to_km
+    dy *= degree_to_km
     radius = np.sqrt(dx**2 + dy**2)
     return radius, dx, dy
 
@@ -119,90 +109,46 @@ def calculate_spatial_derivatives(bathymetry, x_coords, y_coords, x_size,
         Array of derivatives of h in the y direction.
     """
 
-    h = np.zeros((x_size, y_size))
-    hx = np.zeros((x_size, y_size))
-    hy = np.zeros((x_size, y_size))
-    bathymetry = np.maximum(bathymetry, -1)
+    def calculate_indices(lon, lat):
+        """ Helper function for calculating indices """
+        ib = int(topo_resolution_inv * lon)
+        ibp = (ib + 1) % num_topo_rows
+        ibs = int(topo_resolution_inv * lon - 0.5)
+        ibsp = (ibs + 1) % num_topo_rows
+        jb = int(topo_resolution_inv * (lat + 90))
+        jbs = int(topo_resolution_inv * (lat + 90) - 0.5)
+        return ib, ibp, ibs, ibsp, jb, jbs
+
+    def weighted_sum(data, indices, delx, dely, logfac=True):
+        """ Helper function for weighted sum """
+        ib, ibp, _, _, jb, _ = indices
+        b = [data[ib, jb], data[ib, jb + 1], data[ibp, jb], data[ibp, jb + 1]]
+        d = [(1 - delx) * (1 - dely), dely * (1 - delx), delx * (1 - dely), delx * dely]
+        if logfac:
+            return sum(np.log(b[i]+11) * d[i] for i in range(4))
+        else:
+            return sum(b[i] * d[i] for i in range(4))
+
+    h, hx, hy = [np.zeros((x_size, y_size)) for _ in range(3)]
+    bathymetry = np.maximum(np.float32(bathymetry), -1)
     dhdx = scale_factor * (np.roll(bathymetry, -1, 0) - np.roll(bathymetry, 0, 0))
     dhdy = scale_factor * (np.roll(bathymetry, -1, 1) - np.roll(bathymetry, 0, 1))
 
-    for i in range(x_size):
-        longitude = x_coords[i]
-        if longitude >= 360:
-            longitude -= 360
+    for i, lon in enumerate(x_coords):
+        lon = lon if lon < 360 else lon - 360
 
-        for j in range(y_size):
-            latitude = y_coords[j]
-            ib = np.floor(topo_resolution_inv * longitude).astype(int)
-            ibp = ib + 1
-            if ibp >= num_topo_rows:
-                ibp -= num_topo_rows
+        for j, lat in enumerate(y_coords):
+            indices = calculate_indices(lon, lat)
+            ib, _, ibs, ibsp, jb, jbs = indices
+            delx, dely = topo_resolution_inv * lon - ib, topo_resolution_inv * (lat + 90) - jb
+            h[i, j] = np.exp(weighted_sum(bathymetry, indices, delx, dely, logfac=True)) - 11
 
-            ibs = np.floor(topo_resolution_inv * longitude - 0.5).astype(int)
-            ibsp = ibs + 1
-            if ibs < 0:
-                ibs = num_topo_rows - 1
-                longitude += 360
-
-            if ibsp >= num_topo_rows:
-                ibsp -= num_topo_rows
-
-            jb = np.floor(topo_resolution_inv * (latitude + 90)).astype(int)
-            jbs = np.floor(topo_resolution_inv * (latitude + 90) - 0.5).astype(int)
-            b1, b2, b3, b4 = (
-                np.float32(bathymetry[ib, jb]),
-                np.float32(bathymetry[ib, jb + 1]),
-                np.float32(bathymetry[ibp, jb]),
-                np.float32(bathymetry[ibp, jb + 1]),
-            )
-            dely, delx = (
-                topo_resolution_inv * (latitude + 90) - jb,
-                topo_resolution_inv * longitude - ib,
-            )
-            d1, d2, d3, d4 = (
-                (1 - delx) * (1 - dely),
-                dely * (1 - delx),
-                delx * (1 - dely),
-                delx * dely,
-            )
-            h[i, j] = (
-                np.float32(np.exp(
-                    d1 * np.log(b1 + 11)
-                    + d2 * np.log(b2 + 11)
-                    + d3 * np.log(b3 + 11)
-                    + d4 * np.log(b4 + 11)
-                ))
-                - 11
-            )
-
-            b1, b2, b3, b4 = (
-                dhdx[ibs, jbs],
-                dhdx[ibs, jbs + 1],
-                dhdx[ibsp, jbs],
-                dhdx[ibsp, jbs + 1],
-            )
-            dely, delx = (
-                -0.5 + topo_resolution_inv * (latitude + 90) - jbs,
-                -0.5 + topo_resolution_inv * longitude - ibs,
-            )
-            d1, d2, d3, d4 = (
-                (1 - delx) * (1 - dely),
-                dely * (1 - delx),
-                delx * (1 - dely),
-                delx * dely,
-            )
-            hx[i, j] = (b1 * d1 + b2 * d2 + b3 * d3 + b4 * d4) / np.cos(
-                pi_factor * latitude
-            )
-
-            b1, b2, b3, b4 = (
-                dhdy[ibs, jbs],
-                dhdy[ibs, jbs + 1],
-                dhdy[ibsp, jbs],
-                dhdy[ibsp, jbs + 1],
-            )
-            hy[i, j] = b1 * d1 + b2 * d2 + b3 * d3 + b4 * d4
-
+            delx = -0.5 + topo_resolution_inv * lon - ibs
+            dely = -0.5 + topo_resolution_inv * (lat + 90) - jbs
+            hx[i, j] = weighted_sum(dhdx, (ibs, ibsp, None, None, jbs, None),
+                                    delx, dely, logfac=False) / np.cos(pi_factor * lat)
+            hy[i, j] = weighted_sum(dhdy, (ibs, ibsp, None, None, jbs, None),
+                                    delx, dely, logfac=False)
     return h, hx, hy
 
 
