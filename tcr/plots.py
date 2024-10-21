@@ -280,6 +280,7 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
     )
 
     # Plot hurricane tracks
+    line = None  # Initialize line variable
     for i in track_inds:
         lat = lats[i, :]
         indmax = np.where(lat > -90)[0][-1] + 1
@@ -495,6 +496,7 @@ def gmtColormap_openfile(cptf, name=None):
     g = []
     b = []
     lastls = None
+    colorModel = "RGB"  # Set default value
     for line in cptf.readlines():
         ls = line.split()
 
@@ -570,11 +572,28 @@ def load_cpt_colormap(cptfile, name=None):
         name for color map
         if not provided, the file name will be used
     """
-    with open(cptfile, 'r') as cptf:
+    with open(cptfile, 'r', encoding='utf-8') as cptf:
         return gmtColormap_openfile(cptf, name=name)
 
 
 def shape2grid(x, y, shapefile):
+    """
+    Convert shapefile to a grid mask.
+
+    Parameters:
+    -----------
+    x : array-like
+        X-coordinates of the grid.
+    y : array-like
+        Y-coordinates of the grid.
+    shapefile : str
+        Path to the shapefile.
+
+    Returns:
+    --------
+    numpy.ndarray
+        Grid mask where 1 indicates inside the shape, NaN outside.
+    """
     # Load the shapefile
     gdf = gpd.read_file(shapefile)
     # Create a meshgrid

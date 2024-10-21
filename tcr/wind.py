@@ -424,6 +424,7 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
     if vm2 is not None:
         vm2 = vm2 * 1852 / 3600  # Convert maximum wind speed to m/s
 
+    se = 0  # Initialize se to 0
     if rm2 is not None:
         se = np.sum(rm2[rm2 != 0])  # Test if there are any secondary eyewalls
 
@@ -470,7 +471,10 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
             V2 = (
                 vm2
                 * (np.maximum((r0 - r), 0) / (r0 - rm2))
-                * np.sqrt(rat ** mb2 * (fac1 / (nb + mb * rat ** fac3) + fac2 / (1 + mb2 * rat ** fac4)))
+                * np.sqrt(
+                    rat ** mb2
+                    * (fac1 / (nb + mb * rat ** fac3) + fac2 / (1 + mb2 * rat ** fac4))
+                )
             )
 
     elif wprofile == 3:
@@ -1026,8 +1030,7 @@ def calculate_wind_time_series(latitude, longitude, velocity, radius_storm,
     rfine, dx, dy = tcr_tb.calculate_distance_to_track(
         plat, plong, latfine, longfine, nn, jfine, sx, sy, ngrid, dfac)
 
-    V = windprofiles(vfine, rmfine, rfine, wprofile, vsefine, rmsefine,
-                    opt=True)
+    V = windprofiles(vfine, rmfine, rfine, wprofile, vsefine, rmsefine, opt=True)
     V = V * latfine / (np.abs(latfine)+1e-8)
 
     # Calculate cdfac and update V
@@ -1047,243 +1050,10 @@ def calculate_wind_time_series(latitude, longitude, velocity, radius_storm,
 
 
 def calculate_upward_velocity_time_series(
-    latitude, longitude, velocity, radius_storm, velocity_secondary, radius_storm_secondary,
-    ut, vt, us, vs, plong, plat, h, hx, hy, timeres, deltar=2, timelength=96, Htrop=4000,
-    wprofile=3, radcity=300
-):
-    """
-    Calculate the time series of vertical velocity at specified points of interest.
-
-    Parameters:
-    ----------
-    latitude : array-like
-        Latitudes along each track.
-    longitude : array-like
-        Longitudes along each track.
-    velocity : array-like
-        Maximum circular wind speed along each track.
-    radius_storm : array-like
-        Radius (km) of maximum circular wind along each track.
-    velocity_secondary : array-like
-        Maximum circular wind speed of any secondary eyewalls present.
-    radius_storm_secondary : array-like
-        Radius (km) of maximum circular wind of any secondary eyewalls.
-    ut : array-like
-        West-east component of the storm translation velocity.
-    vt : array-like
-        North-south component of the storm translation velocity.
-    us : array-like
-        Vertical shears (m/s) used to estimate the baroclinic components of the vertical motion.
-    vs : array-like
-        Vertical shears (m/s) used to estimate the baroclinic components of the vertical motion.
-    plong : array-like
-        Longitudes of points of interest.
-    plat : array-like
-        Latitudes of points of interest.
-    h : array-like
-        Topographic heights.
-    hx : array-like
-        Derivatives of topographic heights in the x direction.
-    hy : array-like
-        Derivatives of topographic heights in the y direction.
-    timeres : float
-        Time resolution.
-    deltar : float, optional
-        Delta radius for calculating dM/dr (default is 2 km).
-    timelength : int, optional
-        Length of the time series at fixed points (default is 96).
-    Htrop : float, optional
-        Depth of the lower troposphere in meters (default is 4000 m).
-    wprofile : int, optional
-        Wind profile parameter (default is 3).
-    radcity : int, optional
-        Distance from point of interest beyond which storm influence is ignored
-        (default is 300).
-
-    Returns:
-    -------
-    w : array-like
-        Vertical velocity (m/s) at the points of interest.
-    """
-
-    timeresi = 1.0 / (3600 * timeres)
-
-    # convert degree to km (1 nautical mile = 1/60 degree = 1.852 km)
-    pifac = np.arccos(-1) / 180
-    dfac = 60.0 * 1.852
-    sfac = 1.0 / (0.25 * 60.0 * 1852)
-    knotfac = 1852.0 / 3600.0
-    omega = np.arccos(-1) / (6 * 3600)  # Earth angular velocity parameter
-
-    se = np.nanmax(velocity_secondary)  # for secondary eyewalls
-    ntime = int(timelength / timeres + 1)
-    nsteps = round(2.0 / timeres)
-    nstepsi = 1.0 / nsteps
-    delj = np.floor(timelength / nsteps).astype(int)
-    deltari = 1.0 / deltar  # inverse of Delta radius
-    Hi = 1.0 / Htrop
-
-    nn, m = ut.shape
-    sx = plong.size
-    sy = plat.size
-    ngrid = 0
-
-    if sx == sy:
-        ngrid = 1
-        sy = 1
-
-    w = np.zeros((nn, ntime, sx, sy))
-    w2 = np.zeros((nn, ntime, sx, sy))
-
-    plong = np.where(plong < 0, plong + 360, plong)
-
-    latfac = latitude[0, 0] / (abs(latitude[0, 0]) + 1e-8)
-    ut = ut * knotfac
-    vt = vt * knotfac
-
-    # Estimate Drag coefficients:
-    cdrag, cdx, cdy = tcr_tb.estimate_drag_coefficients(plat, plong, sfac)
-
-    # Reduce drag coefficient of near-coastal locations
-    cdrag = np.minimum(cdrag, 1.5e-3 * (1 + np.maximum(h, 0) / 100))
-    cdx = cdx * 0.01 * np.minimum(np.maximum(h, 0), 100)
-    cdy = cdy * 0.01 * np.minimum(np.maximum(h, 0), 100)
-
-    radius, dx, dy = tcr_tb.calculate_distance_to_track(
-        plat, plong, latitude, longitude, nn, m, sx, sy, ngrid, dfac)
-    radius = np.maximum(radius, 0.5)
-
-    # Get index where the radius is smallest to start
-    jmin = np.argmin(radius, axis=1)
-    jmin = np.clip(jmin, delj, m - 1 - delj)
-    jstart = jmin - delj
-    jend = jmin + delj + 1
-    jtot = 2 * delj + 1
-    jfine = 1 + nsteps * (jtot - 1)
-
-    # Create arrays for reduced length time series of each quantity
-    vshort = np.zeros((nn, jtot, sx, sy))
-    rmshort = np.zeros((nn, jtot, sx, sy))
-    vseshort = np.zeros((nn, jtot, sx, sy))
-    rmseshort = np.zeros((nn, jtot, sx, sy))
-    rshort = np.zeros((nn, jtot, sx, sy))
-    latshort = np.zeros((nn, jtot, sx, sy))
-    longshort = np.zeros((nn, jtot, sx, sy))
-    utshort = np.zeros((nn, jtot, sx, sy))
-    vtshort = np.zeros((nn, jtot, sx, sy))
-    usshort = np.zeros((nn, jtot, sx, sy))
-    vsshort = np.zeros((nn, jtot, sx, sy))
-
-    for i in range(sx):
-        for j in range(sy):
-            for n in range(nn):
-                vshort[n, :, i, j] = velocity[n, jstart[n, i, j]:jend[n, i, j]]
-                rmshort[n, :, i, j] = radius_storm[n, jstart[n, i, j]:jend[n, i, j]]
-                vseshort[n, :, i, j] = velocity_secondary[n, jstart[n, i, j]:jend[n, i, j]]
-                rmseshort[n, :, i, j] = radius_storm_secondary[n, jstart[n, i, j]:jend[n, i, j]]
-                rshort[n, :, i, j] = radius[n, jstart[n, i, j]:jend[n, i, j], i, j]
-                latshort[n, :, i, j] = latitude[n, jstart[n, i, j]:jend[n, i, j]]
-                longshort[n, :, i, j] = longitude[n, jstart[n, i, j]:jend[n, i, j]]
-                utshort[n, :, i, j] = ut[n, jstart[n, i, j]:jend[n, i, j]]
-                vtshort[n, :, i, j] = vt[n, jstart[n, i, j]:jend[n, i, j]]
-                usshort[n, :, i, j] = us[n, jstart[n, i, j]:jend[n, i, j]]
-                vsshort[n, :, i, j] = vs[n, jstart[n, i, j]:jend[n, i, j]]
-
-    # Create arrays filled with zeros
-    vfine = np.zeros((nn, jfine, sx, sy))
-    rmfine = np.zeros((nn, jfine, sx, sy))
-    vsefine = np.zeros((nn, jfine, sx, sy))
-    rmsefine = np.zeros((nn, jfine, sx, sy))
-    latfine = np.zeros((nn, jfine, sx, sy))
-    longfine = np.zeros((nn, jfine, sx, sy))
-    utfine = np.zeros((nn, jfine, sx, sy))
-    vtfine = np.zeros((nn, jfine, sx, sy))
-    usfine = np.zeros((nn, jfine, sx, sy))
-    vsfine = np.zeros((nn, jfine, sx, sy))
-    hfine = np.zeros((nn, jfine, sx, sy))
-    hyfine = np.zeros((nn, jfine, sx, sy))
-    hxfine = np.zeros((nn, jfine, sx, sy))
-    cdfine = np.zeros((nn, jfine, sx, sy))
-    cdyfine = np.zeros((nn, jfine, sx, sy))
-    cdxfine = np.zeros((nn, jfine, sx, sy))
-
-    k = 0
-    for j in range(jtot - 1):
-        for n in range(nsteps):
-            weight = n * nstepsi
-            vfine[:, k, :, :] = (1 - weight) * vshort[:, j, :, :] + weight * vshort[:, j + 1, :, :]
-            rmfine[:, k, :, :] = (1 - weight) * rmshort[:, j, :, :] + weight * rmshort[:, j + 1, :, :]
-            vsefine[:, k, :, :] = (1 - weight) * vseshort[:, j, :, :] + weight * vseshort[:, j + 1, :, :]
-            rmsefine[:, k, :, :] = (1 - weight) * rmseshort[:, j, :, :] + weight * rmseshort[:, j + 1, :, :]
-            latfine[:, k, :, :] = (1 - weight) * latshort[:, j, :, :] + weight * latshort[:, j + 1, :, :]
-            longfine[:, k, :, :] = (1 - weight) * longshort[:, j, :, :] + weight * longshort[:, j + 1, :, :]
-            utfine[:, k, :, :] = (1 - weight) * utshort[:, j, :, :] + weight * utshort[:, j + 1, :, :]
-            vtfine[:, k, :, :] = (1 - weight) * vtshort[:, j, :, :] + weight * vtshort[:, j + 1, :, :]
-            usfine[:, k, :, :] = (1 - weight) * usshort[:, j, :, :] + weight * usshort[:, j + 1, :, :]
-            vsfine[:, k, :, :] = (1 - weight) * vsshort[:, j, :, :] + weight * vsshort[:, j + 1, :, :]
-            k += 1
-
-    vfine[:, k, :, :] = vshort[:, jtot - 1, :, :]
-    rmfine[:, k, :, :] = rmshort[:, jtot - 1, :, :]
-    vsefine[:, k, :, :] = vseshort[:, jtot - 1, :, :]
-    rmsefine[:, k, :, :] = rmseshort[:, jtot - 1, :, :]
-    latfine[:, k, :, :] = latshort[:, jtot - 1, :, :]
-    longfine[:, k, :, :] = longshort[:, jtot - 1, :, :]
-    utfine[:, k, :, :] = utshort[:, jtot - 1, :, :]
-    vtfine[:, k, :, :] = vtshort[:, jtot - 1, :, :]
-    usfine[:, k, :, :] = usshort[:, jtot - 1, :, :]
-    vsfine[:, k, :, :] = vsshort[:, jtot - 1, :, :]
-
-    rmsefine = np.maximum(rmsefine, 0.1)
-    rfine, dx, dy = tcr_tb.calculate_distance_to_track(
-        plat, plong, latfine, longfine, nn, jfine, sx, sy, ngrid, dfac)
-    rfinei = 1 / np.maximum(rfine, 1)
-
-    w, cp, V, Vd, Vrp, Vrm, u1temp, u2temp, Cdp, Cdm = calculate_wind_primary(
-        utfine, vtfine, vfine, rfine, rmfine, vsefine, rmsefine, latfine,
-        nn, jfine, sx, sy, h, hx, hy, cdrag, hfine, hxfine,
-        hyfine, cdfine, cdx, cdxfine, cdy, cdyfine, Hi, Htrop, omega, pifac,
-        deltar, deltari, knotfac, latfac, timeresi, dx * rfinei, dy * rfinei, 10,
-        wprofile, adj_water=False)
-
-    if se > 0:  # If secondary eyewalls present, add in their contribution to wind
-        w2, cp, V, Vrp, Vrm = calculate_wind_secondary(
-            rfine, vsefine, rmsefine, latfine, nn, jfine, sx, sy, Hi, Htrop, omega,
-            pifac, deltar, deltari, knotfac, latfac, timeresi, u1temp, u2temp, Cdp,
-            Cdm, wprofile)
-        w = np.maximum(w, w2)
-
-    # Now add in topographic and shear components
-    # to include shear dotted with storm entropy
-    hxmod = -0.0005 * (cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)) * vsfine
-    hymod = 0.0005 * (cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)) * usfine
-
-    # Reduce effect of translation speed outside of radcity
-    ufunc = np.clip((radcity - rfine) / 50.0, 0, 1)
-    utfine = utfine * ufunc
-    vtfine = vtfine * ufunc
-
-    # Reduce effect of orography outside of storm core
-    ufunc = np.clip((150 - rfine) / 30, 0.2, 0.6)
-    hxfine = hxfine * ufunc
-    hyfine = hyfine * ufunc
-
-    w = (
-        w
-        + (Vd * latfac * dx * rfinei + vtfine) * hyfine
-        + (utfine - Vd * latfac * dy * rfinei) * hxfine
-        + Vd * dx * rfinei * hymod
-        - Vd * dy * rfinei * hxmod
-    )
-    w = np.minimum(w, 7)
-    return w
-
-
-def calculate_upward_velocity_time_series_qdx(
-    latitude, longitude, date_records, dq, velocity, radius_storm, 
+    latitude, longitude, velocity, radius_storm,
     velocity_secondary, radius_storm_secondary, ut, vt, us, vs, plong, plat,
-    h, hx, hy, timeres, wrad, deltar=2, timelength=96, Htrop=4000, wprofile=3,
-    radcity=300
+    h, hx, hy, timeres, deltar=2, timelength=96, Htrop=4000, wprofile=3,
+    radcity=300, date_records=None, dq=None, wrad=None,
 ):
     """
     Calculate the time series of vertical velocity multiplied by saturation specific humidity
@@ -1350,6 +1120,7 @@ def calculate_upward_velocity_time_series_qdx(
     """
 
     timeresi = 1.0 / (3600 * timeres)
+
     # convert degree to km (1 nautical mile = 1/60 degree = 1.852 km)
     pifac = math.acos(-1) / 180  # pi number
     dfac = 60 * 1.852
@@ -1367,7 +1138,16 @@ def calculate_upward_velocity_time_series_qdx(
 
     nn, m = ut.shape
     sx = plong.size
-    sy = 1
+    ngrid = 0
+
+    if date_records is not None:
+        sy = 1
+    else:
+        sy = plat.size
+        if sx == sy:
+            ngrid = 1
+            sy = 1
+
     w = np.zeros((nn, ntime, sx, sy))
 
     plong = np.where(plong < 0, plong + 360, plong)
@@ -1386,7 +1166,7 @@ def calculate_upward_velocity_time_series_qdx(
 
     # Calculate radius distance from storm center to POI
     radius, dx, dy = tcr_tb.calculate_distance_to_track(
-        plat, plong, latitude, longitude, nn, m, sx, sy, 0, dfac)
+        plat, plong, latitude, longitude, nn, m, sx, sy, ngrid, dfac)
     radius = np.maximum(radius, 0.5)
 
     # Get index where the radius is smallest to start
@@ -1406,12 +1186,13 @@ def calculate_upward_velocity_time_series_qdx(
     rshort = np.zeros((nn, jtot, sx, sy))
     latshort = np.zeros((nn, jtot, sx, sy))
     longshort = np.zeros((nn, jtot, sx, sy))
-    dateshort = np.zeros((nn, jtot, sx, sy))
     utshort = np.zeros((nn, jtot, sx, sy))
     vtshort = np.zeros((nn, jtot, sx, sy))
     usshort = np.zeros((nn, jtot, sx, sy))
     vsshort = np.zeros((nn, jtot, sx, sy))
-    dqshort = np.zeros((nn, jtot, sx, sy))
+    if date_records is not None:
+        dateshort = np.zeros((nn, jtot, sx, sy))
+        dqshort = np.zeros((nn, jtot, sx, sy))
 
     for i in range(sx):
         for j in range(sy):
@@ -1423,12 +1204,13 @@ def calculate_upward_velocity_time_series_qdx(
                 rshort[n, :, i, j] = radius[n, jstart[n, i, j]:jend[n, i, j], i, j]
                 latshort[n, :, i, j] = latitude[n, jstart[n, i, j]:jend[n, i, j]]
                 longshort[n, :, i, j] = longitude[n, jstart[n, i, j]:jend[n, i, j]]
-                dateshort[n, :, i, j] = date_records[n, jstart[n, i, j]:jend[n, i, j]]
                 utshort[n, :, i, j] = ut[n, jstart[n, i, j]:jend[n, i, j]]
                 vtshort[n, :, i, j] = vt[n, jstart[n, i, j]:jend[n, i, j]]
                 usshort[n, :, i, j] = us[n, jstart[n, i, j]:jend[n, i, j]]
                 vsshort[n, :, i, j] = vs[n, jstart[n, i, j]:jend[n, i, j]]
-                dqshort[n, :, i, j] = dq[n, jstart[n, i, j]:jend[n, i, j]]
+                if date_records is not None:
+                    dateshort[n, :, i, j] = date_records[n, jstart[n, i, j]:jend[n, i, j]]
+                    dqshort[n, :, i, j] = dq[n, jstart[n, i, j]:jend[n, i, j]]
 
     # Create high time-resolution series
     vfine = np.zeros((nn, jfine, sx, sy))
@@ -1437,18 +1219,20 @@ def calculate_upward_velocity_time_series_qdx(
     rmsefine = np.zeros((nn, jfine, sx, sy))
     latfine = np.zeros((nn, jfine, sx, sy))
     longfine = np.zeros((nn, jfine, sx, sy))
-    date_record = np.zeros((nn, jfine, sx, sy))
     utfine = np.zeros((nn, jfine, sx, sy))
     vtfine = np.zeros((nn, jfine, sx, sy))
     usfine = np.zeros((nn, jfine, sx, sy))
     vsfine = np.zeros((nn, jfine, sx, sy))
-    dqfine = np.zeros((nn, jfine, sx, sy))
     hfine = np.zeros((nn, jfine, sx, sy))
     hyfine = np.zeros((nn, jfine, sx, sy))
     hxfine = np.zeros((nn, jfine, sx, sy))
     cdfine = np.zeros((nn, jfine, sx, sy))
     cdyfine = np.zeros((nn, jfine, sx, sy))
     cdxfine = np.zeros((nn, jfine, sx, sy))
+
+    if date_records is not None:
+        date_record = np.zeros((nn, jfine, sx, sy))
+        dqfine = np.zeros((nn, jfine, sx, sy))
 
     k = 0
     for j in range(jtot - 1):
@@ -1466,8 +1250,6 @@ def calculate_upward_velocity_time_series_qdx(
                 weight * latshort[:, j + 1, :, :]
             longfine[:, k, :, :] = (1 - weight) * longshort[:, j, :, :] + \
                 weight * longshort[:, j + 1, :, :]
-            date_record[:, k, :, :] = (1 - weight) * dateshort[:, j, :, :] + \
-                weight * dateshort[:, j + 1, :, :]
             utfine[:, k, :, :] = (1 - weight) * utshort[:, j, :, :] + \
                 weight * utshort[:, j + 1, :, :]
             vtfine[:, k, :, :] = (1 - weight) * vtshort[:, j, :, :] + \
@@ -1476,8 +1258,11 @@ def calculate_upward_velocity_time_series_qdx(
                 weight * usshort[:, j + 1, :, :]
             vsfine[:, k, :, :] = (1 - weight) * vsshort[:, j, :, :] + \
                 weight * vsshort[:, j + 1, :, :]
-            dqfine[:, k, :, :] = (1 - weight) * dqshort[:, j, :, :] + \
-                weight * dqshort[:, j + 1, :, :]
+            if date_records is not None:
+                date_record[:, k, :, :] = (1 - weight) * dateshort[:, j, :, :] + \
+                    weight * dateshort[:, j + 1, :, :]
+                dqfine[:, k, :, :] = (1 - weight) * dqshort[:, j, :, :] + \
+                    weight * dqshort[:, j + 1, :, :]
             k += 1
 
     vfine[:, k, :, :] = vshort[:, jtot - 1, :, :]
@@ -1486,66 +1271,64 @@ def calculate_upward_velocity_time_series_qdx(
     rmsefine[:, k, :, :] = rmseshort[:, jtot - 1, :, :]
     latfine[:, k, :, :] = latshort[:, jtot - 1, :, :]
     longfine[:, k, :, :] = longshort[:, jtot - 1, :, :]
-    date_record[:, k, :, :] = dateshort[:, jtot - 1, :, :]
     utfine[:, k, :, :] = utshort[:, jtot - 1, :, :]
     vtfine[:, k, :, :] = vtshort[:, jtot - 1, :, :]
     usfine[:, k, :, :] = usshort[:, jtot - 1, :, :]
     vsfine[:, k, :, :] = vsshort[:, jtot - 1, :, :]
-    dqfine[:, k, :, :] = dqshort[:, jtot - 1, :, :]
+    if date_records is not None:
+        date_record[:, k, :, :] = dateshort[:, jtot - 1, :, :]
+        dqfine[:, k, :, :] = dqshort[:, jtot - 1, :, :]
 
     rmsefine = np.maximum(rmsefine, 0.1)
     rfine, dx, dy = tcr_tb.calculate_distance_to_track(
-        plat, plong, latfine, longfine, nn, jfine, sx, sy, 0, dfac)
+        plat, plong, latfine, longfine, nn, jfine, sx, sy, ngrid, dfac)
     rfinei = 1 / np.maximum(rfine, 1)
 
     # for primary eyewalls
     w, cp, V, Vd, Vrp, Vrm, u1temp, u2temp, Cdp, Cdm = calculate_wind_primary(
-        utfine, vtfine, vfine, rfine, rmfine, vsefine, rmsefine,
-        latfine, nn, jfine, sx, sy, h, hx, hy, cdrag, hfine, hxfine,
-        hyfine, cdfine, cdx, cdxfine, cdy, cdyfine, Hi, Htrop, omega,
-        pifac, deltar, deltari, knotfac, latfac, timeresi, dx * rfinei,
-        dy * rfinei, 10, wprofile, adj_water=False)
+        utfine, vtfine, vfine, rfine, rmfine, vsefine, rmsefine, latfine,
+        nn, jfine, sx, sy, h, hx, hy, cdrag, hfine, hxfine, hyfine,
+        cdfine, cdx, cdxfine, cdy, cdyfine, Hi, Htrop, omega, pifac,
+        deltar, deltari, knotfac, latfac, timeresi, dx * rfinei, dy * rfinei, 10,
+        wprofile, adj_water=False)
 
     # if secondary eyewalls present
     if se > 0:
         w2, cp, V, Vrp, Vrm = calculate_wind_secondary(
-            rfine, vsefine, rmsefine, latfine, nn, jfine, sx, 1, Hi, Htrop,
-            omega, pifac, deltar, deltari, knotfac, latfac, timeresi,
-            u1temp, u2temp, Cdp, Cdm, wprofile)
+            rfine, vsefine, rmsefine, latfine, nn, jfine, sx, sy, Hi, Htrop, omega,
+            pifac, deltar, deltari, knotfac, latfac, timeresi, u1temp, u2temp, Cdp,
+            Cdm, wprofile)
         w = np.maximum(w, w2)
 
-    # Now add in topographic and shear components
-    hxmod = -0.0005 * (
-        cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)
-    ) * vsfine
-    # to include shear dotted with storm entropy
-    hymod = 0.0005 * (
-        cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)
-    ) * usfine
+    # Now add in topographic and shear components to include shear dotted with storm entropy
+    hxmod = -0.0005 * (cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)) * vsfine
+    hymod = 0.0005 * (cp + 2 * V / (0.1 + rfine) + deltari * (Vrp - Vrm)) * usfine
 
     # Reduce effect of translation speed outside of radcity
-    ufunc = (radcity - rfine) / 50
-    ufunc = np.minimum(ufunc, 1)
-    ufunc = np.maximum(ufunc, 0)
+    ufunc = np.clip((radcity - rfine) / 50.0, 0, 1)
     utfine = utfine * ufunc
     vtfine = vtfine * ufunc
 
     # Reduce effect of orography outside of storm core
-    ufunc = (150 - rfine) / 30.0
-    ufunc = np.minimum(ufunc, 0.6)
-    ufunc = np.maximum(ufunc, 0.2)
+    ufunc = np.clip((150 - rfine) / 30, 0.2, 0.6)
     hxfine *= ufunc
     hyfine *= ufunc
 
-    w = (w + (Vd * latfac * dx * rfinei + vtfine) * hyfine +
-         (utfine - Vd * latfac * dy * rfinei) * hxfine +
-         Vd * dx * rfinei * hymod - Vd * dy * rfinei * hxmod)
+    w = (
+        w
+        + (Vd * latfac * dx * rfinei + vtfine) * hyfine
+        + (utfine - Vd * latfac * dy * rfinei) * hxfine
+        + Vd * dx * rfinei * hymod
+        - Vd * dy * rfinei * hxmod
+    )
     w = np.minimum(w, 7)
 
-    # Add radiative cooling
-    # If w-wrad is negative (downward motion): wp = 0
-    wq = dqfine * np.maximum(w - wrad, 0)
-    return wq, date_record
+    # Add radiative cooling. If w-wrad is negative (downward motion): wp = 0
+    if date_records is not None:
+        wq = dqfine * np.maximum(w - wrad, 0)
+        return wq, date_record
+    else:
+        return w
 
 
 def integrate_outer_wind_profile(vm, fc, ro, wc, CD, q):
@@ -1603,7 +1386,7 @@ def integrate_outer_wind_profile(vm, fc, ro, wc, CD, q):
     for i in range(q - 3, 0, -1):
         r[i] = r[i + 1] - dr
         m[i] = (m[i + 2] - 2.0 * dr * (chi * m[i + 1]**2 /
-              (rond**2 - r[i + 1]**2) - r[i + 1]))
+                (rond**2 - r[i + 1]**2) - r[i + 1]))
         m[i + 1] += assl * (m[i] + m[i + 2] - 2.0 * m[i + 1])
         v[i] = m[i] / r[i]
         if v[i] > 1.0:
