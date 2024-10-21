@@ -11,11 +11,12 @@ from tcr import terrain_boundary as tcr_tb
 from tcr import iodata as tcr_io
 
 
-def rainfieldx(nt, latitude, longitude, radius_storm, velocity,
-               radius_storm_secondary, velocity_secondary, ut, vt, u850, v850,
-               months, days, hours, monthplot, dayplot, hourplot,
-               extent=None, shapefile=None, magfac=1.0, deltax=5, deltay=4,
-               dellatlong=0.05, q900=0.01, eprecip=0.9, wrad=0.005):
+def calculate_rainfall_rate(
+    nt, latitude, longitude, radius_storm, velocity, radius_storm_secondary,
+    velocity_secondary, ut, vt, u850, v850, months, days, hours, monthplot,
+    dayplot, hourplot, extent=None, shapefile=None, magfac=1.0, deltax=5,
+    deltay=4, dellatlong=0.05, q900=0.01, eprecip=0.9, wrad=0.005
+):
     """
     Computes the surface rain rate distribution (mm/hr) for a specified storm
     at a given time.
@@ -174,7 +175,7 @@ def rainfieldx(nt, latitude, longitude, radius_storm, velocity,
         bxmin, bxmax, bymin, bymax, dellatlong
     )
 
-    w = tcr_wind.pointwfield(
+    w = tcr_wind.calculate_upward_velocity_field(
         latstorm, longstorm, vstorm, rmstorm, vsestorm, rmsestorm, utstorm,
         vtstorm, ush, vsh, y, x, h, hx, hy
     )
@@ -190,14 +191,15 @@ def rainfieldx(nt, latitude, longitude, radius_storm, velocity,
     return rainrate, x, y
 
 
-def rainswathx(nt, latitude, longitude, radius_storm, velocity,
-               radius_storm_secondary, velocity_secondary, ut, vt, u850, v850,
-               extent=None, shapefile=None, magfac=1, deltax=5, deltay=4,
-               dellatlongs=0.15, q900=0.01, timeres=0.5, wrad=0.005,
-               eprecip=0.9):
+def calculate_etr_swath(
+    nt, latitude, longitude, radius_storm, velocity, radius_storm_secondary,
+    velocity_secondary, ut, vt, u850, v850, extent=None, shapefile=None,
+    magfac=1, deltax=5, deltay=4, dellatlongs=0.15, q900=0.01, timeres=0.5,
+    wrad=0.005, eprecip=0.9
+):
     """
-    Calculate the distribution of accumulated precipitation for a given
-    individual storm.
+    Calculate the distribution of event total rainfall for a given individual
+    storm.
 
     Parameters:
     -----------
@@ -325,8 +327,10 @@ def rainswathx(nt, latitude, longitude, radius_storm, velocity,
     )
 
     # Calculate vertical velocity time series
-    w = tcr_wind.pointwshortn(lat, long, v, rm, vse, rmse, utd, vtd, ush, vsh, x, y, h,
-                              hx, hy, timeres)
+    w = tcr_wind.calculate_upward_velocity_time_series(
+        lat, long, v, rm, vse, rmse, utd, vtd, ush, vsh, x, y, h,
+        hx, hy, timeres
+    )
     wq = np.maximum(w - wrad, 0) * q900
     netrain = (eprecip * 1000 * timeres * 3600 * RHOA_OVER_RHOL *
                np.nansum(wq, axis=(0, 1)))  # mm/hr
@@ -334,12 +338,14 @@ def rainswathx(nt, latitude, longitude, radius_storm, velocity,
     return x, y, netrain.T
 
 
-def raingen(plat, plong, latitude, longitude, datearray, velocity,
-            radius_storm, velocity_secondary, radius_storm_secondary,
-            u850, v850, utrans, vtrans, T600=None, magfac=1.0,
-            q900_constant=0.01, timeres=0.5, wrad=0.005, eprecip=0.9):
+def generate_rainfall_point(
+    plat, plong, latitude, longitude, datearray, velocity,
+    radius_storm, velocity_secondary, radius_storm_secondary,
+    u850, v850, utrans, vtrans, T600=None, magfac=1.0,
+    q900_constant=0.01, timeres=0.5, wrad=0.005, eprecip=0.9
+):
     """
-    Calculate the accumulated rainfall and rain rates at specified locations
+    Calculate the accumulated rainfall and rain rates at a specified location
     for the given set of storm events.
 
     Parameters:
@@ -453,7 +459,7 @@ def raingen(plat, plong, latitude, longitude, datearray, velocity,
         q900 = np.where(ut != 0, q900_constant, 0)
 
     # Estimate vertical wind velocity
-    wq, date_record = tcr_wind.pointwshortnqdx(
+    wq, date_record = tcr_wind.calculate_upward_velocity_time_series_qdx(
         lat, long, dates, q900, v, rm, vse, rmse, ut, vt, ush, vsh,
         plong, plat, h, hx, hy, timeres, wrad)
 

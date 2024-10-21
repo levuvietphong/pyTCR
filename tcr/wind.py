@@ -140,14 +140,12 @@ def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
     vnetm = np.sqrt(vmh ** 2 + 2 * vmh * latfac * u1temp + u2temp)
 
     # Update topographic heights and drag coefficients
-    for n in range(nn):
-        for j in range(jf):
-            hf[n, j, :, :] = h[:, :]
-            hyf[n, j, :, :] = hy[:, :]
-            hxf[n, j, :, :] = hx[:, :]
-            cdf[n, j, :, :] = cdrag[:, :]
-            cdyf[n, j, :, :] = cdy[:, :]
-            cdxf[n, j, :, :] = cdx[:, :]
+    hf[:] = h[np.newaxis, np.newaxis, :, :]
+    hyf[:] = hy[np.newaxis, np.newaxis, :, :]
+    hxf[:] = hx[np.newaxis, np.newaxis, :, :]
+    cdf[:] = cdrag[np.newaxis, np.newaxis, :, :]
+    cdyf[:] = cdy[np.newaxis, np.newaxis, :, :]
+    cdxf[:] = cdx[np.newaxis, np.newaxis, :, :]
 
     # Calculate drag coefficients
     cdfac = 1e3 * 0.5 * deltar * (cdxf * costhetaf + cdyf * sinthetaf)
@@ -558,7 +556,7 @@ def transfunction(latitude):
     return transfactor
 
 
-def utrans(latitude, longitude):
+def get_translation_speeds(latitude, longitude):
     """
     Calculate translation speeds (knots) and smooth the results.
 
@@ -641,7 +639,7 @@ def utrans(latitude, longitude):
     return ut, vt, jmax
 
 
-def utransfull(lats, longs, vs=None, u850=None, v850=None):
+def get_translation_speeds_full(lats, longs, vs=None, u850=None, v850=None):
     """
     Calculate translation speed and apply corrections to circular wind speed.
 
@@ -670,7 +668,7 @@ def utransfull(lats, longs, vs=None, u850=None, v850=None):
         Corrected meridional wind speed.
     """
     # Calculate translation velocity
-    ut, vt, _ = utrans(lats, longs)
+    ut, vt, _ = get_translation_speeds(lats, longs)
 
     # Add latitude-dependent fraction of translation speed to circular wind
     transfunc = transfunction(lats)
@@ -700,10 +698,11 @@ def utransfull(lats, longs, vs=None, u850=None, v850=None):
     return ut, vt, uinc, vinc
 
 
-def pointwfield(latitude, longitude, velocity, radius_storm,
-                velocity_secondary, radius_storm_secondary, ut, vt, us, vs,
-                plat, plong, h, hx, hy, deltar=2, timeresw=2, Htrop=4000,
-                radcity=300, wprofile=3):
+def calculate_upward_velocity_field(
+    latitude, longitude, velocity, radius_storm, velocity_secondary,
+    radius_storm_secondary, ut, vt, us, vs, plat, plong, h, hx, hy,
+    deltar=2, timeresw=2, Htrop=4000, radcity=300, wprofile=3
+):
     """
     Calculate the spatial distribution of vertical velocity.
 
@@ -786,19 +785,29 @@ def pointwfield(latitude, longitude, velocity, radius_storm,
     usfull, vsfull, hfull, hyfull, hxfull = (np.zeros(shape) for _ in range(5))
     cdfull, cdyfull, cdxfull = (np.zeros(shape) for _ in range(3))
 
-    for i in range(sx):
-        for jj in range(sy):
-            j = i if ngrid == 1 else jj
-            vfull[0, :, i, j] = velocity[:]
-            rmfull[0, :, i, j] = radius_storm[:]
-            vsefull[0, :, i, j] = velocity_secondary[:]
-            rmsefull[0, :, i, j] = radius_storm_secondary[:]
-            latfull[0, :, i, j] = latitude[:]
-            longfull[0, :, i, j] = longitude[:]
-            utfull[0, :, i, j] = ut[:]
-            vtfull[0, :, i, j] = vt[:]
-            usfull[0, :, i, j] = us[:]
-            vsfull[0, :, i, j] = vs[:]
+    # Reshape input arrays to match the output shape
+    velocity_reshaped = velocity[:, np.newaxis, np.newaxis]
+    radius_storm_reshaped = radius_storm[:, np.newaxis, np.newaxis]
+    velocity_secondary_reshaped = velocity_secondary[:, np.newaxis, np.newaxis]
+    radius_storm_secondary_reshaped = radius_storm_secondary[:, np.newaxis, np.newaxis]
+    latitude_reshaped = latitude[:, np.newaxis, np.newaxis]
+    longitude_reshaped = longitude[:, np.newaxis, np.newaxis]
+    ut_reshaped = ut[:, np.newaxis, np.newaxis]
+    vt_reshaped = vt[:, np.newaxis, np.newaxis]
+    us_reshaped = us[:, np.newaxis, np.newaxis]
+    vs_reshaped = vs[:, np.newaxis, np.newaxis]
+
+    # Broadcast the reshaped arrays to fill the output arrays
+    vfull[0, :, :, :] = np.broadcast_to(velocity_reshaped, (3, sx, sy))
+    rmfull[0, :, :, :] = np.broadcast_to(radius_storm_reshaped, (3, sx, sy))
+    vsefull[0, :, :, :] = np.broadcast_to(velocity_secondary_reshaped, (3, sx, sy))
+    rmsefull[0, :, :, :] = np.broadcast_to(radius_storm_secondary_reshaped, (3, sx, sy))
+    latfull[0, :, :, :] = np.broadcast_to(latitude_reshaped, (3, sx, sy))
+    longfull[0, :, :, :] = np.broadcast_to(longitude_reshaped, (3, sx, sy))
+    utfull[0, :, :, :] = np.broadcast_to(ut_reshaped, (3, sx, sy))
+    vtfull[0, :, :, :] = np.broadcast_to(vt_reshaped, (3, sx, sy))
+    usfull[0, :, :, :] = np.broadcast_to(us_reshaped, (3, sx, sy))
+    vsfull[0, :, :, :] = np.broadcast_to(vs_reshaped, (3, sx, sy))
 
     w, cp, V, Vd, Vrp, Vrm, u1temp, u2temp, Cdp, Cdm = calculate_wind_primary(
         utfull, vtfull, vfull, rfull, rmfull, vsefull, rmsefull, latfull,
@@ -836,10 +845,10 @@ def pointwfield(latitude, longitude, velocity, radius_storm,
     return w
 
 
-def pointshortn(latitude, longitude, velocity, radius_storm,
-                velocity_secondary, radius_storm_secondary, ut, vt,
-                plat, plong, timeres, timelength=96, wheight=30,
-                wprofile=3, radcity=300):
+def calculate_wind_time_series(latitude, longitude, velocity, radius_storm,
+                               velocity_secondary, radius_storm_secondary, ut, vt,
+                               plat, plong, timeres, timelength=96, wheight=30,
+                               wprofile=3, radcity=300):
     """
     Calculate the time series of wind speed and direction at specified points
     of interest.
@@ -1037,13 +1046,13 @@ def pointshortn(latitude, longitude, velocity, radius_storm,
     return vs, direction
 
 
-def pointwshortn(latitude, longitude, velocity, radius_storm,
-                 velocity_secondary, radius_storm_secondary, ut, vt, us, vs,
-                 plong, plat, h, hx, hy, timeres, deltar=2, timelength=96,
-                 Htrop=4000, wprofile=3, radcity=300):
+def calculate_upward_velocity_time_series(
+    latitude, longitude, velocity, radius_storm, velocity_secondary, radius_storm_secondary,
+    ut, vt, us, vs, plong, plat, h, hx, hy, timeres, deltar=2, timelength=96, Htrop=4000,
+    wprofile=3, radcity=300
+):
     """
-    Calculate the time series of vertical velocity at specified points of
-    interest.
+    Calculate the time series of vertical velocity at specified points of interest.
 
     Parameters:
     ----------
@@ -1270,11 +1279,12 @@ def pointwshortn(latitude, longitude, velocity, radius_storm,
     return w
 
 
-def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
-                    radius_storm, velocity_secondary, radius_storm_secondary,
-                    ut, vt, us, vs, plong, plat, h, hx, hy, timeres, wrad,
-                    deltar=2, timelength=96, Htrop=4000, wprofile=3,
-                    radcity=300):
+def calculate_upward_velocity_time_series_qdx(
+    latitude, longitude, date_records, dq, velocity, radius_storm, 
+    velocity_secondary, radius_storm_secondary, ut, vt, us, vs, plong, plat,
+    h, hx, hy, timeres, wrad, deltar=2, timelength=96, Htrop=4000, wprofile=3,
+    radcity=300
+):
     """
     Calculate the time series of vertical velocity multiplied by saturation specific humidity
     at specified points of interest (POI)
@@ -1538,7 +1548,7 @@ def pointwshortnqdx(latitude, longitude, date_records, dq, velocity,
     return wq, date_record
 
 
-def vouternew(vm, fc, ro, wc, CD, q):
+def integrate_outer_wind_profile(vm, fc, ro, wc, CD, q):
     """
     Numerically integrates the outer wind profile from a simple ordinary
     differential equation (ODE).
@@ -1669,7 +1679,7 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
                 # Skip at equator (coriolis force fc = 0) or vs = 0
                 if alats != 0 and vsin > 0:
                     fc1 = 1.45e-4 * np.abs(alats * 0.0175)
-                    _, rm, _ = vouternew(vsin, fc1, ro, wc, cdouter, nouter)
+                    _, rm, _ = integrate_outer_wind_profile(vsin, fc1, ro, wc, cdouter, nouter)
                 else:
                     rm = 0
                 rm_trks[ind, jnd] = rm
@@ -1694,7 +1704,7 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
     return rm_trks
 
 
-def smoothb(x, nz, jmin, jmax):
+def smooth_2d_array(x, nz, jmin, jmax):
     """
     Apply a 1-2-1 smoothing filter to a 2D array.
 
@@ -1727,10 +1737,11 @@ def smoothb(x, nz, jmin, jmax):
     return xsmooth
 
 
-def windswathx(nt, latitude, longitude, radius_storm, velocity,
-               radius_storm_secondary, velocity_secondary, uinc, vinc,
-               extent=None, shapefile=None, magfac=1, deltax=5, deltay=4,
-               dellatlongs=0.15, timeres=2):
+def calculate_wind_swath(
+    nt, latitude, longitude, radius_storm, velocity, radius_storm_secondary,
+    velocity_secondary, uinc, vinc, extent=None, shapefile=None, magfac=1,
+    deltax=5, deltay=4, dellatlongs=0.15, timeres=2
+):
     """
     Calculate the distribution of maximum point wind speed (knots) for a
     single storm, including the effects of primary and secondary eyewalls.
@@ -1837,12 +1848,11 @@ def windswathx(nt, latitude, longitude, radius_storm, velocity,
     # Initialize maxwind array and compute maxwind
     maxwind = np.zeros((sx, sy))
 
-    wind_speed, _ = pointshortn(lat, long, v, rm, vse, rmse, utd, vtd, y, x,
-                                timeres)
+    wind_speed, _ = calculate_wind_time_series(lat, long, v, rm, vse, rmse, utd, vtd, y, x, timeres)
     maxwind[:, :] = np.max(wind_speed[0, :, :, :], axis=0)
 
     # Smooth the maxwind array
-    maxwind = smoothb(maxwind, sx - 1, 1, sy - 1)
+    maxwind = smooth_2d_array(maxwind, sx - 1, 1, sy - 1)
     maxwind = np.transpose(maxwind)
 
     return x, y, maxwind
