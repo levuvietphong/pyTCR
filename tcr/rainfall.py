@@ -459,9 +459,9 @@ def generate_rainfall_point(
         q900 = np.where(ut != 0, q900_constant, 0)
 
     # Estimate vertical wind velocity
-    wq, date_record = tcr_wind.calculate_upward_velocity_time_series_qdx(
-        lat, long, dates, q900, v, rm, vse, rmse, ut, vt, ush, vsh,
-        plong, plat, h, hx, hy, timeres, wrad)
+    wq, date_record = tcr_wind.calculate_upward_velocity_time_series(
+        lat, long, v, rm, vse, rmse, ut, vt, ush, vsh, plong, plat,
+        h, hx, hy, timeres, date_records=dates, dq=q900, wrad=wrad)
 
     # Convert date_record to pandas format
     datetimes = pd.to_datetime(np.where(date_record.flatten() < 0,
