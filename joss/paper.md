@@ -111,13 +111,12 @@ The notebooks include:
 - Generating rainfall within a spatial domain
 - Generating multiple rainfall events within polygons
 
-Figure 1 shows the comparison of TCs downscaled from the outputs of the Exascale Energy Earth Model (E3SM) and reanalysis data using the TC downscaling model and observations in North Atlantic ocean during historical period (1964-2014).
+Figure 1 shows the comparison of TCs downscaled from the outputs of the Exascale Energy Earth Model (E3SM) and ERA5 reanalysis data using the TC downscaling model with observations from IBTrACS in North Atlantic ocean during historical period (1964-2014).
 It highlights the ability of the TC downscaling model to reasonably reproduce the general behavior of TC observed over the past period, providing confidence for analyzing TC patterns in the future climate.
 
 ![(Top) Tracks of 200 TCs in the North Atlantic. Color lines indicates wind speed and TC tracks that landfall in Texas.(Bottom) Mean power dissipation index (PDI) per $2^{\circ} \times 2^{\circ}$ box per year. Plot was generated using `ex1_tropical_cyclone_tracks.ipynb` in the repository.\label{fig1}](Fig1.png)
 
 Along each TC track from the above model, `pyTCR` can generate time series of TC-induced rainfall.
-
 Figure 2 shows an example of the spatial distribution of total rainfall along a TC track. Time series of rainfall at any domain influenced by the TCs can be extracted in `pyTCR`.
 
 ![Illustration of spatial distribution of total rainfall of a particular TC that makes landfall on Texas.\label{fig2}](Fig2.png)
