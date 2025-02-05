@@ -96,32 +96,38 @@ The storm-centered specific humidity $q_s$ is calculated from the 600 hPa atmosp
 
 # Examples
 
-`pyTCR` generates and provides an access point for a large number of synthetic TC rainfall and tracks forced by physics-based GCMs. 
-TCs datasets for the North Atlantic ocean used as the input database for `pyTCR` are downscaled from 26 CMIP6 models and stored in the Texas Advanced Computing Center (TACC) Corral storage [@CorralTACCHPC].
-Observed TCs datasets obtained from the International Best Track Archive for Climate Stewardship (IBTrACS) are also included in the repository for comparison.
+`pyTCR` generates and provides access to a large set of synthetic rainfall events based on TC tracks.
+To demonstrate its use, the repository includes downscaled TC datasets for the North Atlantic Ocean, derived from 26 CMIP6 models and ERA5 reanalysis data [@Hersbach:2020].
+These datasets are stored in the Texas Advanced Computing Center (TACC) Corral storage [@CorralTACCHPC]. 
+They provide TC track and intensity information required as inputs for `pyTCR`. For downscaling TCs in other ocean basins, users are referred to @Lin:2023 for further details.
 
-We initially provide 6 example notebooks for users to get started with `pyTCR`. 
-These `jupyter` notebooks  are designed specifically for hands-on tutorial and training to help users learn the key concepts and functions of `pyTCR`.
-The notebooks include:
+To help users get started, we provide six example `Jupyter` notebooks. 
+These hands-on tutorials are designed for training purpose, guiding users through the key concepts and functions of `pyTCR`. The notebooks include:
 
 - Downloading and preprocessing TCs data
 - Visualizing and analyzing TC tracks and densities
 - Generating TC rainfall timeseries
 - Generating TC wind speed
-- Generating rainfall within a spatial domain
+- Generating single rainfall event within polygons
 - Generating multiple rainfall events within polygons
 
-Figure 1 shows the comparison of TCs downscaled from the outputs of the Exascale Energy Earth Model (E3SM) and ERA5 reanalysis data using the TC downscaling model with observations from IBTrACS in North Atlantic ocean during historical period (1964-2014).
-It highlights the ability of the TC downscaling model to reasonably reproduce the general behavior of TC observed over the past period, providing confidence for analyzing TC patterns in the future climate.
+We briefly present two notebooks in this paper. Users are encouraged to check out other notebooks for learning `pyTCR`.
 
-![(Top) Tracks of 200 TCs in the North Atlantic. Color lines indicates wind speed and TC tracks that landfall in Texas.(Bottom) Mean power dissipation index (PDI) per $2^{\circ} \times 2^{\circ}$ box per year. Plot was generated using `ex1_tropical_cyclone_tracks.ipynb` in the repository.\label{fig1}](Fig1.png)
+Figure 1 compares the tracks and mean power dissipation index (PDI; [$L^3T^{-2}$]) of TCs downscaled from the low-resolution outputs of the Exascale Energy Earth Model [@E3SMv1.0] and ERA5 reanalysis data [@Hersbach:2020] using the TC downscaling model [@Lin:2023] with those obtained from IBTrACS observations in the North Atlantic ocean during the historical period (1964-2014).
+The PDI quantifies the total power dissipated annually by all TCs in the ocean basin and is defined as $PDI=\int_0^{\tau}V^3_{max}dt$ [@Emanuel:2005]. Here, $V_{max}$ is the maximum sustained wind speed at the conventional measurement altitude of 10 $m$, $\tau$ is the lifetime of the storm. The PDI captures not only TC frequency, but also duration and intensity.
+Overall, the results suggest that `pyTCR` is able to reproduce the behavior of TCs in North Atlantic ocean over the historical period. However, the PDI maps indicate that TCs downscaled the E3SM tend to underestimate storm activity near the tropical eastern Atlantic region.
 
-Along each TC track from the above model, `pyTCR` can generate time series of TC-induced rainfall.
-Figure 2 shows an example of the spatial distribution of total rainfall along a TC track. Time series of rainfall at any domain influenced by the TCs can be extracted in `pyTCR`.
+<!-- It highlights the ability of the TC downscaling model to reasonably reproduce the general behavior of TC observed over the past period, providing confidence for analyzing TC patterns in the future climate. -->
 
-![Illustration of spatial distribution of total rainfall of a particular TC that makes landfall on Texas.\label{fig2}](Fig2.png)
+![(Top) Tracks of 200 TCs in the North Atlantic. Color lines indicates wind speed and TC tracks that landfall in Texas.(Bottom) Mean power dissipation index (PDI) per $2^{\circ} \times 2^{\circ}$ box per year. Plot was generated using the notebook `ex1_tropical_cyclone_tracks.ipynb` in the repository.\label{fig1}](Fig1.png)
 
-\clearpage
+Along each TC track from the downscaling model, `pyTCR` stochastically generate time series and spatial patterns of rainfall events.
+Figure 2 illustrates the spatial distribution of total rainfall along a TC track in North Atlantic Ocean. 
+The TC originates in the central Atlantic (25$^\circ$N, 60$^\circ$W) and generally move westward before making landfall in the United States.
+Rainfall intensity increases significantly upon landfall in Texas compared to its intensity over the ocean.
+Time series of rainfall at any domain influenced by the TCs can be easily extracted in `pyTCR` for other analyses.
+
+![Illustration of the spatial distribution of total rainfall generated for a particular TC track that makes landfall on Texas, USA. Plot was generated using the notebook `ex2_rainfall_generation.ipynb` in the repository\label{fig2}](Fig2.png){width=80%}
 
 # Acknowledgements
 This work was supported by the U.S. Department of Energy, Office of Science, Biological and Environmental Research program and is a product of the Southeast Texas (SETx) Urban Integrated Field Laboratory (UIFL) project.
