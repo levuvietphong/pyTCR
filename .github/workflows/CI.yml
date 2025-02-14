@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Mamba
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          init-shell: bash
+          cache-environment: true
+          post-cleanup: 'all'
+
+      - name: Install additional dependencies and this package
+        run: |
+          pip install notebook nbconvert
+          pip install .
+        shell: micromamba-shell {0}
+
+      - name: Check environment is correctly set up.
+        run: |
+          python -c "import tcr"
+        shell: micromamba-shell {0}
+
+      - name: Execute Jupyter notebook tests
+        working-directory: ./notebooks
+        run: |
+          for notebook in *.ipynb; do jupyter nbconvert --to notebook --execute "$notebook" --output "$notebook"; done
+        shell: micromamba-shell {0}

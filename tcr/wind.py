@@ -10,6 +10,7 @@ import glob
 import numpy as np
 from tcr import terrain_boundary as tcr_tb
 from tcr import iodata as tcr_io
+from tcr.datadir import DATA_DIR
 
 
 def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
@@ -921,12 +922,12 @@ def calculate_wind_time_series(latitude, longitude, velocity, radius_storm,
 
     # Load bathymetry
     bathy = tcr_io.load_netcdf_2d_parameters(
-        "../data", "surface_data.nc", "bathymetry"
+        DATA_DIR, "surface_data.nc", "bathymetry"
     )
 
     # Load neutral drag coefficients
     cd = tcr_io.load_netcdf_2d_parameters(
-        "../data", "surface_data.nc", "cdrag"
+        DATA_DIR, "surface_data.nc", "cdrag"
     )
     mincd = np.min(cd)
     cd[bathy < 0] = mincd
@@ -1410,7 +1411,7 @@ def integrate_outer_wind_profile(vm, fc, ro, wc, CD, q):
 
 
 def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
-                         data_directory='../data/downscaled/', model=None,
+                         data_directory=os.path.join(DATA_DIR, 'downscaled'), model=None,
                          basin=None, expmnt=None, force_recompute=False):
     """
     Estimate the radius of maximum circular wind from maximum circular
@@ -1473,9 +1474,7 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
         ds = ds.assign(rm_trks=(['n_trk', 'time'], rm_trks))
 
         # Remove old dataset and save updated dataset to disk
-        ncfile = glob.glob(
-            f"{data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc"
-        )[0]
+        ncfile = glob.glob(os.path.join(data_directory, expmnt, f"tracks_{basin}_{model}_*.nc"))[0]
         if os.path.exists(ncfile):
             os.remove(ncfile)
         ds.to_netcdf(ncfile, mode='w')
