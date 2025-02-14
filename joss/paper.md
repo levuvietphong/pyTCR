@@ -39,11 +39,12 @@ To sample rare (most intense) rainfall events that are often of great societal i
 
 
 # Statement of need
-TCs -- that is, hurricanes and tropical storms -- are among the most destructive weather events, causing massive economic and human losses worldwide each year [@Mendelsohn:2012;@Krichene:2023]. In the United States, hurricanes can trigger a surge of deaths long after the storms through complex chains of lasting impacts [@Young:2024]. Much of the damage caused by TCs is done by water – particularly by torrential rainfall (which is sensitive to TC structural characteristics, intensity, and movement) and subsequent flooding [@Shi:2024;@Zhang:2018]. Accurately capturing TC rainfall characteristics at high spatial (e.g., <10 km) and temporal resolution (e.g, hourly) is therefore of critical importance. Moreover, a growing body of evidence suggests that TC rainfall is becoming more intense under a warming climate due to the Clapeyron–Clausius scaling of water vapor in the atmosphere [@Held:2006], increasing the likelihood of extreme rainfall and flooding [@Emanuel:2021;@Zhu:2021]. Given the societal consequences of TCs, it is crucial to understand not only TC risk in the current climate, but also how the risk might evolve with warming. Advancing tools and models to accurately and efficiently quantify these risks is of great significance.
+Tropical Cyclones (TCs) -- that is, hurricanes and tropical storms -- are among the most destructive weather events, causing massive economic and human losses worldwide each year [@Mendelsohn:2012;@Krichene:2023]. In the United States, hurricanes can trigger a surge of deaths long after the storms through complex chains of lasting impacts [@Young:2024]. Much of the damage caused by TCs is done by water – particularly by torrential rainfall (which is sensitive to TC structural characteristics, intensity, and movement) and subsequent flooding [@Shi:2024;@Zhang:2018]. Accurately capturing TC rainfall characteristics at high spatial (e.g., <10 km) and temporal resolution (e.g, hourly) is therefore of critical importance. Moreover, a growing body of evidence suggests that TC rainfall is becoming more intense under a warming climate due to the Clapeyron–Clausius scaling of water vapor in the atmosphere [@Held:2006], increasing the likelihood of extreme rainfall and flooding [@Emanuel:2021;@Zhu:2021]. Given the societal consequences of TCs, it is crucial to understand not only TC risk in the current climate, but also how the risk might evolve with warming. Advancing tools and models to accurately and efficiently quantify these risks is of great significance.
 
 The ability of GCMs to simulate climate extremes has been substantially improved over the past few decades, primarily those participating in the Coupled Model Intercomparison Project phase 6 or CMIP6 [@Eyring:2016;@Kim:2020]. These climate models have become one of the main tools used for exploring the effect of global warming on precipitation and climate variability [@Emanuel:2021;@Le:2021;@Le:2023]. While high-resolution GCMs (e.g., those in the HighResMIP experiments) have improved the representation of TCs [@Haarsma:2016;@Li:2018;@Zhang:2024], they remain too computationally expensive for risk analysis, which requires robust sampling of extreme rainfall events. `pyTCR` responds to this need for an easy to use and efficient tool that facilitates TC-driven rainfall analysis across scales. It takes the advantage of a synthetic downscaling approach that can generate large ensembles of synthetic TCs at the basin (ocean) scale based on comprehensive climate conditions from observations and reanalysis data and a large number of GCM simulations [@Emanuel:2008;@Lin:2023].
 `pyTCR` provides a fast and highly efficient tool for risk analysis related to TC rainfall.
 
+**Is it normal to include a paragraph on expected users?  It seems like it would be a useful thing to include in a paper like this -- effectively some summary of who might use this tool and for what purpose.**
 
 # Mathematical Approach
 `PyTCR` implements a TC rainfall model described in @Zhu:2013 and @Lu:2018 that simulates along-track convective rainfall by relating the precipitation rate to the total upward velocity within the TC vortex. We refer to the study by @Lu:2018 for detailed formulation of this model. Here, for convenience, we give a brief overview of the main rainfall mechanisms used in this model and implemented in `pyTCR`.
@@ -72,7 +73,7 @@ in which $r$ is the radius from the storm center, $\tau_{\theta s}$ is the azimu
 w_h = \mathbf{V} \cdot \nabla h
 \end{equation}
 
-where $h$ is the topographic height and $\mathbf{V}$ is the total horizontal wind velocity given as the vector sum of the storm gradient wind (excluding the radial component) and environmental background wind.
+where $h$ is the topographic height and $\mathbf{V}$ is the total horizontal wind velocity **is this the same as total wind?** given as the vector sum of the storm gradient wind **storm gradient wind or gradient wind** (excluding the radial component) and environmental background wind.
 Third, $w_t$ denotes the vertical wind velocity component arising from time dependence of the storm's vorticity (vortex stretching):
 
 \begin{equation}
@@ -89,11 +90,11 @@ w_s \simeq \frac{g}{c_p(T_s-T_t)(1-\epsilon_p)N^2} V \left(f+\frac{V}{r}+\frac{\
 where $c_p$ is the heat capacity of dry air, $g$ is the acceleration of gravity, $N$ is the buoyancy frequency for dry air, $T_s$ is the surface temperature, $T_t$ is the tropopause temperature, $\mathbf{j}$ is the unit vector pointing radially outward from the storm center, and $\mathbf{V}_e$ is the vector wind shear across the troposphere. Finally, $w_r$ represents wind velocity related to radiative cooling, a process in which heat is lost from the storm system due to infrared radiation emitted by clouds, the storm core, and surrounding environment.
 For the sake of simplicity, it is set as a constant parameter (-0.005 $m/s$) in `pyTCR` .
 
-The inputs to `pyTCR` are the gradient and total wind, wind shear, topography, and saturation specific humidity along the storm track.
+The inputs to `pyTCR` then are the gradient and total wind **add notation**, wind shear $\mathbf{V}_e$, topographic height $h$, and saturation specific humidity $q_s$ along the storm track.
 The TC downscaling model [@Lin:2023] provides `pyTCR` with 3-hourly information on TCs such as track, intensity, and size to calculate these inputs.
-The gradient wind is estimated from analytical wind profile models [@Chavas:2015] based on TC intensity and size.
-The total wind is approximated as the sum of the gradient wind and storm translation.
-The storm-centered specific humidity $q_s$ is calculated from the 600 hPa atmospheric temperature and TC intensity at each time step following @Emanuel:2017.
+The gradient wind is estimated from analytical wind profile models [@Chavas:2015] based on TC intensity and size. **Is this up to the user?  Or does the user provide TC intensity and size, and pyTCR computes gradient wind for you?**
+The total wind is approximated as the sum of the gradient wind and storm translation. **You're a little bit inconcistent in naming these quantities -- "storm gradient wind" vs "gradient wind", "environmental background wind" vs "storm translation" (are these the same?), "total wind" vs "total horizontal wind velocity."  It would help to be precise and always use the exact same names for the same things.  E.g. always use wind velocity if it is a velocity vector.**
+The storm-centered specific humidity $q_s$ is calculated from the 600 hPa atmospheric temperature and TC intensity at each time step following @Emanuel:2017. **How much space would it take to include these equations, and would doing so make the paper self-contained?  It would be nice if the entirety of the equations implemented were included here, but I understand if that's not possible.**
 
 
 # Examples
@@ -112,7 +113,7 @@ These hands-on tutorials are designed for training purpose, guiding users throug
 - Generating single rainfall event within polygons
 - Generating multiple rainfall events within polygons
 
-We briefly present two notebooks in this paper. Users are encouraged to check out other notebooks for learning `pyTCR`.
+We briefly present two notebooks in this paper.
 
 Figure 1 compares the tracks and mean power dissipation index (PDI) of TCs downscaled from the low-resolution outputs of the Exascale Energy Earth Model ver 1.0 [@E3SMv1.0] and ERA5 reanalysis data [@Hersbach:2020] using the TC downscaling model [@Lin:2023] with those obtained from the International Best Track Archive for Climate Stewardship (IBTrACS) observations in the North Atlantic ocean during the historical period (1964-2014).
 The PDI quantifies the total power dissipated annually by all TCs in the ocean basin and is defined as $PDI=\int_0^{\tau}V^3_{max}dt$ [@Emanuel:2005]. Here, $V_{max}$ is the maximum sustained wind speed at the conventional measurement altitude of \mbox{10 $m$}, and $\tau$ is the lifetime of the storm. The PDI captures not only TC frequency, but also duration and intensity.
