@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "pyTCR"
@@ -26,3 +26,10 @@ classifiers = [
     "Operating System :: OS Independent"
 ]
 readme = "README.md"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["tcr", "data"]
+
+[tool.hatch.build.targets.wheel.sources]
+"tcr" = "tcr"
+"data" = "tcr/data"

@@ -10,6 +10,7 @@
 ![](https://img.shields.io/github/forks/levuvietphong/pyTCR)
 ![](https://img.shields.io/github/last-commit/levuvietphong/pyTCR)
 ![](https://img.shields.io/github/v/release/levuvietphong/pyTCR)
+![](https://img.shields.io/github/actions/workflow/status/levuvietphong/pyTCR/CI.yml)
 
 ![](images/Intro-hurricane.gif)
 
@@ -52,7 +53,13 @@ It is recommended to use mamba for a faster and more reliable installation proce
 
 5. Install the PyTCR package:
     ```sh
+    pip install .
+    ```
+    
+    OR, for developers:
+    ```sh
     pip install -e .
+    cd tcr && ln -s ../data
     ```
 
 ## :arrow_forward: Getting Started

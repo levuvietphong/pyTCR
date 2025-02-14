@@ -2,9 +2,11 @@
 Functions for topography and boundary layers in PyTCR
 """
 
+import os
 import math
 import numpy as np
 from tcr import iodata as tcr_io
+from tcr.datadir import DATA_DIR
 
 
 def calculate_distance_to_track(
@@ -185,9 +187,7 @@ def estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlong):
     """
 
     # Load high-resolution bathymetry data
-    bathymetry = tcr_io.load_netcdf_2d_parameters(
-        "../data", "surface_data.nc", "bathymetry_high"
-    )
+    bathymetry = tcr_io.load_netcdf_2d_parameters(DATA_DIR, "surface_data.nc", "bathymetry_high")
     ntopo, _ = np.shape(bathymetry)  # number of grid point in x direction
     topo_resolution = 360 / ntopo
     topo_resolution_inv = 1 / topo_resolution
@@ -246,7 +246,7 @@ def estimate_drag_coefficients(plat, plong, sfac):
     pi_factor = math.pi / 180  # pi number
 
     # Load neutral drag coefficients
-    cd = tcr_io.load_netcdf_2d_parameters("../data", "surface_data.nc", "cdrag")
+    cd = tcr_io.load_netcdf_2d_parameters(DATA_DIR, "surface_data.nc", "cdrag")
 
     # Correct the drag coefficient for gradient wind application
     cd = 0.9 * cd / (1 + 50 * cd)

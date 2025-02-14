@@ -9,7 +9,7 @@ import numpy as np
 from tcr import wind as tcr_wind
 from tcr import terrain_boundary as tcr_tb
 from tcr import iodata as tcr_io
-
+from tcr.datadir import DATA_DIR
 
 def calculate_rainfall_rate(
     nt, latitude, longitude, radius_storm, velocity, radius_storm_secondary,
@@ -412,7 +412,7 @@ def generate_rainfall_point(
 
     # Load high-resolution bathymetry from netcdf
     bathy = tcr_io.load_netcdf_2d_parameters(
-        '../data', 'surface_data.nc', 'bathymetry_high'
+        DATA_DIR, 'surface_data.nc', 'bathymetry_high'
     )
 
     ntopo, _ = np.shape(bathy)

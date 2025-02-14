@@ -10,7 +10,7 @@ import xarray as xr
 import requests
 import shapefile
 from bs4 import BeautifulSoup
-
+from tcr.datadir import DATA_DIR
 
 def convert_to_mps(values, conversion_factor=0.514444):
     """Convert values to meters per second using the given conversion factor."""
@@ -59,7 +59,7 @@ def load_Matlab_data(directory, filename):
         raise RuntimeError(f"An error occurred while loading the Matlab file: {e}") from e
 
 
-def load_netcdf_track_data(data_directory='../data/downscaled/',
+def load_netcdf_track_data(data_directory=os.path.join(DATA_DIR, 'downscaled'),
                            model='E3SM-1-0', basin='NA', expmnt='historical'):
     """
     Load data in NetCDF format from Tropical cyclone downscaling.
@@ -100,8 +100,9 @@ def load_netcdf_track_data(data_directory='../data/downscaled/',
     tc_time : numpy.ndarray
         Array of tropical cyclone times.
     """
+    ncfilename = os.path.join(data_directory, expmnt, f"tracks_{basin}_{model}_*.nc")
     try:
-        ncfile = glob.glob(f"{data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc")[0]
+        ncfile = glob.glob(ncfilename)[0]
         ds = xr.open_dataset(ncfile)
         lat_trks = np.nan_to_num(ds['lat_trks'].values)
         lon_trks = np.nan_to_num(ds['lon_trks'].values)
@@ -114,8 +115,7 @@ def load_netcdf_track_data(data_directory='../data/downscaled/',
         tc_years = np.nan_to_num(ds['tc_years'].values)
         tc_time = np.nan_to_num(ds['time'].values)
     except IndexError as exc:
-        raise FileNotFoundError(f"No files found for the given path: \
-            {data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc") from exc
+        raise FileNotFoundError(f"No files found for the given path: {ncfilename}") from exc
     except KeyError as e:
         raise KeyError(f"Missing expected data in the dataset: {e}") from e
     except Exception as e:
@@ -213,7 +213,7 @@ def load_best_tracks_obs(fname, year_start, year_end):
     return lat_tc, lon_tc, time_tc, ind_tc, name_tc, basin_tc, wind_tc, speed_tc
 
 
-def load_tracks_GCMs(data_directory='../data/downscaled/',
+def load_tracks_GCMs(data_directory=os.path.join(DATA_DIR, 'downscaled'),
                      model='E3SM-1-0', basin='NA', expmnt='historical'):
     """
     Load the downscaled tracks of tropical cyclones from CMIP6 models.
@@ -242,8 +242,9 @@ def load_tracks_GCMs(data_directory='../data/downscaled/',
     vmax_trks : numpy.ndarray
         Maximum wind speeds of tropical cyclones.
     """
+    ncfilename = os.path.join(data_directory, expmnt, f"tracks_{basin}_{model}_*.nc")
     try:
-        ncfile = glob.glob(f"{data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc")[0]
+        ncfile = glob.glob(ncfilename)[0]
         ds = xr.open_dataset(ncfile)
         lon_trks = ds['lon_trks'].values
         lat_trks = ds['lat_trks'].values
@@ -251,7 +252,7 @@ def load_tracks_GCMs(data_directory='../data/downscaled/',
         year_trks = ds['year'].values
         id_trks = ds['n_trk'].values
     except IndexError as exc:
-        raise FileNotFoundError(f"No files found for the given path: {data_directory}/{expmnt}/tracks_{basin}_{model}_*.nc") from exc
+        raise FileNotFoundError(f"No files found for the given path: {ncfilename}") from exc
     except KeyError as e:
         raise KeyError(f"Missing expected data in the dataset: {e}") from e
     except Exception as e:
@@ -315,7 +316,7 @@ def download_tracks_data_cmip6(
     url="https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks/",
     experiments=None,
     models=None,
-    target_directory="../data/downscaled/",
+    target_directory=os.path.join(DATA_DIR, "downscaled"),
 ):
     """
     Download the downscaled tropical cyclone tracks from CMIP6 models.
@@ -341,7 +342,7 @@ def download_tracks_data_cmip6(
     for experiment in experiments:
         for model in models:
             # Create a local directory to save the downloaded files
-            os.makedirs(f'{target_directory}/{experiment}', exist_ok=True)
+            os.makedirs(os.path.join(target_directory, experiment), exist_ok=True)
 
             # Get the list of netcdf files in the folder
             response = requests.get(f'{url}/{experiment}/{model}/', timeout=10)
@@ -358,7 +359,7 @@ def download_tracks_data_cmip6(
             for link in links:
                 href = link.get('href')
                 if href.endswith('.nc'):
-                    file_path = f'{target_directory}/{experiment}/{href}'
+                    file_path = os.path.join(target_directory, experiment, href)
                     if os.path.exists(file_path):
                         print(f"File {href} already exists. Skipping download.")
                         continue
