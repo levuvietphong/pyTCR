@@ -129,7 +129,7 @@ Overall, the results suggest that TCs downscaled from E3SM is able to reproduce 
 
 ![(Top) Tracks of 200 TCs in the North Atlantic. Color lines indicates wind speed and TC tracks that landfall in Texas.(Bottom) Mean power dissipation index (PDI) per $2^{\circ} \times 2^{\circ}$ box per year. Plot was generated using the notebook `ex1_tropical_cyclone_tracks.ipynb` in the repository.\label{fig1}](Fig1.png)
 
-Along each TC track from the downscaling model, `pyTCR` stochastically can generate time series and spatial patterns of rainfall events.
+Along each TC track from the downscaling model, `pyTCR` stochastically generate time series and spatial patterns of rainfall events.
 Figure 2 illustrates the spatial distribution of total rainfall along a TC track in North Atlantic Ocean. 
 The TC originates in the central Atlantic (25$^\circ$N, 60$^\circ$W) and generally moves westward before making landfall in the United States.
 Rainfall intensity increases significantly upon landfall in Texas compared to its intensity over the ocean.
