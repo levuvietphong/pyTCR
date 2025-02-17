@@ -106,7 +106,7 @@ The inputs to the TC rainfall model then are the gradient wind $V$, total horizo
 # Examples
 
 `pyTCR` generates and provides access to a large set of synthetic rainfall events based on TC tracks.
-To demonstrate its use, the repository includes downscaled TC datasets for the North Atlantic Ocean, derived from 26 CMIP6 models (historical and ssp585 experiments) and ERA5 reanalysis data [@Hersbach:2020] using the model developed by @Lin:2023. These datasets, stored in the Texas Advanced Computing Center (TACC) Corral storage [@CorralTACCHPC], provide TC track and intensity information required as inputs for `pyTCR`. For downscaling TCs in other ocean basins, users are referred to @Lin:2023 for further details.
+To demonstrate its use, the repository includes downscaled TC datasets for the North Atlantic Ocean (NAO), derived from 26 CMIP6 models (historical and ssp585 experiments) and ERA5 reanalysis data [@Hersbach:2020] using the model developed by @Lin:2023. These datasets, stored in the Texas Advanced Computing Center (TACC) Corral storage [@CorralTACCHPC], provide TC track and intensity information required as inputs for `pyTCR`. For downscaling TCs in other ocean basins, users are referred to @Lin:2023 for further details.
 We note that `pyTCR` is not restricted to this datasets and can seamlessly integrate outputs from any other TC downscaling model.
 
 To help users get started, we provide six example `Jupyter` notebooks.
@@ -121,19 +121,15 @@ These hands-on tutorials are designed for training purpose, guiding users throug
 
 We briefly present two notebooks in this paper.
 
-Figure 1 compares the tracks and mean power dissipation index (PDI) of TCs downscaled from the low-resolution outputs of the Exascale Energy Earth Model ver 1.0 [@E3SMv1.0] and ERA5 reanalysis data [@Hersbach:2020] using the TC downscaling model [@Lin:2023] with those obtained from the International Best Track Archive for Climate Stewardship (IBTrACS) observations in the North Atlantic ocean during the historical period (1964-2014).
+Figure 1 compares the tracks and mean power dissipation index (PDI) of TCs downscaled from the low-resolution outputs of the Exascale Energy Earth Model ver 1.0 [@E3SMv1.0] and ERA5 reanalysis data [@Hersbach:2020] using the TC downscaling model [@Lin:2023] with those obtained from the International Best Track Archive for Climate Stewardship (IBTrACS) observations in the NAO during the historical period (1964-2014).
 The PDI quantifies the total power dissipated annually by all TCs in the ocean basin and is defined as $PDI=\int_0^{\tau}V^3_{max}dt$ [@Emanuel:2005]. Here, $V_{max}$ is the maximum sustained wind speed at the conventional measurement altitude of \mbox{10 $m$}, and $\tau$ is the lifetime of the storm. The PDI captures not only TC frequency, but also duration and intensity.
-Overall, the results suggest that TCs downscaled from E3SM is able to reproduce key aspects of TC behavior in the North Atlantic over the historical period. However, the PDI maps indicate that E3SM-downscaled TCs tend to underestimate storm activity near the tropical eastern Atlantic region.
+Overall, the results suggest that TCs downscaled from E3SM is able to reproduce key aspects of TC behavior in the NAO over the historical period. However, the PDI maps indicate that E3SM-downscaled TCs tend to underestimate storm activity near the tropical eastern Atlantic region.
 
 <!-- It highlights the ability of the TC downscaling model to reasonably reproduce the general behavior of TC observed over the past period, providing confidence for analyzing TC patterns in the future climate. -->
 
-![(Top) Tracks of 200 TCs in the North Atlantic. Color lines indicates wind speed and TC tracks that landfall in Texas.(Bottom) Mean power dissipation index (PDI) per $2^{\circ} \times 2^{\circ}$ box per year. Plot was generated using the notebook `ex1_tropical_cyclone_tracks.ipynb` in the repository.\label{fig1}](Fig1.png)
+![(Top) Tracks of 200 example TCs in the North Atlantic. Color lines indicates wind speed and TC tracks that landfall in Texas.(Bottom) Mean power dissipation index (PDI) per $2^{\circ} \times 2^{\circ}$ box per year. Plot was generated using the notebook `ex1_tropical_cyclone_tracks.ipynb` in the repository.\label{fig1}](Fig1.png)
 
-Along each TC track from the downscaling model, `pyTCR` stochastically generate time series and spatial patterns of rainfall events.
-Figure 2 illustrates the spatial distribution of total rainfall along a TC track in North Atlantic Ocean. 
-The TC originates in the central Atlantic (25$^\circ$N, 60$^\circ$W) and generally moves westward before making landfall in the United States.
-Rainfall intensity increases significantly upon landfall in Texas compared to its intensity over the ocean.
-Time series of rainfall at any domain influenced by the TCs can be easily extracted in `pyTCR` for other analyses.
+Along each TC track from the downscaling model, `pyTCR` can generate time series and spatial patterns of rainfall events. Figure 2 illustrates the spatial distribution of total rainfall along a TC track in NAO. The TC originates in the central Atlantic (25$^\circ$N, 60$^\circ$W) and generally moves westward before making landfall in the United States. Rainfall intensity increases significantly upon landfall in Texas compared to its intensity over the ocean. Time series of rainfall at any domain influenced by the TCs can be easily extracted in `pyTCR` for other analyses.
 
 ![Illustration of the spatial distribution of total rainfall generated for a particular TC track that makes landfall on Texas, USA. Plot was generated using the notebook `ex2_rainfall_generation.ipynb` in the repository\label{fig2}](Fig2.png){width=90%}
 
