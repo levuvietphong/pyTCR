@@ -128,46 +128,45 @@ def plot_density(ax, lat, lon, density, levels, extent=None, projection=None,
     Parameters:
     -----------
     ax : matplotlib.axes.Axes
-        The axis on which to plot the density map.
+        The axis on which to plot the density map
     lat : array-like
-        Latitude coordinates of the tropical cyclone tracks.
+        Latitude coordinates of the tropical cyclone tracks (degree)
     lon : array-like
-        Longitude coordinates of the tropical cyclone tracks.
+        Longitude coordinates of the tropical cyclone tracks (degree)
     density : 2D array-like
-        Density values corresponding to the latitude and longitude grid.
+        Density values corresponding to the latitude and longitude grid
     levels : array-like
-        Contour levels for plotting density.
+        Contour levels for plotting density
     extent : tuple, optional
-        Bounding box and spacing in data coordinates (left, right, bottom,
-        top). Defines the spatial extent of the map. Default is None.
+        Bounding box and spacing in data coordinates (left, right, bottom, top)
+        Defines the spatial extent of the map, default is None
     projection : str or Cartopy projection, optional
-        The projection to use for the map. Default is None, which implies a
-        PlateCarree projection.
+        The projection to use for the map
+        Default is None, which implies a PlateCarree projection.
     alpha : float, optional
-        Transparency level of the density plot. Default is 1.0.
+        Transparency level of the density plot, default is 1.0
     cmap : str or Colormap, optional
-        Colormap to use for visualizing density values. Default is 'viridis'.
+        Colormap to use for visualizing density values, default is 'viridis'
     logscale : bool, optional
-        Whether to use a logarithmic scale for density values. Default is
-        False.
+        Whether to use a logarithmic scale for density values, default is False
     gridlabel : bool, optional
-        Whether to display grid labels on the map. Default is False.
+        Whether to display grid labels on the map, default is False
     gridspace : int, optional
-        The spacing between gridlines. Default is 10.
+        The spacing between gridlines, default is 10
     coastlines : bool, optional
-        Whether to display coastlines on the map. Default is True.
+        Whether to display coastlines on the map, default is True
     add_features : bool, optional
-        Whether to add additional features to the map. Default is True.
+        Whether to add additional features to the map, default is True
     shapefile : str or shapefile-like object, optional
-        A shapefile to overlay on the map. Default is None.
+        A shapefile to overlay on the map, default is None
     title : str, optional
-        Title of the plot. Default is None.
+        Title of the plot, default is None
     title_ypos : float, optional
-        Y-coordinate for the title position. Default is 1.0.
+        Y-coordinate for the title position, default is 1.0
     title_fontcolor : str, optional
-        Color of the plot title. Default is 'k'.
+        Color of the plot title, default is 'k'
     title_fontstyle : str, optional
-        Font style of the plot title. Default is 'regular'.
+        Font style of the plot title, default is 'regular'
     """
 
     # Format the map
@@ -219,20 +218,21 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
     ax : matplotlib.axes.Axes
         The axis on which to plot the tracks.
     lats : array-like
-        Latitude data for the tracks.
+        Latitude data for the tracks (degrees).
     lons : array-like
-        Longitude data for the tracks.
+        Longitude data for the tracks (degrees).
     vmaxs : array-like
-        Maximum wind speeds associated with the tracks.
+        Maximum wind speeds associated with the tracks (m/s).
     track_inds : array-like
         Indices of the tropical cyclone tracks to plot.
     interval : int, optional
         Interval of track indices to plot. Default is 1.
     wind_speed_threshold : float, optional
-        Minimum wind speed required to plot a track. Default is 0.
+        Minimum wind speed required to plot a track (m/s).
     extent : tuple, optional
-        Bounding box and spacing in data coordinates (left, right, bottom, top,
-        dx, dy). Defines the spatial extent of the map. Default is None.
+        Bounding box and spacing (degree) in data coordinates
+        (left, right, bottom, top, dx, dy). Defines the spatial extent of the map.
+        Default is None.
     projection : str, optional
         Projection to use for the map.  Default is None, which implies a
         PlateCarree projection.
@@ -364,15 +364,15 @@ def get_tracks_landfall_region(lat_tracks, lon_tracks, polygon, buffer=0,
     Parameters:
     -----------
     lat_tracks : numpy.ndarray
-        2D array of latitudes for each track [num_tracks, num_points].
+        2D array of latitudes (degrees) for each track [num_tracks, num_points]
     lon_tracks : numpy.ndarray
-        2D array of longitudes for each track [num_tracks, num_points].
+        2D array of longitudes (degrees) for each track [num_tracks, num_points]
     num_tracks : int
-        Number of tracks to sample and check for landfall.
+        Number of tracks to sample and check for landfall
     buffer : float, optional
-        Buffer distance around the polygon (degrees). Default is 0.
+        Buffer distance around the polygon (degrees)
     polygon : shapely.geometry.Polygon
-        Polygon representing the region to check for landfall.
+        Polygon representing the region to check for landfall
 
     Returns:
     --------
@@ -451,16 +451,16 @@ def create_buffer_around_POI(lat_poi, lon_poi, radius=1.0):
     Parameters:
     -----------
     lat_poi : float
-        Latitude of the Point of Interest.
+        Latitude of the Point of Interest (degree)
     lon_poi : float
-        Longitude of the Point of Interest.
+        Longitude of the Point of Interest (degree)
     radius : float, optional
-        Radius of the buffer zone in degrees. Default is 1.0.
+        Radius of the buffer zone in degrees, default is 1.0
 
     Returns:
     --------
     Polygon
-        A Polygon object representing the buffer zone around the POI.
+        A Polygon object representing the buffer zone around the POI
     """
     if radius <= 0:
         raise ValueError("Radius must be a positive number.")

@@ -25,67 +25,67 @@ def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
     Parameters:
     -----------
     utf, vtf : array-like
-        West-east and storm translation velocity.
+        West-east and storm translation velocity (m/s)
     vf : array-like
-        Maximum circular wind speed at each 2-hour point along each track.
+        Maximum circular wind speed at each 2-hour point along each track (knots)
     rf : array-like
-        Euclidean distance from each track.
+        Euclidean distance from each track (km)
     rmf : array-like
-        Radius (km) of maximum circular wind of 2-hour points along each track.
+        Radius of maximum circular wind of 2-hour points along each track (km)
     vsef : array-like
         Maximum circular wind speed of any secondary eyewalls that may be
-        present at each 2-hour point along each track.
+        present at each 2-hour point along each track (knots)
     rmsef : array-like
-        Radius (km) of maximum circular wind of any secondary wind maxima of
-        2-hour points along each track.
+        Radius of maximum circular wind of any secondary wind maxima of
+        2-hour points along each track (km) 
     latf : array-like
-        Latitude factor.
+        Latitude of points (degree)
     nn, jf, sx, sy : int
-        Dimensions of the input arrays.
+        Dimensions of the input arrays
     h, hx, hy : array-like
-        Topographic heights and their derivatives in x and y.
+        Topographic heights (m) and their derivatives in x and y
     cdrag : array-like
-        Drag coefficient.
+        Drag coefficient
     hf, hxf, hyf : array-like
-        Topographic heights and their derivatives in x and y for the fine grid.
+        Topographic heights (m) and their derivatives in x and y for the fine grid
     cdf, cdx, cdxf, cdy, cdyf : array-like
-        Drag coefficients and their derivatives.
+        Drag coefficients and their derivatives
     Hi, Htrop : float
-        Depth of the lower troposphere in meters and its inverse.
+        Depth of the lower troposphere (m) and its inverse
     omega : float
-        Earth angular velocity parameter.
+        Earth angular velocity parameter (rad/s)
     pifac : float
-        Pi factor.
+        Pi factor
     deltar, deltari : float
-        Delta radius in kilometers and its inverse.
+        Delta radius (km) and its inverse
     knotfac : float
-        Conversion factor from knots to meters per second.
+        Conversion factor from knots to m/s
     latfac : float
-        Latitude factor.
+        Latitude factor
     timereswi : float
-        Inverse of the native time resolution of WRT output in kilometers.
+        Inverse of the native time resolution of WRT output in kilometers
     costhetaf, sinthetaf : array-like
         Cosine and sine of the angle between the storm translation velocity and
-        the wind direction.
+        the wind direction
     thresM : float
-        Threshold for the gradient wind.
+        Threshold for the gradient wind
     wprofile : array-like
-        Wind profile parameter.
+        Wind profile parameter
     adj_water : bool, optional
-        Adjust for roughness changes over water (default is False).
+        Adjust for roughness changes over water (default is False)
 
     Returns:
     --------
     w : array-like
-        Vertical velocity.
+        Vertical velocity (m/s)
     cp : array-like
-        Coriolis parameter.
+        Coriolis parameter (1/s)
     V, Vd, Vrp, Vrm : array-like
-        Wind profiles.
+        Wind profiles (knots)
     u1temp, u2temp : array-like
-        Temporary variables for wind calculations.
+        Temporary variables for wind calculations
     Cdp, Cdm : array-like
-        Drag coefficients.
+        Drag coefficients
     """
 
     # Initialize arrays
@@ -122,7 +122,7 @@ def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
     Vrm[:, :, :, :] = windprofiles(
         vf[:, :, :, :], rmf[:, :, :, :], np.maximum(rf[:, :, :, :] - deltar, 0), wprofile)
 
-    # Convert to meters per second
+    # Convert knot to m/s
     V = knotfac * V
     Vd = knotfac * Vd
     Vpp = knotfac * Vpp
@@ -228,48 +228,48 @@ def calculate_wind_secondary(rf, vsef, rmsef, latf, nn, jf, sx, sy, Hi, Htrop,
     Parameters:
     -----------
     rf : array-like
-        Euclidean distance from each track.
+        Euclidean distance from each track (km)
     vsef : array-like
-        Maximum circular wind speed of any secondary eyewalls.
+        Maximum circular wind speed of any secondary eyewalls (knots)
     rmsef : array-like
-        Radius of maximum circular wind of any secondary wind maxima.
+        Radius of maximum circular wind of any secondary wind maxima (km)
     latf : array-like
-        Latitude factor.
+        Latitude of points (degree)
     nn, jf, sx, sy : int
         Dimensions of the input arrays.
     Hi : float
-        Inverse of the depth of the lower troposphere.
+        Inverse of the depth of the lower troposphere (1/m)
     Htrop : float
-        Depth of the lower troposphere in meters.
+        Depth of the lower troposphere (m)
     omega : float
-        Earth angular velocity parameter.
+        Earth angular velocity parameter (rad/s)
     pifac : float
-        Pi factor.
+        Pi factor
     deltar : float
-        Delta radius in kilometers.
+        Delta radius (km)
     deltari : float
-        Inverse of delta radius.
+        Inverse of delta radius
     knotfac : float
-        Conversion factor from knots to meters per second.
+        Conversion factor from knots to m/s
     latfac : float
-        Latitude factor.
+        Latitude factor
     timereswi : float
-        Inverse of the native time resolution of WRT output.
+        Inverse of the native time resolution of WRT output
     u1temp, u2temp : array-like
-        Temporary variables for wind calculations.
+        Temporary variables for wind calculations
     Cdp, Cdm : array-like
-        Drag coefficients.
+        Drag coefficients
     wprofile : int
-        Wind profile parameter.
+        Wind profile parameter
 
     Returns:
     --------
     w2 : array-like
-        Vertical velocity for secondary eyewalls.
+        Vertical velocity for secondary eyewalls (m/s)
     cp : array-like
-        Coriolis parameter.
+        Coriolis parameter (1/s)
     V, Vrp, Vrm : array-like
-        Wind profiles for secondary eyewalls.
+        Wind profiles for secondary eyewalls (knots)
     """
 
     # Initialize arrays
@@ -391,22 +391,22 @@ def windprofiles(vm, rm, r, wp, vm2=None, rm2=None, opt=True):
     Parameters:
     -----------
     vm : float
-        Maximum circular wind speed (knots).
+        Maximum circular wind speed (knots)
     rm : float
-        Radius of maximum wind (km).
+        Radius of maximum wind (km)
     r : float
-        Distance of each event from the point of interest (POI) (km).
-    wp : float
-        Wind profile shape parameter, used to adjust the wind decay rate.
+        Distance of each event from the point of interest (POI) (km)
+    wp : int
+        Wind profile shape parameter, used to adjust the wind decay rate
     vm2 : float, optional
-        Secondary maximum circular wind speed (knots), if a secondary eyewall
-        is present. Default is 0, indicating no secondary eyewall.
+        Secondary maximum circular wind speed (knots), if a secondary eyewall is present
+        Default is 0, indicating no secondary eyewall
     rm2 : float, optional
-        Secondary radius of maximum wind (km). Default is 0, indicating no
-        secondary eyewall.
+        Secondary radius of maximum wind (km)
+        Default is 0, indicating no secondary eyewall
     opt : bool, optional
         Option to include additional scaling for the Emanuel wind profile
-        (default is True).
+        Default is True
 
     Returns:
     --------
@@ -579,9 +579,9 @@ def get_translation_speeds(latitude, longitude):
     Returns:
     --------
     ut : array-like, shape (n, m)
-        West-east component of the storm translation velocity.
+        West-east component of the storm translation velocity (knots).
     vt : array-like, shape (n, m)
-        North-south component of the storm translation velocity.
+        North-south component of the storm translation velocity (knots).
     jmax : array-like, shape (n,)
         Time length of each event.
     """
@@ -651,28 +651,28 @@ def get_translation_speeds_full(lats, longs, vs=None, u850=None, v850=None):
     Parameters:
     -----------
     lats : array-like
-        Latitude values along the storm track.
+        Latitude values along the storm track (degree)
     longs : array-like
-        Longitude values along the storm track.
+        Longitude values along the storm track (degree)
     vs : array-like, optional
-        Circular wind speed values along the storm track.
+        Circular wind speed values along the storm track
     u850 : array-like, optional
-        Zonal component of the environmental 850 hPa wind.
+        Zonal component of the environmental 850 hPa wind (knots)
     v850 : array-like, optional
-        Meridional component of the environmental 850 hPa wind.
+        Meridional component of the environmental 850 hPa wind (knots)
 
     Returns:
     --------
     ut : array-like
-        Zonal translation velocity.
+        Zonal translation velocity (knots)
     vt : array-like
-        Meridional translation velocity.
+        Meridional translation velocity (knots)
     uinc : array-like
-        Corrected zonal wind speed.
+        Corrected zonal wind speed (knots)
     vinc : array-like
-        Corrected meridional wind speed.
+        Corrected meridional wind speed (knots)
     """
-    # Calculate translation velocity
+    # Calculate translation velocity (knots)
     ut, vt, _ = get_translation_speeds(lats, longs)
 
     # Add latitude-dependent fraction of translation speed to circular wind
@@ -682,6 +682,7 @@ def get_translation_speeds_full(lats, longs, vs=None, u850=None, v850=None):
 
     # If env 850 hPa wind available, add baroclinic factor to wind speed
     if u850 is not None and v850 is not None:
+        # convert from m/s to knots
         udrift = -0.9 * 3600 / 1852
         vdrift = 1.4 * 3600 / 1852
         vdrift = vdrift * lats / (np.abs(lats) + 1e-8)
@@ -690,7 +691,7 @@ def get_translation_speeds_full(lats, longs, vs=None, u850=None, v850=None):
         uinc += 0.5 * (ut - udrift - u850) * (vs / 15)
         vinc += 0.5 * (vt - vdrift - v850) * (vs / 15)
 
-    # Do not allow wind speed increments to exceed circular gradient wind
+    # Wind speed increments is not allowed to exceed circular gradient wind
     if vs is not None:
         ufrac = vs / (0.1 + np.abs(uinc))
         ufrac = np.minimum(ufrac, 1)
@@ -714,39 +715,37 @@ def calculate_upward_velocity_field(
     Parameters:
     -----------
     latitude, longitude : array-like
-        Latitude and longitude of points along each track.
+        Latitude and longitude of points along each track (degree)
     velocity : array-like
-        Maximum circular wind speed along each track.
+        Maximum circular wind speed along each track (knots)
     velocity_secondary : array-like
-        Maximum circular wind speed of any secondary eyewalls along each track.
+        Maximum circular wind speed of any secondary eyewalls along each track (knots)
     radius_storm : array-like
-        Radius (km) of maximum circular wind along each track.
+        Radius of maximum circular wind along each track (km)
     radius_storm_secondary : array-like
-        Radius (km) of maximum circular wind of any secondary wind maxima
-        along each track.
+        Radius of maximum circular wind of any secondary wind maxima along each track (km)
     ut, vt : array-like
-        West-east and north-south components of the storm translation velocity.
+        West-east and north-south components of the storm translation velocity (knots)
     us, vs : array-like
-        Vertical shears (m/s) used to estimate the baroclinic components of
-        the vertical motion.
+        Vertical shears used to estimate the baroclinic components of the vertical motion (m/s)
     h, hx, hy : array-like
-        Topographic heights and their derivatives in x and y.
+        Topographic heights (m) and their derivatives in x and y.
     deltar : float, optional
-        Delta radius for calculating dM/dr (default is 2 km).
+        Delta radius (km) for calculating dM/dr, default is 2
     timeresw : float, optional
-        Native time resolution of WRT output (default is 2 hours).
+        Native time resolution (hr) of WRT output, default is 2
     Htrop : float, optional
-        Depth of the lower troposphere in meters (default is 4000 m).
+        Depth of the lower troposphere (m), default is 4000
     radcity : float, optional
-        Distance from point of interest beyond which storm influence is
-        ignored (default is 300 km).
+        Distance from point of interest (km) beyond which storm influence is
+        ignored, default is 300
     wprofile : int, optional
-        Wind profile parameter (default is 3).
+        Wind profile parameter, default is 3
 
     Returns:
     --------
     w : array-like
-        Spatial distribution of vertical velocity centered at plong, plat.
+        Spatial distribution of vertical velocity (m/s) centered at plong, plat
     """
 
     se = np.max(velocity_secondary)
@@ -765,10 +764,12 @@ def calculate_upward_velocity_field(
 
     pifac = math.pi / 180
     dfac = 60 * 1.852
+
+    # scale factor converting nautical miles to meters (using 0.25 degree resolution).
     sfac = 1 / (0.25 * 60 * 1852)
-    knotfac = 1852. / 3600
-    ut = ut * knotfac
-    vt = vt * knotfac
+    knotfac = 1852. / 3600  # convert knots to m/s (1 knots = 0.5144 m/s)
+    ut = ut * knotfac   # convert to m/s
+    vt = vt * knotfac   # convert to m/s
     omega = math.pi / (6 * 3600)
     latfac = (latitude[0] / (abs(latitude[0]) + 1e-8) if latitude.ndim == 1
               else latitude[0, 0] / (abs(latitude[0, 0]) + 1e-8))
@@ -830,10 +831,8 @@ def calculate_upward_velocity_field(
         w = np.maximum(w, w2)
 
     # Include shear dotted with storm entropy
-    hxmod = -0.0005 * (cp + 2 * V / (0.1 + rfull) +
-                       deltari * (Vrp - Vrm)) * vsfull
-    hymod = 0.0005 * (cp + 2 * V / (0.1 + rfull) +
-                      deltari * (Vrp - Vrm)) * usfull
+    hxmod = -0.0005 * (cp + 2 * V / (0.1 + rfull) + deltari * (Vrp - Vrm)) * vsfull
+    hymod = 0.0005 * (cp + 2 * V / (0.1 + rfull) + deltari * (Vrp - Vrm)) * usfull
     ufunc = np.clip((radcity - rfull) / 50, 0, 1)
     utfull *= ufunc
     vtfull *= ufunc
@@ -861,36 +860,36 @@ def calculate_wind_time_series(latitude, longitude, velocity, radius_storm,
     Parameters:
     -----------
     latitude : array-like
-        Latitudes along each track.
+        Latitudes along each track (degree)
     longitude : array-like
-        Longitudes along each track.
+        Longitudes along each track (degree)
     velocity : array-like
-        Maximum circular wind speed along each track.
+        Maximum circular wind speed along each track (knots)
     radius_storm : array-like
-        Radius (km) of maximum circular wind along each track.
+        Radius (km) of maximum circular wind along each track (km)
     velocity_secondary : array-like
-        Maximum circular wind speed of any secondary eyewalls present.
+        Maximum circular wind speed of any secondary eyewalls present (knots)
     radius_storm_secondary : array-like
-        Radius (km) of maximum circular wind of any secondary eyewalls.
+        Radius (km) of maximum circular wind of any secondary eyewalls (km)
     ut : array-like
-        West-east component of the storm translation velocity.
+        West-east component of the storm translation velocity (knots)
     vt : array-like
-        North-south component of the storm translation velocity.
+        North-south component of the storm translation velocity (knots)
     plat : array-like
-        Latitudes of points of interest.
+        Latitudes of points of interest (degree)
     plong : array-like
-        Longitudes of points of interest.
+        Longitudes of points of interest (degree)
     timeres : float
-        Time resolution.
+        Time resolution (hr)
     timelength : int, optional
-        Length of the time series at fixed points (default is 96).
+        Length of the time series at fixed points (default is 96)
     wheight : float, optional
-        Altitude above local terrain to estimate surface winds (default is 30).
+        Altitude above local terrain to estimate surface winds (default is 30 m)
     wprofile : int, optional
-        Wind profile parameter (default is 3).
+        Wind profile parameter (default is 3)
     radcity : int, optional
-        Distance from point of interest beyond which storm influence is ignored
-        (default is 300).
+        Distance from point of interest beyond which storm influence is ignored (km)
+        Default is 300
 
     Returns:
     --------
@@ -1063,54 +1062,56 @@ def calculate_upward_velocity_time_series(
     Parameters:
     -----------
     latitude : array-like
-        Latitudes along each track.
+        Latitudes along each track
     longitude : array-like
-        Longitudes along each track.
-    date_records : array-like
-        Dates corresponding to each track point.
-    dq : array-like
-        Rain rate data.
+        Longitudes along each track
     velocity : array-like
-        Maximum circular wind along each track.
+        Maximum circular wind along each track (m/s)
     radius_storm : array-like
-        Radius (km) of maximum circular wind along each track.
+        Radius of maximum circular wind along each track (km)
     velocity_secondary : array-like
-        Maximum circular wind of any secondary eyewalls that may be present.
+        Maximum circular wind of any secondary eyewalls that may be present (m/s)
     radius_storm_secondary : array-like
-        Radius (km) of maximum circular wind of any secondary eyewalls.
+        Radius of maximum circular wind of any secondary eyewalls (km)
     ut : array-like
-        West-east component of the storm translation velocity.
+        West-east component of the storm translation velocity (knots)
     vt : array-like
-        North-south component of the storm translation velocity.
+        North-south component of the storm translation velocity (knots)
     us : array-like
-        Vertical shear in the west-east direction (m/s).
+        Vertical shear in the west-east direction (m/s)
     vs : array-like
-        Vertical shear in the north-south direction (m/s).
+        Vertical shear in the north-south direction (m/s)
     plat : array-like
-        Latitudes of POI.
+        Latitudes of POI (degree)
     plong : array-like
-        Longitudes of POI.
+        Longitudes of POI (degree)
     h : array-like
-        Topographic heights.
+        Topographic heights (m)
     hx : array-like
-        Gradients of topographic heights in the x direction.
+        Gradients of topographic heights in the x direction (-)
     hy : array-like
-        Gradients of topographic heights in the y direction.
+        Gradients of topographic heights in the y direction (-)
     timeres : float
-        Time resolution in hours.
+        Temporal resolution (hour)
+    date_records : array-like
+        Dates corresponding to each track point
+    dq : array-like
+        Saturation specific humidity at 900 hPa (g/kg)
     wrad : float
-        Background subsidence velocity under radiative cooling.
+        Background subsidence velocity under radiative cooling
     deltar : float, optional
-        Delta radius for calculating dM/dr (km). Default is 2.
+        Delta radius for calculating dM/dr (km). Default is 2
     timelength : int, optional
-        Length of time series at fixed points (hours). Default is 96.
+        Length of time series at fixed points (hours)
+        Default is 96
     Htrop : float, optional
-        Depth of lower troposphere (m). Default is 4000.
+        Depth of lower troposphere (m). Default is 4000
     wprofile : int, optional
-        Wind profile (1=Holland, 2=Emanuel, 3=Emanuel & Rotunno 2011). Default is 3.
+        Wind profile (1=Holland, 2=Emanuel, 3=Emanuel & Rotunno 2011)
+        Default is 3
     radcity : int, optional
-        Distance from point of interest beyond which storm influence is ignored (km).
-        Default is 300.
+        Distance from point of interest beyond which storm influence is ignored (km)
+        Default is 300
 
     Returns:
     --------
@@ -1324,15 +1325,15 @@ def calculate_upward_velocity_time_series(
     )
     w = np.minimum(w, 7)
 
-    # Add radiative cooling. If w-wrad is negative (downward motion): wp = 0
+    # Add radiative cooling. If w+wrad is negative (downward motion): wp = 0
     if date_records is not None:
-        wq = dqfine * np.maximum(w - wrad, 0)
+        wq = dqfine * np.maximum(w + wrad, 0)
         return wq, date_record
     else:
         return w
 
 
-def integrate_outer_wind_profile(vm, fc, ro, wc, CD, q):
+def integrate_outer_wind_profile(vm, fc, ro, wc, Cd, q):
     """
     Numerically integrates the outer wind profile from a simple ordinary
     differential equation (ODE).
@@ -1340,14 +1341,14 @@ def integrate_outer_wind_profile(vm, fc, ro, wc, CD, q):
     Parameters:
     ----------
     vm : float
-        Maximum wind speed (m/s).
+        Maximum wind speed (m/s)
     fc : float
-        Coriolis parameter (s^-1).
+        Coriolis parameter (s^-1)
     ro : float
-        Outer radius (km).
+        Outer radius (km)
     wc : float
-        Radiative subsidence rate (mm/s).
-    CD : float
+        Radiative subsidence rate (mm/s)
+    Cd : float
         Drag coefficient.
     q : int
         Number of radial points.
@@ -1355,11 +1356,11 @@ def integrate_outer_wind_profile(vm, fc, ro, wc, CD, q):
     Returns:
     -------
     v : array of float
-        Potential intensity (m/s) at each radial point.
+        Potential intensity at each radial point (m/s)
     r : array of float
-        Radius at each radial point (km).
+        Radius at each radial point (km)
     imin : int
-        Minimum index for which v and r are defined.
+        Minimum index for which v and r are defined
     """
 
     # Asselin filter coefficient
@@ -1368,7 +1369,7 @@ def integrate_outer_wind_profile(vm, fc, ro, wc, CD, q):
     # Convert units
     ro *= 1000.0  # Convert to meters
     wc *= 0.001   # Convert to m/s
-    chi = CD * fc * ro / wc  # Definition of chi
+    chi = Cd * fc * ro / wc  # Definition of chi
     rdim = vm / fc
     rond = ro / rdim
     dr = rond / (q - 2)
@@ -1411,32 +1412,31 @@ def integrate_outer_wind_profile(vm, fc, ro, wc, CD, q):
 
 
 def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
-                         data_directory=os.path.join(DATA_DIR, 'downscaled'), model=None,
-                         basin=None, expmnt=None, force_recompute=False):
+                         data_directory=os.path.join(DATA_DIR, 'downscaled'),
+                         model=None, basin=None, expmnt=None, force_recompute=False):
     """
-    Estimate the radius of maximum circular wind from maximum circular
-    wind speed.
+    Estimate the radius of maximum circular wind from maximum circular wind speed.
 
     Parameters:
     -----------
     ds : xarray.Dataset
-        Dataset containing the data.
+        Dataset containing the data
     lat_tracks : np.ndarray
-        Latitude (degrees) for the wind tracks.
+        Latitude for the wind tracks (degree)
     vmax_tracks : np.ndarray
-        Maximum circular wind speed (m/s).
+        Maximum wind or intensity (m/s)
     id_tracks : np.ndarray
-        IDs of the TC tracks.
+        IDs of the TC tracks
     data_directory : str
-        Folder containing the dataset.
+        Folder containing the dataset
     model : str, optional
         Model name.
     basin : str, optional
         Basin name.
     expmnt : str, optional
-        Experiment name.
+        Experiment name
     force_recompute : bool, optional
-        If True, force recomputation of the radius of maximum circular wind.
+        If True, force recomputation of the radius of maximum circular wind
 
     Returns:
     --------
@@ -1488,18 +1488,18 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
 
 def smooth_2d_array(x, nz, jmin, jmax):
     """
-    Apply a 1-2-1 smoothing filter to a 2D array.
+    Apply a 1-2-1 smoothing filter to a 2D array
 
     Parameters:
     -----------
     x : numpy.ndarray
-        Input 2D array to be smoothed.
+        Input 2D array to be smoothed
     nz : int
-        Number of rows in the 2D array.
+        Number of rows in the 2D array
     jmin : int
-        Minimum column index to start smoothing.
+        Minimum column index to start smoothing
     jmax : int
-        Maximum column index to end smoothing.
+        Maximum column index to end smoothing
 
     Returns:
     --------
@@ -1525,55 +1525,53 @@ def calculate_wind_swath(
     deltax=5, deltay=4, dellatlongs=0.15, timeres=2
 ):
     """
-    Calculate the distribution of maximum point wind speed (knots) for a
+    Calculate the distribution of maximum point wind speed (in knots) for a
     single storm, including the effects of primary and secondary eyewalls.
 
     Parameters:
     -----------
     nt : int
-        Track number of the storm.
+        Track number of the storm
     latitude : numpy.ndarray
-        Latitudes along each track.
+        Latitudes along each track (degree)
     longitude : numpy.ndarray
-        Longitudes along each track.
+        Longitudes along each track (degree)
     radius_storm : numpy.ndarray
-        Radius (in km) of maximum circular wind along each track.
+        Radius of maximum circular wind along each track (km)
     velocity : numpy.ndarray
-        Maximum circular wind along each storm track.
+        Maximum circular wind along each storm track (knots)
     radius_storm_secondary : numpy.ndarray
-        Radius (in km) of maximum circular wind of any secondary eyewalls.
+        Radius of maximum circular wind of any secondary eyewalls (km)
     velocity_secondary : numpy.ndarray
-        Maximum circular wind of any secondary eyewalls that may be present.
+        Maximum circular wind of any secondary eyewalls that may be present (knots)
     uinc : numpy.ndarray
-        West-east component of the storm translation velocity.
+        West-east component of the storm translation velocity (knots)
     vinc : numpy.ndarray
-        Zonal & meridional components of the 850 hPa env wind speed (knots).
+        Zonal & meridional components of the 850 hPa env wind speed (knots)
     extent : tuple, optional
         Bounding box and spacing in data coordinates (left, right, bottom, top)
-        Defines the spatial extent of the map. Default is None.
+        Defines the spatial extent of the map, default is None
     shapefile : str or shapefile-like object, optional
-        A shapefile to overlay on the map..
+        A shapefile to overlay on the map
     magfac : float, optional
-        Overall scale factor for storm size. Default is 1.0.
+        Overall scale factor for storm size, default is 1.0
     deltax : float, optional
-        Longitudinal distance of map boundaries from storm center (degrees).
-        Default is 5.
+        Longitudinal distance of map boundaries from storm center (degree), default is 5
     deltay : float, optional
-        Latitudinal distance of map boundaries from storm center (degrees).
-        Default is 4.
+        Latitudinal distance of map boundaries from storm center (degree), default is 4
     dellatlongs : float, optional
-        Horizontal resolution of swath maps (degrees). Default is 0.15.
+        Horizontal resolution of swath maps (degree), default is 0.15
     timeres : float, optional
-        Time resolution for time series at fixed points (hours). Default is 2.
+        Time resolution for time series at fixed points (hr), default is 2
 
     Returns:
     --------
     x : numpy.ndarray
-        Longitudes of the grid.
+        Longitudes of the grid (degree)
     y : numpy.ndarray
-        Latitudes of the grid.
+        Latitudes of the grid (degree)
     maxwind : numpy.ndarray
-        Storm maximum wind speed (knots) at each point on the grid.
+        Storm maximum wind speed at each point on the grid (knots)
     """
 
     if extent is None and shapefile is None:

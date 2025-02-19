@@ -17,3 +17,8 @@ pyTCR.egg-info/
 /data/*.mat
 /data/test/
 /data/reanalysis/
+tcr/data/MIROC6_20th_Atlantic.mat
+tcr/data/*.mat
+tcr/data/test/
+tcr/data/reanalysis/
+/joss/internal/
