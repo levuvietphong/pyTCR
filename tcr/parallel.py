@@ -48,7 +48,7 @@ def domain_decompose(comm, rank, size, data, verbose=False):
                 offset += loc_num_element
                 displs[i] = displs[i - 1] + counts[i - 1]
 
-            if verbose:     
+            if verbose:
                 for j in range(offset - loc_num_element, offset):
                     print(f"Rank: {i} - {data[j]}")
                     sys.stdout.flush()

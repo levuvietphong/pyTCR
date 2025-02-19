@@ -6,34 +6,34 @@ import numpy as np
 
 def estimate_track_density(lat_trks, lon_trks, vmax_trks, num_trks, threshold, cellsize, interval):
     """
-    Estimate the total number of tropical cyclone (TC) tracks crossing a latitude-longitude box 
-    at a specified resolution (cellsize x cellsize in degrees).
+    Estimate the total number of tropical cyclone (TC) tracks crossing a latitude-longitude box
+    at a specified resolution (cellsize x cellsize in degree).
 
     Parameters:
     -----------
     lat_trks : numpy.ndarray
-        Array of latitudes for each TC track.
+        Array of latitudes for each TC track (degree)
     lon_trks : numpy.ndarray
-        Array of longitudes for each TC track.
+        Array of longitudes for each TC track (degree)
     vmax_trks : numpy.ndarray
-        Array of maximum wind speeds for each TC track.
+        Array of maximum wind speeds for each TC track (m/s)
     num_trks : int
-        Number of TC tracks to randomly sample.
+        Number of TC tracks to randomly sample
     threshold : float
-        Wind speed threshold to consider a TC track.
+        Wind speed threshold to consider a TC track (m/s)
     cellsize : float
-        Size of the grid cell in degrees.
+        Size of the grid cell (degree)
     interval : int
         Interval for sampling points along each track.
 
     Returns:
     --------
     latitude : numpy.ndarray
-        Array of latitude values for the grid.
+        Array of latitude values for the grid (degree)
     longitude : numpy.ndarray
-        Array of longitude values for the grid.
+        Array of longitude values for the grid (degree)
     density_all : numpy.ndarray
-        2D array representing the density of TC tracks in each grid cell.
+        2D array representing the density of TC tracks in each grid cell
     """
 
     num_tc = lat_trks.shape[0]
@@ -74,26 +74,27 @@ def estimate_pdi(lat_trks, lon_trks, vmax_trks, num_trks, cellsize, dt):
     Parameters:
     -----------
     lat_trks : numpy.ndarray
-        Array of latitude tracks for tropical cyclones.
+        Array of latitude tracks for tropical cyclones (degree)
     lon_trks : numpy.ndarray
-        Array of longitude tracks for tropical cyclones.
+        Array of longitude tracks for tropical cyclones (degree)
     vmax_trks : numpy.ndarray
-        Array of maximum wind speeds for tropical cyclones.
+        Array of maximum wind speeds for tropical cyclones (m/s)
     num_trks : int
         Number of TC tracks to randomly sample.
     cellsize : float
-        Size of the grid cell in degrees.
+        Size of the grid cell (degrees)
     dt : float
         Time interval in hours.
 
     Returns:
     --------
     latitude : numpy.ndarray
-        Array of latitude values for the grid.
+        Array of latitude values for the grid (degree)
     longitude : numpy.ndarray
-        Array of longitude values for the grid.
+        Array of longitude values for the grid (degree)
     pdi_all : numpy.ndarray
-        2D array representing the PDI of TC tracks in each grid cell.
+        2D array representing the PDI of TC tracks in each grid cell
+        over a period of time (unit m^3/s^2)
     """
     num_tc = lat_trks.shape[0]
     ind_trks = np.random.choice(num_tc, num_trks, replace=False)
@@ -120,6 +121,6 @@ def estimate_pdi(lat_trks, lon_trks, vmax_trks, num_trks, cellsize, dt):
 
         jrows = np.floor(lat / cellsize).astype(int)
         icols = np.floor(lon / cellsize).astype(int)
-        np.add.at(pdi_all, (jrows, icols), vmax**3 * dt * 3600)  # unit L^3/L^2
+        np.add.at(pdi_all, (jrows, icols), vmax**3 * dt * 3600)
 
     return latitude, longitude, pdi_all
