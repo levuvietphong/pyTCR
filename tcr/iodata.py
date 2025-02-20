@@ -71,28 +71,28 @@ def load_netcdf_track_data(data_directory=os.path.join(DATA_DIR, 'downscaled'),
     model : str
         Name of the CMIP6 model.
     basin : str
-        Name of the ocean basin.
+        Name of the ocean basin (e.g., NA, WP, EP, SH).
     expmnt : str
-        Name of the model experiment.
+        Name of the model experiment (e.g., historical, ssp585).
 
     Returns:
     --------
     ds : xarray.Dataset
         The loaded NetCDF dataset.
     lat_trks : numpy.ndarray
-        Array of latitude tracks.
+        Array of track latitude (degree).
     lon_trks : numpy.ndarray
-        Array of longitude tracks.
+        Array of track longitude (degree).
     n_trk : numpy.ndarray
         Array of track numbers.
     v_trks : numpy.ndarray
-        Array of track velocities.
+        Array of track azimuthal wind (m/s).
     vmax_trks : numpy.ndarray
-        Array of maximum track velocities.
+        Array of track maximum wind or intensity (m/s).
     u850_trks : numpy.ndarray
-        Array of 850 hPa zonal wind components.
+        Array of 850 hPa zonal wind components (m/s).
     v850_trks : numpy.ndarray
-        Array of 850 hPa meridional wind components.
+        Array of 850 hPa meridional wind components (m/s).
     tc_month : numpy.ndarray
         Array of tropical cyclone months.
     tc_years : numpy.ndarray
@@ -158,7 +158,7 @@ def load_netcdf_2d_parameters(directory, filename, varname):
 
 def load_best_tracks_obs(fname, year_start, year_end):
     """
-    Load the best tracks of observed tropical cyclones.
+    Load the best tracks of observed tropical cyclones (IBTrACS).
 
     Parameters:
     -----------
@@ -172,11 +172,11 @@ def load_best_tracks_obs(fname, year_start, year_end):
     Returns:
     --------
     lat_tc : numpy.ndarray
-        Latitudes of tropical cyclone tracks.
+        Latitudes of tropical cyclone tracks (degree).
     lon_tc : numpy.ndarray
-        Longitudes of tropical cyclone tracks.
+        Longitudes of tropical cyclone tracks (degree).
     time_tc : numpy.ndarray
-        Times of tropical cyclones.
+        Times of tropical cyclones (YYYY-MM-DD HH:MM:SS)
     ind_tc : numpy.ndarray
         Indices of tropical cyclones.
     name_tc : numpy.ndarray
@@ -184,9 +184,9 @@ def load_best_tracks_obs(fname, year_start, year_end):
     basin_tc : numpy.ndarray
         Names of ocean basins.
     wind_tc : numpy.ndarray
-        Circular wind speeds of tropical cyclones (in m/s).
+        Circular wind speeds of tropical cyclones (m/s).
     speed_tc : numpy.ndarray
-        Translational velocities of tropical cyclones (in m/s).
+        Translational velocities of tropical cyclones (m/s).
     """
 
     ds = xr.open_dataset(fname)
@@ -195,6 +195,7 @@ def load_best_tracks_obs(fname, year_start, year_end):
     lon_tc = ds['lon'].values
     time_tc = ds['time'].values
     yeartc = ds['season'].values
+    # unit in 
     wind_tc = convert_to_mps(ds['usa_wind'].values)
     speed_tc = convert_to_mps(ds['storm_speed'].values)
     basin_tc = ds['basin'].values
@@ -232,15 +233,15 @@ def load_tracks_GCMs(data_directory=os.path.join(DATA_DIR, 'downscaled'),
     Returns:
     --------
     lat_trks : numpy.ndarray
-        Latitudes of tropical cyclone tracks.
+        Latitudes of tropical cyclone tracks (degree).
     lon_trks : numpy.ndarray
-        Longitudes of tropical cyclone tracks.
+        Longitudes of tropical cyclone tracks (degree).
     year_trks : numpy.ndarray
         Years of tropical cyclones.
     id_trks : numpy.ndarray
         Indices of tropical cyclones.
     vmax_trks : numpy.ndarray
-        Maximum wind speeds of tropical cyclones.
+        Maximum wind speeds of tropical cyclones (m/s).
     """
     ncfilename = os.path.join(data_directory, expmnt, f"tracks_{basin}_{model}_*.nc")
     try:
@@ -328,7 +329,7 @@ def download_tracks_data_cmip6(
     model : str, optional
         Name of the CMIP6 model (default is 'E3SM-1-0').
     target_directory : str, optional
-        Path to the target directory to save the downloaded files (default is '../data/downscaled/').
+        Path to the target directory to save the downloaded files (default is '{DATA_DIR}/downscaled/').
 
     Returns:
     --------

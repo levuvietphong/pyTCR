@@ -19,13 +19,13 @@ def calculate_distance_to_track(
     Parameters:
     -----------
     point_lat : numpy.ndarray
-        Array of latitudes for points of interest.
+        Array of latitudes for points of interest (degree)
     point_lon : numpy.ndarray
-        Array of longitudes for points of interest.
+        Array of longitudes for points of interest (degree)
     track_lats : numpy.ndarray
-        Array of latitudes along each track.
+        Array of latitudes along each track (degree)
     track_lons : numpy.ndarray
-        Array of longitudes along each track.
+        Array of longitudes along each track (degree)
     num_storms : int
         Number of storms.
     storm_length : int
@@ -42,11 +42,11 @@ def calculate_distance_to_track(
     Returns:
     --------
     radius : numpy.ndarray
-        Euclidean distance from track.
+        Euclidean distance from track (km).
     dx : numpy.ndarray
-        Distance components in the x direction.
+        Distance components in the x direction (km).
     dy : numpy.ndarray
-        Distance components in the y direction.
+        Distance components in the y direction (km).
     """
     pi_factor = np.pi / 180  # Use numpy's pi constant
     shape = (num_storms, storm_length, num_x_points, num_y_points)
@@ -84,17 +84,17 @@ def calculate_spatial_derivatives(
     Parameters:
     ----------
     bathymetry : numpy.ndarray
-        Array representing the bathymetry.
+        Array representing the bathymetry (m)
     x_coords : numpy.ndarray
-        Array of spatial coordinates in the x direction.
+        Array of spatial coordinates in the x direction (degree)
     y_coords : numpy.ndarray
-        Array of spatial coordinates in the y direction.
+        Array of spatial coordinates in the y direction (degree)
     x_size : int
         Size of the x dimension.
     y_size : int
         Size of the y dimension.
     scale_factor : float
-        Factor for converting nautical miles to kilometers.
+        Factor for converting nautical miles to meters.
     pi_factor : float
         Value of pi divided by 180.
     num_topo_rows : int
@@ -105,7 +105,7 @@ def calculate_spatial_derivatives(
     Returns:
     -------
     h : numpy.ndarray
-        Array of topographic heights.
+        Array of topographic heights (m).
     hx : numpy.ndarray
         Array of derivatives of h in the x direction.
     hy : numpy.ndarray
@@ -132,6 +132,8 @@ def calculate_spatial_derivatives(
         else:
             return sum(b[i] * d[i] for i in range(4))
 
+    # since bathymetry is in meters, need to convert space resolution from degree to meters
+    # for topographic derivatives
     h, hx, hy = [np.zeros((x_size, y_size)) for _ in range(3)]
     bathymetry = np.maximum(np.float32(bathymetry), -1)
     dhdx = scale_factor * (np.roll(bathymetry, -1, 0) - np.roll(bathymetry, 0, 0))
@@ -162,28 +164,28 @@ def estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlong):
     Parameters:
     -----------
     bxmin : float
-        Minimum bound in the x-axis (longitude).
+        Minimum bound in the x-axis (longitude in degree)
     bxmax : float
-        Maximum bound in the x-axis (longitude).
+        Maximum bound in the x-axis (longitude in degree)
     bymin : float
-        Minimum bound in the y-axis (latitude).
+        Minimum bound in the y-axis (latitude in degree)
     bymax : float
-        Maximum bound in the y-axis (latitude).
+        Maximum bound in the y-axis (latitude in degree)
     dellatlong : float
         Horizontal resolution of the map in degrees.
 
     Returns:
     --------
     h : numpy.ndarray
-        Topographic height data.
+        Topographic height data (m)
     hx : numpy.ndarray
-        Topographic gradient in the x direction.
+        Topographic gradient in the x direction
     hy : numpy.ndarray
-        Topographic gradient in the y direction.
+        Topographic gradient in the y direction
     x : numpy.ndarray
-        Array of longitude values for the grid.
+        Array of longitude values for the grid (degree)
     y : numpy.ndarray
-        Array of latitude values for the grid.
+        Array of latitude values for the grid (degree)
     """
 
     # Load high-resolution bathymetry data
@@ -192,7 +194,7 @@ def estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlong):
     topo_resolution = 360 / ntopo
     topo_resolution_inv = 1 / topo_resolution
     pi_factor = math.pi / 180  # pi number
-    # scale factor converting degree to m
+    # scale factor converting nautical mile (degree) to meter
     scale_factor = 1.0 / (topo_resolution * 60.0 * 1852)
 
     x = np.round(np.arange(bxmin, bxmax + 1e-8, dellatlong), 4)
@@ -219,20 +221,20 @@ def estimate_drag_coefficients(plat, plong, sfac):
     Parameters:
     -----------
     plat : numpy.ndarray
-        Array of latitudes for points of interest.
+        Array of latitudes for points of interest (degree)
     plong : numpy.ndarray
-        Array of longitudes for points of interest.
+        Array of longitudes for points of interest (degree)
     sfac : float
-        Factor for converting nautical miles to kilometers.
+        Factor for converting spatial resolution in nautical miles to meters
 
     Returns:
     --------
     cdrag : numpy.ndarray
-        Array of drag coefficients at POI.
+        Array of drag coefficients at POI (-)
     cdx : numpy.ndarray
-        Array of drag coefficient gradients in the x direction.
+        Array of drag coefficient gradients in the x direction (1/m)
     cdy : numpy.ndarray
-        Array of drag coefficient gradients in the y direction.
+        Array of drag coefficient gradients in the y direction (1/m)
     """
 
     def _interpolate(data, ix, iy, dx, dy):
@@ -297,9 +299,9 @@ def calculate_qs900(T600, vmax):
     Returns:
     --------
     q900 : numpy.ndarray
-        Saturation specific humidity at 950 hPa.
+        Saturation specific humidity at 950 hPa (g/g)
     q600 : numpy.ndarray
-        Saturation specific humidity at 600 hPa.
+        Saturation specific humidity at 600 hPa (g/g)
     """
     # Constants
     CONSTANTS = {
