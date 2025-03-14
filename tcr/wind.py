@@ -959,7 +959,7 @@ def calculate_wind_time_series(latitude, longitude, velocity, radius_storm,
     jmin = np.argmin(radius, axis=1)  # where radius of the storm is smallest
     jmin = np.maximum(jmin, 0 + delj)  # cut off delj steps at the begining
     jmin = np.minimum(jmin, m - 1 - delj)  # cut off delj steps at the end
-    jstart = jmin - delj  # index start
+    jstart = np.maximum(jmin - delj, 0)  # index start
     jend = jmin + delj + 1  # index end
     jtot = 2 * delj + 1
     jfine = 1 + nsteps * (jtot - 1)
@@ -977,14 +977,18 @@ def calculate_wind_time_series(latitude, longitude, velocity, radius_storm,
     for i in range(sx):
         for j in range(sy):
             for n in range(nn):
-                vshort[n, :, i, j] = velocity[n, jstart[n, i, j]: jend[n, i, j]]
-                rmshort[n, :, i, j] = radius_storm[n, jstart[n, i, j]: jend[n, i, j]]
-                vseshort[n, :, i, j] = velocity_secondary[n, jstart[n, i, j]: jend[n, i, j]]
-                rmseshort[n, :, i, j] = radius_storm_secondary[n, jstart[n, i, j]: jend[n, i, j]]
-                latshort[n, :, i, j] = latitude[n, jstart[n, i, j]: jend[n, i, j]]
-                longshort[n, :, i, j] = longitude[n, jstart[n, i, j]: jend[n, i, j]]
-                utshort[n, :, i, j] = ut[n, jstart[n, i, j]: jend[n, i, j]]
-                vtshort[n, :, i, j] = vt[n, jstart[n, i, j]: jend[n, i, j]]
+                if jend[n, i, j] - jstart[n, i, j] < jtot:
+                    tind = jend[n, i, j] - jstart[n, i, j]
+                else:
+                    tind = jtot
+                vshort[n, :tind, i, j] = velocity[n, jstart[n, i, j]: jend[n, i, j]]
+                rmshort[n, :tind, i, j] = radius_storm[n, jstart[n, i, j]: jend[n, i, j]]
+                vseshort[n, :tind, i, j] = velocity_secondary[n, jstart[n, i, j]: jend[n, i, j]]
+                rmseshort[n, :tind, i, j] = radius_storm_secondary[n, jstart[n, i, j]: jend[n, i, j]]
+                latshort[n, :tind, i, j] = latitude[n, jstart[n, i, j]: jend[n, i, j]]
+                longshort[n, :tind, i, j] = longitude[n, jstart[n, i, j]: jend[n, i, j]]
+                utshort[n, :tind, i, j] = ut[n, jstart[n, i, j]: jend[n, i, j]]
+                vtshort[n, :tind, i, j] = vt[n, jstart[n, i, j]: jend[n, i, j]]
 
     # Create high time-resolution series
     vfine = np.zeros((nn, jfine, sx, sy))
@@ -1175,7 +1179,7 @@ def calculate_upward_velocity_time_series(
     jmin = np.argmin(radius, axis=1)  # where the radius of the storm smallest (peak of the storm)
     jmin = np.maximum(jmin, 0 + delj)  # cut off delj steps at the begining
     jmin = np.minimum(jmin, m - 1 - delj)  # cut off delj steps at the end
-    jstart = jmin - delj  # index start
+    jstart = np.maximum(jmin - delj, 0)  # index start
     jend = jmin + delj + 1  # index end
     jtot = 2 * delj + 1  # total index?
     jfine = 1 + nsteps * (jtot - 1)
@@ -1199,20 +1203,24 @@ def calculate_upward_velocity_time_series(
     for i in range(sx):
         for j in range(sy):
             for n in range(nn):
-                vshort[n, :, i, j] = velocity[n, jstart[n, i, j]:jend[n, i, j]]
-                rmshort[n, :, i, j] = radius_storm[n, jstart[n, i, j]:jend[n, i, j]]
-                vseshort[n, :, i, j] = velocity_secondary[n, jstart[n, i, j]:jend[n, i, j]]
-                rmseshort[n, :, i, j] = radius_storm_secondary[n, jstart[n, i, j]:jend[n, i, j]]
-                rshort[n, :, i, j] = radius[n, jstart[n, i, j]:jend[n, i, j], i, j]
-                latshort[n, :, i, j] = latitude[n, jstart[n, i, j]:jend[n, i, j]]
-                longshort[n, :, i, j] = longitude[n, jstart[n, i, j]:jend[n, i, j]]
-                utshort[n, :, i, j] = ut[n, jstart[n, i, j]:jend[n, i, j]]
-                vtshort[n, :, i, j] = vt[n, jstart[n, i, j]:jend[n, i, j]]
-                usshort[n, :, i, j] = us[n, jstart[n, i, j]:jend[n, i, j]]
-                vsshort[n, :, i, j] = vs[n, jstart[n, i, j]:jend[n, i, j]]
+                if jend[n, i, j] - jstart[n, i, j] < jtot:
+                    tind = jend[n, i, j] - jstart[n, i, j]
+                else:
+                    tind = jtot
+                vshort[n, :tind, i, j] = velocity[n, jstart[n, i, j]:jend[n, i, j]]
+                rmshort[n, :tind, i, j] = radius_storm[n, jstart[n, i, j]:jend[n, i, j]]
+                vseshort[n, :tind, i, j] = velocity_secondary[n, jstart[n, i, j]:jend[n, i, j]]
+                rmseshort[n, :tind, i, j] = radius_storm_secondary[n, jstart[n, i, j]:jend[n, i, j]]
+                rshort[n, :tind, i, j] = radius[n, jstart[n, i, j]:jend[n, i, j], i, j]
+                latshort[n, :tind, i, j] = latitude[n, jstart[n, i, j]:jend[n, i, j]]
+                longshort[n, :tind, i, j] = longitude[n, jstart[n, i, j]:jend[n, i, j]]
+                utshort[n, :tind, i, j] = ut[n, jstart[n, i, j]:jend[n, i, j]]
+                vtshort[n, :tind, i, j] = vt[n, jstart[n, i, j]:jend[n, i, j]]
+                usshort[n, :tind, i, j] = us[n, jstart[n, i, j]:jend[n, i, j]]
+                vsshort[n, :tind, i, j] = vs[n, jstart[n, i, j]:jend[n, i, j]]
                 if date_records is not None:
-                    dateshort[n, :, i, j] = date_records[n, jstart[n, i, j]:jend[n, i, j]]
-                    dqshort[n, :, i, j] = dq[n, jstart[n, i, j]:jend[n, i, j]]
+                    dateshort[n, :tind, i, j] = date_records[n, jstart[n, i, j]:jend[n, i, j]]
+                    dqshort[n, :tind, i, j] = dq[n, jstart[n, i, j]:jend[n, i, j]]
 
     # Create high time-resolution series
     vfine = np.zeros((nn, jfine, sx, sy))
