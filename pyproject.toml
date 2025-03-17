@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyTCR"
-version = "1.1.0"
+version = "1.2.0"
 description = "Python-based Tropical Cyclone Rainfall"
 authors = [
     {name = "Phong Le", email = "levuvietphong@gmail.com"}
