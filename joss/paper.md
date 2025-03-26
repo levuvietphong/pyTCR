@@ -53,7 +53,7 @@ To sample rare (most intense) rainfall events that are often of great societal i
 # Statement of need
 Tropical cyclones (TCs) -- that is, hurricanes and tropical storms -- are among the most destructive weather events, causing massive economic and human losses worldwide each year [@Krichene:2023]. In the United States, hurricanes can trigger a surge of deaths long after the storms through complex chains of lasting impacts [@Young:2024]. Much of the damage caused by TCs is done by water – particularly by torrential rainfall and subsequent flooding [@Shi:2024;@Zhang:2018]. Accurately capturing TC rainfall characteristics at high spatial (e.g., <10 km) and temporal (e.g, hourly) resolution is therefore of critical importance. Moreover, a growing body of evidence suggests that TC rainfall is becoming more intense under a warming climate due to the Clapeyron–Clausius scaling of water vapor in the atmosphere [@Held:2006], increasing the likelihood of extreme rainfall and flooding [@Zhu:2021]. Given the societal consequences of TCs, it is crucial to understand not only TC rainfall risk in the current climate, but also how the risk might evolve with warming. Advancing tools and models to accurately and efficiently quantify these risks is of great significance.
 
-The ability of GCMs to simulate climate extremes has been substantially improved over the past few decades, primarily those participating in the Coupled Model Intercomparison Project phase 6 or CMIP6 [@Eyring:2016]. These climate models have become one of the main tools used to explore the effect of global warming on precipitation and climate variability [@Emanuel:2021;@Le:2021;@Le:2023]. While high-resolution GCMs have improved the representation of TCs [@Haarsma:2016;@Li:2018], they remain too computationally expensive for risk analysis, which requires robust sampling of extreme rainfall events. `pyTCR` responds to this need for an easy to use and efficient tool that facilitates TC-driven rainfall analysis across scales. It takes the advantage of a synthetic downscaling approach that can generate large ensembles of synthetic TCs at the basin (ocean) scale based on comprehensive climate conditions from observations and reanalysis data and a large number of GCM simulations [@Emanuel:2008;@Lin:2023].
+The ability of GCMs to simulate climate extremes has been substantially improved over the past few decades. These climate models have become one of the main tools used to explore the effect of global warming on precipitation and climate variability [@Emanuel:2021;@Le:2021;@Le:2023]. While high-resolution GCMs have improved the representation of TCs [@Haarsma:2016;@Li:2018], they remain too computationally expensive for risk analysis, which requires robust sampling of extreme rainfall events. `pyTCR` responds to this need for an easy to use and efficient tool that facilitates TC-driven rainfall analysis across scales. It takes the advantage of a synthetic downscaling approach that can generate large ensembles of synthetic TCs at the basin (ocean) scale based on comprehensive climate conditions from observations and reanalysis data and a large number of GCM simulations [@Emanuel:2008;@Lin:2023].
 `pyTCR` provides a fast and highly efficient tool for risk analysis related to TC rainfall.
 
 
@@ -76,7 +76,7 @@ where $w_f$ represents the velocity induced by surface frictional convergence, $
 
 # Examples
 
-`pyTCR` generates and provides access to a large set of synthetic rainfall events based on TC tracks. To help users learn key concepts and functions of `pyTCR`, we provide six `Jupyter` notebooks designed for training purposes:
+To help users learn key concepts and functions of `pyTCR`, we provide six `Jupyter` notebooks designed for training purposes:
 
 - Downloading and preprocessing TCs data
 - Visualizing and analyzing TC tracks
@@ -85,14 +85,9 @@ where $w_f$ represents the velocity induced by surface frictional convergence, $
 - Generating single rainfall event within polygons
 - Generating multiple rainfall events within polygons
 
-We briefly present two notebooks here.
-Figure 1 compares the tracks and mean power dissipation index (PDI) [@Emanuel:2005] of TCs downscaled from the outputs of the E3SM-1.0 model and ERA5 reanalysis data [@Hersbach:2020] using the TC downscaling model [@Lin:2023] with those obtained from IBTrACS observations in the North Atlantic Ocean (NAO) during the historical period (1964-2014). Overall, the results suggest that TCs downscaled from E3SM-1.0 is able to reproduce key aspects of TC behavior in the NAO over the historical period. However, the PDI maps indicate that E3SM-downscaled TCs tend to underestimate storm activity near the tropical eastern Atlantic region.
+Along each TC track, `pyTCR` can generate time series and spatial patterns of rainfall events. Figure 1 illustrates the spatial distribution of total rainfall along a TC track. The TC originates in the central Atlantic (25$^\circ$N, 60$^\circ$W) and generally moves westward before making landfall in the US. Rainfall intensity increases significantly upon landfall in Texas compared to its intensity over the ocean. Time series of rainfall at any domain influenced by the TCs can be extracted in `pyTCR` for analyses.
 
-![(Top) Tracks of 200 example TCs in the North Atlantic. Color lines indicates wind speed and TC tracks that landfall in Texas, USA. (Bottom) Mean power dissipation index (PDI) per $2^{\circ} \times 2^{\circ}$ box per year. Plot was generated using the notebook `ex1_tropical_cyclone_tracks.ipynb` in the repository.\label{fig1}](Fig1.png)
-
-Along each TC track from the downscaling model, `pyTCR` can generate time series and spatial patterns of rainfall events. Figure 2 illustrates the spatial distribution of total rainfall along a TC track in NAO. The TC originates in the central Atlantic (25$^\circ$N, 60$^\circ$W) and generally moves westward before making landfall in the US. Rainfall intensity increases significantly upon landfall in Texas compared to its intensity over the ocean. Time series of rainfall at any domain influenced by the TCs can be extracted in `pyTCR` for analyses.
-
-![Illustration of the spatial distribution of total rainfall generated for a particular TC track that makes landfall on Texas, USA. Plot was generated using the notebook `ex2_rainfall_generation.ipynb` in the repository\label{fig2}](Fig2.png){width=90%}
+![Spatial distribution of total rainfall generated for a particular TC track that makes landfall on Texas, USA. Plot was generated using the notebook `ex2_rainfall_generation.ipynb` in the repository\label{fig2}](Fig2.png){width=90%}
 
 # Acknowledgements
 This work was supported by the U.S. Department of Energy, Office of Science, Biological and Environmental Research program and is a product of the Southeast Texas (SETx) Urban Integrated Field Laboratory (UIFL) project.
