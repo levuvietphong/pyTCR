@@ -1,6 +1,9 @@
 .DS_Store
 .vscode/
 .chglog/
+dist/
+build/
+*.egg-info/
 __pycache__/
 pyTCR.egg-info/
 
@@ -22,3 +25,4 @@ tcr/data/*.mat
 tcr/data/test/
 tcr/data/reanalysis/
 /joss/internal/
+README-pypi.md

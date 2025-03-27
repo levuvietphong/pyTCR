@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyTCR"
-version = "1.2.0"
+version = "1.2.1rc1"
 description = "Python-based Tropical Cyclone Rainfall"
 authors = [
     {name = "Phong Le", email = "levuvietphong@gmail.com"}
@@ -18,14 +18,18 @@ dependencies = [
     "shapely",
     "xarray",
     "netcdf4",
-    "pyproj"
+    "pyproj",
+    "jupyter",
+    "geopandas",
+    "requests",
+    "bs4",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent"
 ]
-readme = "README.md"
+readme = "README-pypi.md"
 
 [tool.hatch.build.targets.wheel]
 only-include = ["tcr", "data"]
