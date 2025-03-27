@@ -15,27 +15,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Mamba
-        uses: mamba-org/setup-micromamba@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          environment-file: environment.yml
-          init-shell: bash
-          cache-environment: true
-          post-cleanup: 'all'
+          python-version: "3.9"
 
       - name: Install additional dependencies and this package
         run: |
+          pip install --upgrade pip setuptools wheel
+          pip install pytcr  # Install from PyPI          
+          # pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pyTCR  # install from test PyPI
           pip install notebook nbconvert
-          pip install .
-        shell: micromamba-shell {0}
 
       - name: Check environment is correctly set up.
         run: |
           python -c "import tcr"
-        shell: micromamba-shell {0}
 
       - name: Execute Jupyter notebook tests
         working-directory: ./notebooks
         run: |
           for notebook in *.ipynb; do jupyter nbconvert --to notebook --execute "$notebook" --output "$notebook"; done
-        shell: micromamba-shell {0}

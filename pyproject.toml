@@ -4,32 +4,33 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyTCR"
-version = "1.2.1rc1"
+dynamic = ["version"]
 description = "Python-based Tropical Cyclone Rainfall"
 authors = [
     {name = "Phong Le", email = "levuvietphong@gmail.com"}
 ]
+readme = "README-pypi.md"
+
 dependencies = [
-    "numpy",
-    "matplotlib",
-    "colorcet",
-    "scipy",
     "cartopy",
+    "colorcet",
+    "geopandas",
+    "jupyter",
+    "matplotlib",
+    "netcdf4",
+    "numpy",
+    "pyproj",
+    "requests",
+    "scipy",
     "shapely",
     "xarray",
-    "netcdf4",
-    "pyproj",
-    "jupyter",
-    "geopandas",
-    "requests",
-    "bs4",
+    "beautifulsoup4",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent"
 ]
-readme = "README-pypi.md"
 
 [tool.hatch.build.targets.wheel]
 only-include = ["tcr", "data"]
@@ -37,3 +38,6 @@ only-include = ["tcr", "data"]
 [tool.hatch.build.targets.wheel.sources]
 "tcr" = "tcr"
 "data" = "tcr/data"
+
+[tool.hatch.version]
+path = "tcr/__init__.py"  # This tells Hatch where to find the version
