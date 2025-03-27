@@ -26,41 +26,22 @@
 - [Contacts](#mailbox-contacts)
 
 ## :books: Overview
-**pyTCR** is a physics-based model developed in python to estimate rainfall induced by tropical cyclones (TCs). It is largely based on the TCR model described by [Zhu *et al.*, 2013](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2013GL058284) and [Lu *et al.*, 2018](https://journals.ametsoc.org/view/journals/atsc/75/7/jas-d-17-0264.1.xml). PyTCR simulates convective TC rainfall by correlating the precipitation rate with the total upward velocity within the TC vortex. It integrates seamlessly with outputs from [a tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) (see [Lin *et al.,* 2023](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023MS003686)) to generate detailed spatial-temporal rainfall patterns that align with hurricane tracks.
+pyTCR is a physics-based model developed in python to estimate rainfall induced by tropical cyclones (TCs). It is largely based on the TCR model described by [Zhu *et al.*, 2013](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2013GL058284) and [Lu *et al.*, 2018](https://journals.ametsoc.org/view/journals/atsc/75/7/jas-d-17-0264.1.xml). PyTCR simulates convective TC rainfall by correlating the precipitation rate with the total upward velocity within the TC vortex. It integrates seamlessly with outputs from [a tropical cyclone downscaling model](https://github.com/linjonathan/tropical_cyclone_risk) (see [Lin *et al.,* 2023](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023MS003686)) to generate detailed spatial-temporal rainfall patterns that align with hurricane tracks.
 
 ## :wrench: Installation
 
-It is recommended to use mamba for a faster and more reliable installation process. If you haven't installed mamba yet, you can do so by running:
-1. Install `mamba`
+1. To install the latest stable release from `PyPI`:
     ```sh
-    conda install -n base -c conda-forge mamba
+    pip install pyTCR
     ```
 
-2. Clone the pyTCR repository
+2. To get the latest updates from the github repository:
     ```sh
     git clone https://github.com/levuvietphong/pyTCR.git
-    ```
-
-3. Navigate to the pyTCR directory and create a `conda` virtual environment named 'pyTCR' using the provided `environment.yml` file
-    ```sh
-    mamba env create -f environment.yml
-    ```
-
-4. Activate the environment:
-    ```sh
-    conda activate pyTCR
-    ```
-
-5. Install the PyTCR package:
-    ```sh
+    cd pyTCR
     pip install .
     ```
-    
-    OR, for developers:
-    ```sh
-    pip install -e .
-    cd tcr && ln -s ../data
-    ```
+    Cloning the repository also gives you access to the tutorial in the notebooks folder.
 
 ## :arrow_forward: Getting Started
 This repository provides a collection of [jupyter notebooks](https://github.com/levuvietphong/pyTCR/tree/main/notebooks) designed to facilitate the use of PyTCR for generating and visualizing rainfall and wind speed induced by TCs. These notebooks cover various use cases and data sources, providing comprehensive guidance for users.
@@ -99,14 +80,16 @@ The following figures illustrate the inputs used in pyTCR and results obtained f
 ## :page_facing_up: License
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
+## :rocket: Contributions
+Collaborators and contributions are very welcome! See the [contributing guidelines](CONTRIBUTING.md) for more details.
 
 ## :people_hugging: Acknowledgments
 This work was supported by the [Southeast Texas Urban Integrated Field Lab](https://setx-uifl.org/) <img src="https://setx-uifl.org/wp-content/uploads/2023/08/SETx-URBAN-IFL-Logo-Full-Color-Final-300x109.png" height="22" style="vertical-align: -8px" /> project, one of four [Urban Integrated Field Laboratories](https://ess.science.energy.gov/urban-ifls/) <img src="https://ess.science.energy.gov/urban-ifls/wp-content/uploads/sites/2/2023/04/UIFL-logo-final.jpg" height="22" style="vertical-align: -8px" /> (UIFLs). The software was mostly developed at <img src="https://map.ornl.org/art/logo.png" height="22" style="vertical-align: -10px"/>. We extend our gratitude to the SETx-UIFL team for their support and collaboration.
 
 
 ## :mailbox: Contacts
-Collaborators and contributions are very welcome! For questions and feedback, please contact:
-- Phong Le (lepv@ornl.gov)
+For questions and feedback, please contact:
+- Phong Le (levuvietphong@gmail.com)
 
 <hr>
 
