@@ -1347,7 +1347,7 @@ def integrate_outer_wind_profile(vm, fc, ro, wc, Cd, q):
     differential equation (ODE).
 
     Parameters:
-    ----------
+    -----------
     vm : float
         Maximum wind speed (m/s)
     fc : float
@@ -1362,7 +1362,7 @@ def integrate_outer_wind_profile(vm, fc, ro, wc, Cd, q):
         Number of radial points.
 
     Returns:
-    -------
+    --------
     v : array of float
         Potential intensity at each radial point (m/s)
     r : array of float

@@ -59,8 +59,9 @@ def load_Matlab_data(directory, filename):
         raise RuntimeError(f"An error occurred while loading the Matlab file: {e}") from e
 
 
-def load_netcdf_track_data(data_directory=os.path.join(DATA_DIR, 'downscaled'),
-                           model='E3SM-1-0', basin='NA', expmnt='historical'):
+def load_netcdf_track_data(
+    data_directory=None, model="E3SM-1-0", basin="NA", expmnt="historical"
+):
     """
     Load data in NetCDF format from Tropical cyclone downscaling.
 
@@ -100,6 +101,9 @@ def load_netcdf_track_data(data_directory=os.path.join(DATA_DIR, 'downscaled'),
     tc_time : numpy.ndarray
         Array of tropical cyclone times.
     """
+    if data_directory is None:
+        data_directory = os.path.join(DATA_DIR, 'downscaled')
+
     ncfilename = os.path.join(data_directory, expmnt, f"tracks_{basin}_{model}_*.nc")
     try:
         ncfile = glob.glob(ncfilename)[0]
@@ -195,7 +199,7 @@ def load_best_tracks_obs(fname, year_start, year_end):
     lon_tc = ds['lon'].values
     time_tc = ds['time'].values
     yeartc = ds['season'].values
-    # unit in 
+    # unit in
     wind_tc = convert_to_mps(ds['usa_wind'].values)
     speed_tc = convert_to_mps(ds['storm_speed'].values)
     basin_tc = ds['basin'].values
@@ -214,8 +218,9 @@ def load_best_tracks_obs(fname, year_start, year_end):
     return lat_tc, lon_tc, time_tc, ind_tc, name_tc, basin_tc, wind_tc, speed_tc
 
 
-def load_tracks_GCMs(data_directory=os.path.join(DATA_DIR, 'downscaled'),
-                     model='E3SM-1-0', basin='NA', expmnt='historical'):
+def load_tracks_GCMs(
+    data_directory=None, model="E3SM-1-0", basin="NA", expmnt="historical"
+):
     """
     Load the downscaled tracks of tropical cyclones from CMIP6 models.
 
@@ -243,6 +248,9 @@ def load_tracks_GCMs(data_directory=os.path.join(DATA_DIR, 'downscaled'),
     vmax_trks : numpy.ndarray
         Maximum wind speeds of tropical cyclones (m/s).
     """
+    if data_directory is None:
+        data_directory = os.path.join(DATA_DIR, 'downscaled')
+
     ncfilename = os.path.join(data_directory, expmnt, f"tracks_{basin}_{model}_*.nc")
     try:
         ncfile = glob.glob(ncfilename)[0]
@@ -262,16 +270,14 @@ def load_tracks_GCMs(data_directory=os.path.join(DATA_DIR, 'downscaled'),
     return lat_trks, lon_trks, year_trks, id_trks, vmax_trks
 
 
-def fetch_directory_tree(
-    url="https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks/",
-    depth=0,
-    max_depth=2,
-):
+def fetch_directory_tree(url=None, depth=0, max_depth=2):
     """
     Fetch and print the directory tree from a specified URL up to a given depth.
 
     Parameters:
     -----------
+    url : str, optional
+        URL to the directory containing the downscaled tracks (default is TACC url).
     depth : int, optional
         Current depth of the directory tree (default is 0).
     max_depth : int, optional
@@ -281,6 +287,9 @@ def fetch_directory_tree(
     --------
     None
     """
+    if url is None:
+        url = "https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks"
+
     # Make a GET request to fetch the HTML content
     response = requests.get(url, timeout=10)
     if response.status_code != 200:
@@ -314,16 +323,15 @@ def fetch_directory_tree(
 
 
 def download_tracks_data_cmip6(
-    url="https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks/",
-    experiments=None,
-    models=None,
-    target_directory=os.path.join(DATA_DIR, "downscaled"),
+    url=None, experiments='historical', models='E3SM-1-0', target_directory=None
 ):
     """
     Download the downscaled tropical cyclone tracks from CMIP6 models.
 
     Parameters:
     -----------
+    url : str, optional
+        URL to the directory containing the downscaled tracks (default is TACC url).
     experiment : str, optional
         Name of the model experiment (default is 'historical').
     model : str, optional
@@ -337,8 +345,15 @@ def download_tracks_data_cmip6(
     """
     if isinstance(experiments, str):
         experiments = [experiments]
+
     if isinstance(models, str):
         models = [models]
+
+    if url is None:
+        url = "https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks"
+
+    if target_directory is None:
+        target_directory = os.path.join(DATA_DIR, 'downscaled')
 
     for experiment in experiments:
         for model in models:
