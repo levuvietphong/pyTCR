@@ -1,0 +1,566 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>pyTCR &#8212; pyTCR Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-examples.css?v=e236af4b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.bundle.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-shadow.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-punk.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-noir.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-light.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-borderless.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/micromodal.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=010c3e5c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/hoverxref.js"></script>
+    <script src="../_static/js/tooltipster.bundle.min.js"></script>
+    <script src="../_static/js/micromodal.min.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"N": "\\mathbb{N}", "floor": ["\\lfloor#1\\rfloor", 1], "bmat": ["\\left[\\begin{array}"], "emat": ["\\end{array}\\right]"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/modules';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Functions" href="pyTCR.html" />
+    <link rel="prev" title="API" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="pyTCR Documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="pyTCR Documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Documentation 🔎
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started 🚀</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../math.html">Background</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples/examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples/ex0_download_tracks_from_cmip6.html"><strong>0. Download tropical cyclone tracks</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/ex1_tropical_cyclone_tracks.html"><strong>1. Tropical cyclone tracks and intensity</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/ex2_rainfall_generation.html"><strong>2. Tropical cyclone rainfall generation</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/ex3_wind_speed_generation.html"><strong>3. Tropical cyclone maximum wind speed</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/ex4_rainfall_polygons_generation.html"><strong>4. Generate tropical cyclone rainfall over a specific region</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/ex5_multiple_rainfall_event_polygon.html"><strong>5. Multiple tropical cyclone rainfall events generated over a specific region</strong></a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference 📖</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">pyTCR</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html">Functions</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/api/modules.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>pyTCR</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="pytcr">
+<h1>pyTCR<a class="headerlink" href="#pytcr" title="Link to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyTCR.html">Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyTCR.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyTCR.html#module-tcr.convert">tcr.convert module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.convert.to_datetime_from_Matlab"><code class="docutils literal notranslate"><span class="pre">to_datetime_from_Matlab()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.convert.to_datetime_from_netcdf"><code class="docutils literal notranslate"><span class="pre">to_datetime_from_netcdf()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyTCR.html#module-tcr.datadir">tcr.datadir module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.datadir.DATA_DIR"><code class="docutils literal notranslate"><span class="pre">DATA_DIR</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyTCR.html#module-tcr.iodata">tcr.iodata module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.iodata.convert_to_mps"><code class="docutils literal notranslate"><span class="pre">convert_to_mps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.iodata.download_tracks_data_cmip6"><code class="docutils literal notranslate"><span class="pre">download_tracks_data_cmip6()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.iodata.fetch_directory_tree"><code class="docutils literal notranslate"><span class="pre">fetch_directory_tree()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.iodata.filter_by_year"><code class="docutils literal notranslate"><span class="pre">filter_by_year()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.iodata.get_bbox_from_shapefile"><code class="docutils literal notranslate"><span class="pre">get_bbox_from_shapefile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.iodata.load_Matlab_data"><code class="docutils literal notranslate"><span class="pre">load_Matlab_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.iodata.load_best_tracks_obs"><code class="docutils literal notranslate"><span class="pre">load_best_tracks_obs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.iodata.load_netcdf_2d_parameters"><code class="docutils literal notranslate"><span class="pre">load_netcdf_2d_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.iodata.load_netcdf_track_data"><code class="docutils literal notranslate"><span class="pre">load_netcdf_track_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.iodata.load_tracks_GCMs"><code class="docutils literal notranslate"><span class="pre">load_tracks_GCMs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyTCR.html#module-tcr.parallel">tcr.parallel module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.parallel.domain_decompose"><code class="docutils literal notranslate"><span class="pre">domain_decompose()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyTCR.html#module-tcr.physics">tcr.physics module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.physics.estimate_pdi"><code class="docutils literal notranslate"><span class="pre">estimate_pdi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.physics.estimate_track_density"><code class="docutils literal notranslate"><span class="pre">estimate_track_density()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyTCR.html#module-tcr.plots">tcr.plots module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.plots.create_buffer_around_POI"><code class="docutils literal notranslate"><span class="pre">create_buffer_around_POI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.plots.format_mapping"><code class="docutils literal notranslate"><span class="pre">format_mapping()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.plots.get_tracks_landfall_region"><code class="docutils literal notranslate"><span class="pre">get_tracks_landfall_region()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.plots.gmtColormap_openfile"><code class="docutils literal notranslate"><span class="pre">gmtColormap_openfile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.plots.load_cpt_colormap"><code class="docutils literal notranslate"><span class="pre">load_cpt_colormap()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.plots.plot_density"><code class="docutils literal notranslate"><span class="pre">plot_density()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.plots.plot_exceedance_probability"><code class="docutils literal notranslate"><span class="pre">plot_exceedance_probability()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.plots.plot_tracks"><code class="docutils literal notranslate"><span class="pre">plot_tracks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.plots.shape2grid"><code class="docutils literal notranslate"><span class="pre">shape2grid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.plots.truncate_colormap"><code class="docutils literal notranslate"><span class="pre">truncate_colormap()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyTCR.html#module-tcr.rainfall">tcr.rainfall module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.rainfall.calculate_etr_swath"><code class="docutils literal notranslate"><span class="pre">calculate_etr_swath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.rainfall.calculate_rainfall_rate"><code class="docutils literal notranslate"><span class="pre">calculate_rainfall_rate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.rainfall.generate_rainfall_point"><code class="docutils literal notranslate"><span class="pre">generate_rainfall_point()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyTCR.html#module-tcr.terrain_boundary">tcr.terrain_boundary module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.terrain_boundary.calculate_distance_to_track"><code class="docutils literal notranslate"><span class="pre">calculate_distance_to_track()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.terrain_boundary.calculate_qs900"><code class="docutils literal notranslate"><span class="pre">calculate_qs900()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.terrain_boundary.calculate_spatial_derivatives"><code class="docutils literal notranslate"><span class="pre">calculate_spatial_derivatives()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.terrain_boundary.estimate_drag_coefficients"><code class="docutils literal notranslate"><span class="pre">estimate_drag_coefficients()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.terrain_boundary.estimate_topographic_height"><code class="docutils literal notranslate"><span class="pre">estimate_topographic_height()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyTCR.html#module-tcr.wind">tcr.wind module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.calculate_upward_velocity_field"><code class="docutils literal notranslate"><span class="pre">calculate_upward_velocity_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.calculate_upward_velocity_time_series"><code class="docutils literal notranslate"><span class="pre">calculate_upward_velocity_time_series()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.calculate_wind_primary"><code class="docutils literal notranslate"><span class="pre">calculate_wind_primary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.calculate_wind_secondary"><code class="docutils literal notranslate"><span class="pre">calculate_wind_secondary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.calculate_wind_swath"><code class="docutils literal notranslate"><span class="pre">calculate_wind_swath()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.calculate_wind_time_series"><code class="docutils literal notranslate"><span class="pre">calculate_wind_time_series()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.estimate_radius_wind"><code class="docutils literal notranslate"><span class="pre">estimate_radius_wind()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.get_translation_speeds"><code class="docutils literal notranslate"><span class="pre">get_translation_speeds()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.get_translation_speeds_full"><code class="docutils literal notranslate"><span class="pre">get_translation_speeds_full()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.integrate_outer_wind_profile"><code class="docutils literal notranslate"><span class="pre">integrate_outer_wind_profile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.smooth_2d_array"><code class="docutils literal notranslate"><span class="pre">smooth_2d_array()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.transfunction"><code class="docutils literal notranslate"><span class="pre">transfunction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyTCR.html#tcr.wind.windprofiles"><code class="docutils literal notranslate"><span class="pre">windprofiles()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyTCR.html#module-tcr">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./api"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">API</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pyTCR.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Functions</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Phong V.V. Le
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

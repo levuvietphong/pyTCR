@@ -1,0 +1,1034 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tcr.plots &#8212; pyTCR Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-examples.css?v=e236af4b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-shadow.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-punk.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-noir.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=010c3e5c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/hoverxref.js"></script>
+    <script src="../../_static/js/tooltipster.bundle.min.js"></script>
+    <script src="../../_static/js/micromodal.min.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"N": "\\mathbb{N}", "floor": ["\\lfloor#1\\rfloor", 1], "bmat": ["\\left[\\begin{array}"], "emat": ["\\end{array}\\right]"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/tcr/plots';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="pyTCR Documentation - Home"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="pyTCR Documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../intro.html">
+                    Documentation 🔎
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started 🚀</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../math.html">Background</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../examples/examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex0_download_tracks_from_cmip6.html"><strong>0. Download tropical cyclone tracks</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex1_tropical_cyclone_tracks.html"><strong>1. Tropical cyclone tracks and intensity</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex2_rainfall_generation.html"><strong>2. Tropical cyclone rainfall generation</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex3_wind_speed_generation.html"><strong>3. Tropical cyclone maximum wind speed</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex4_rainfall_polygons_generation.html"><strong>4. Generate tropical cyclone rainfall over a specific region</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex5_multiple_rainfall_event_polygon.html"><strong>5. Multiple tropical cyclone rainfall events generated over a specific region</strong></a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference 📖</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/modules.html">pyTCR</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/pyTCR.html">Functions</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for tcr.plots</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for plottings in PyTCR</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">colorsys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.path</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">ticker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineCollection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogNorm</span><span class="p">,</span> <span class="n">LinearSegmentedColormap</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mcolors</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cartopy.feature</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShapelyFeature</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cartopy.crs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ccrs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cartopy.feature</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cfeature</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span>
+
+
+<div class="viewcode-block" id="format_mapping">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.plots.format_mapping">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">format_mapping</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">),</span> <span class="n">projection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">shapefile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gridlabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gridspace</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                   <span class="n">coastlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_features</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Customizes the map by setting its spatial extent, grid spacing, and</span>
+<span class="sd">    optionally overlays a shapefile.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    ax : matplotlib.axes.Axes</span>
+<span class="sd">        The axis object where the map will be formatted.</span>
+<span class="sd">    extent : tuple, optional</span>
+<span class="sd">        Specifies the map&#39;s spatial extent in data coordinates (left, right,</span>
+<span class="sd">        bottom, top). Defaults to (-180, 180, -90, 90).</span>
+<span class="sd">    shapefile : str or shapefile-like object, optional</span>
+<span class="sd">        Path to a shapefile or shapefile object to overlay on the map.</span>
+<span class="sd">    gridlabel : bool, optional</span>
+<span class="sd">        Toggles the display of grid labels on the map.</span>
+<span class="sd">        Default is False, hiding gridline labels.</span>
+<span class="sd">    projection : cartopy.crs, optional</span>
+<span class="sd">        The projection to use for the map. Defaults to None, which implies a</span>
+<span class="sd">        PlateCarree projection.</span>
+<span class="sd">    coastlines : bool, optional</span>
+<span class="sd">        Toggles the display of coastlines on the map.</span>
+<span class="sd">        Default is True, showing coastlines.</span>
+<span class="sd">    add_features : bool, optional</span>
+<span class="sd">        Toggles the display of additional geographical features.</span>
+<span class="sd">        Default is True, showing these features.</span>
+<span class="sd">    gridspace : int, optional</span>
+<span class="sd">        Specifies the spacing between gridlines. Defaults to 10 degrees.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">extent</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">projection</span><span class="p">,</span> <span class="n">ccrs</span><span class="o">.</span><span class="n">UTM</span><span class="p">):</span>
+        <span class="n">utm</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">utm</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">utm</span><span class="p">:</span>
+        <span class="n">utm_extent</span> <span class="o">=</span> <span class="n">projection</span><span class="o">.</span><span class="n">transform_points</span><span class="p">(</span>
+            <span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_extent</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">utm_extent</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">utm_extent</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">utm_extent</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="n">utm_extent</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">crs</span><span class="o">=</span><span class="n">projection</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_extent</span><span class="p">((</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">))</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">60</span>
+        <span class="n">aoi</span> <span class="o">=</span> <span class="n">mpath</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)))</span> <span class="o">+</span>
+            <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">xmax</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ymax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">n</span><span class="p">)))</span> <span class="o">+</span>
+            <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ymin</span><span class="p">)))</span> <span class="o">+</span>
+            <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">xmin</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">n</span><span class="p">)))</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_boundary</span><span class="p">(</span><span class="n">aoi</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">coastlines</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">coastlines</span><span class="p">(</span><span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">add_features</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">cfeature</span><span class="o">.</span><span class="n">LAND</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                       <span class="n">alpha</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">gridlabel</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">utm</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">gridlines</span><span class="p">(</span><span class="n">draw_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rotate_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                         <span class="n">x_inline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">y_inline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
+                         <span class="n">crs</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># lat-lon grid</span>
+            <span class="c1"># Find the smallest multiple of 10 greater than or equal to xmin</span>
+            <span class="n">xstart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">xmin</span> <span class="o">/</span> <span class="n">gridspace</span><span class="p">)</span> <span class="o">*</span> <span class="n">gridspace</span>
+            <span class="n">ystart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">ymin</span> <span class="o">/</span> <span class="n">gridspace</span><span class="p">)</span> <span class="o">*</span> <span class="n">gridspace</span>
+
+            <span class="c1"># Find the largest multiple of gridspace less than or equal to xmax</span>
+            <span class="n">xend</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">xmax</span> <span class="o">/</span> <span class="n">gridspace</span><span class="p">)</span> <span class="o">*</span> <span class="n">gridspace</span> <span class="o">+</span> <span class="n">gridspace</span><span class="o">/</span><span class="mf">2.</span>
+            <span class="n">yend</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">ymax</span> <span class="o">/</span> <span class="n">gridspace</span><span class="p">)</span> <span class="o">*</span> <span class="n">gridspace</span> <span class="o">+</span> <span class="n">gridspace</span><span class="o">/</span><span class="mf">2.</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">gridlines</span><span class="p">(</span>
+                <span class="n">draw_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">xlocs</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">xstart</span><span class="p">,</span> <span class="n">xend</span><span class="p">,</span> <span class="n">gridspace</span><span class="p">),</span>
+                <span class="n">ylocs</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ystart</span><span class="p">,</span> <span class="n">yend</span><span class="p">,</span> <span class="n">gridspace</span><span class="p">),</span>
+                <span class="n">rotate_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">x_inline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">y_inline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">lw</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">()</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">shapefile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shapereg</span> <span class="o">=</span> <span class="n">ShapelyFeature</span><span class="p">(</span><span class="n">shapefile</span><span class="o">.</span><span class="n">geometries</span><span class="p">(),</span> <span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(),</span>
+                                  <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">shapereg</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="plot_density">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.plots.plot_density">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_density</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">logscale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gridlabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">gridspace</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">coastlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_features</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">shapefile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title_ypos</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">title_fontcolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">title_fontstyle</span><span class="o">=</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span>
+                 <span class="n">method</span><span class="o">=</span><span class="s1">&#39;contourf&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the density of tropical cyclone (TC) tracks.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    ax : matplotlib.axes.Axes</span>
+<span class="sd">        The axis on which to plot the density map</span>
+<span class="sd">    lat : array-like</span>
+<span class="sd">        Latitude coordinates of the tropical cyclone tracks (degree)</span>
+<span class="sd">    lon : array-like</span>
+<span class="sd">        Longitude coordinates of the tropical cyclone tracks (degree)</span>
+<span class="sd">    density : 2D array-like</span>
+<span class="sd">        Density values corresponding to the latitude and longitude grid</span>
+<span class="sd">    levels : array-like</span>
+<span class="sd">        Contour levels for plotting density</span>
+<span class="sd">    extent : tuple, optional</span>
+<span class="sd">        Bounding box and spacing in data coordinates (left, right, bottom, top)</span>
+<span class="sd">        Defines the spatial extent of the map, default is None</span>
+<span class="sd">    projection : str or Cartopy projection, optional</span>
+<span class="sd">        The projection to use for the map</span>
+<span class="sd">        Default is None, which implies a PlateCarree projection.</span>
+<span class="sd">    alpha : float, optional</span>
+<span class="sd">        Transparency level of the density plot, default is 1.0</span>
+<span class="sd">    cmap : str or Colormap, optional</span>
+<span class="sd">        Colormap to use for visualizing density values, default is &#39;viridis&#39;</span>
+<span class="sd">    logscale : bool, optional</span>
+<span class="sd">        Whether to use a logarithmic scale for density values, default is False</span>
+<span class="sd">    gridlabel : bool, optional</span>
+<span class="sd">        Whether to display grid labels on the map, default is False</span>
+<span class="sd">    gridspace : int, optional</span>
+<span class="sd">        The spacing between gridlines, default is 10</span>
+<span class="sd">    coastlines : bool, optional</span>
+<span class="sd">        Whether to display coastlines on the map, default is True</span>
+<span class="sd">    add_features : bool, optional</span>
+<span class="sd">        Whether to add additional features to the map, default is True</span>
+<span class="sd">    shapefile : str or shapefile-like object, optional</span>
+<span class="sd">        A shapefile to overlay on the map, default is None</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">        Title of the plot, default is None</span>
+<span class="sd">    title_ypos : float, optional</span>
+<span class="sd">        Y-coordinate for the title position, default is 1.0</span>
+<span class="sd">    title_fontcolor : str, optional</span>
+<span class="sd">        Color of the plot title, default is &#39;k&#39;</span>
+<span class="sd">    title_fontstyle : str, optional</span>
+<span class="sd">        Font style of the plot title, default is &#39;regular&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Format the map</span>
+    <span class="n">format_mapping</span><span class="p">(</span>
+        <span class="n">ax</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">projection</span><span class="p">,</span> <span class="n">shapefile</span><span class="o">=</span><span class="n">shapefile</span><span class="p">,</span>
+        <span class="n">gridlabel</span><span class="o">=</span><span class="n">gridlabel</span><span class="p">,</span> <span class="n">gridspace</span><span class="o">=</span><span class="n">gridspace</span><span class="p">,</span> <span class="n">coastlines</span><span class="o">=</span><span class="n">coastlines</span><span class="p">,</span>
+        <span class="n">add_features</span><span class="o">=</span><span class="n">add_features</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Contour fill map</span>
+    <span class="k">if</span> <span class="n">logscale</span><span class="p">:</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">LogNorm</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vmax</span><span class="o">=</span><span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">locator</span> <span class="o">=</span> <span class="n">ticker</span><span class="o">.</span><span class="n">LogLocator</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">locator</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;contourf&#39;</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+                         <span class="n">levels</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">locator</span><span class="o">=</span><span class="n">locator</span><span class="p">,</span>
+                         <span class="n">extend</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;pcolormesh&#39;</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+                           <span class="n">vmin</span><span class="o">=</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vmax</span><span class="o">=</span><span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span>
+                           <span class="n">transform</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid plotting method: </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Set plot title if provided</span>
+    <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">title_ypos</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">title_fontcolor</span><span class="p">,</span>
+                     <span class="n">fontweight</span><span class="o">=</span><span class="n">title_fontstyle</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">im</span></div>
+
+
+
+<div class="viewcode-block" id="plot_tracks">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.plots.plot_tracks">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_tracks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">lats</span><span class="p">,</span> <span class="n">lons</span><span class="p">,</span> <span class="n">vmaxs</span><span class="p">,</span> <span class="n">track_inds</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">wind_speed_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">gridlabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gridspace</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">coastlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_features</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shapefile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title_ypos</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">wind_color</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">title_fontcolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">title_fontstyle</span><span class="o">=</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span>
+                <span class="n">norm</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the tracks of tropical cyclones (TCs).</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    ax : matplotlib.axes.Axes</span>
+<span class="sd">        The axis on which to plot the tracks.</span>
+<span class="sd">    lats : array-like</span>
+<span class="sd">        Latitude data for the tracks (degrees).</span>
+<span class="sd">    lons : array-like</span>
+<span class="sd">        Longitude data for the tracks (degrees).</span>
+<span class="sd">    vmaxs : array-like</span>
+<span class="sd">        Maximum wind speeds associated with the tracks (m/s).</span>
+<span class="sd">    track_inds : array-like</span>
+<span class="sd">        Indices of the tropical cyclone tracks to plot.</span>
+<span class="sd">    interval : int, optional</span>
+<span class="sd">        Interval of track indices to plot. Default is 1.</span>
+<span class="sd">    wind_speed_threshold : float, optional</span>
+<span class="sd">        Minimum wind speed required to plot a track (m/s).</span>
+<span class="sd">    extent : tuple, optional</span>
+<span class="sd">        Bounding box and spacing (degree) in data coordinates</span>
+<span class="sd">        (left, right, bottom, top, dx, dy). Defines the spatial extent of the map.</span>
+<span class="sd">        Default is None.</span>
+<span class="sd">    projection : str, optional</span>
+<span class="sd">        Projection to use for the map.  Default is None, which implies a</span>
+<span class="sd">        PlateCarree projection.</span>
+<span class="sd">    alpha : float, optional</span>
+<span class="sd">        Transparency level of the plot. Default is 1.0.</span>
+<span class="sd">    cmap : str or Colormap, optional</span>
+<span class="sd">        Colormap to use for the plot. Default is &#39;viridis&#39;.</span>
+<span class="sd">    gridlabel : bool, optional</span>
+<span class="sd">        Whether to display grid labels on the map. Default is False.</span>
+<span class="sd">    shapefile : str or shapefile-like object, optional</span>
+<span class="sd">        A shapefile to overlay on the map. Default is None.</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">        Title of the plot. Default is None.</span>
+<span class="sd">    title_ypos : float, optional</span>
+<span class="sd">        Y-coordinate for the title position. Default is 1.0.</span>
+<span class="sd">    wind_color : bool, optional</span>
+<span class="sd">        Whether to color the tracks based on wind speed. Default is False.</span>
+<span class="sd">    title_fontcolor : str, optional</span>
+<span class="sd">        Color of the plot title. Default is &#39;k&#39;.</span>
+<span class="sd">    title_fontstyle : str, optional</span>
+<span class="sd">        Font style of the plot title. Default is &#39;regular&#39;.</span>
+<span class="sd">    norm : matplotlib.colors.Normalize, optional</span>
+<span class="sd">        Normalization for the colormap scaling.</span>
+<span class="sd">    coastlines : bool, optional</span>
+<span class="sd">        Whether to display coastlines on the map. Default is True.</span>
+<span class="sd">    add_features : bool, optional</span>
+<span class="sd">        Whether to add additional features such as country borders and lakes.</span>
+<span class="sd">        Default is True.</span>
+<span class="sd">    gridlines : bool, optional</span>
+<span class="sd">        Whether to display gridlines on the map. Default is False.</span>
+<span class="sd">    gridspaces : list, optional</span>
+<span class="sd">        List of grid spacings for the x and y axes. Default is [10, 10].</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    line : matplotlib.collections.LineCollection</span>
+<span class="sd">        The LineCollection object representing the plotted tracks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Format the map</span>
+    <span class="n">format_mapping</span><span class="p">(</span>
+        <span class="n">ax</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">projection</span><span class="p">,</span> <span class="n">shapefile</span><span class="o">=</span><span class="n">shapefile</span><span class="p">,</span>
+        <span class="n">gridlabel</span><span class="o">=</span><span class="n">gridlabel</span><span class="p">,</span> <span class="n">gridspace</span><span class="o">=</span><span class="n">gridspace</span><span class="p">,</span> <span class="n">coastlines</span><span class="o">=</span><span class="n">coastlines</span><span class="p">,</span>
+        <span class="n">add_features</span><span class="o">=</span><span class="n">add_features</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Plot hurricane tracks</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Initialize line variable</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">track_inds</span><span class="p">:</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">lats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">indmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lat</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">90</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">lat</span><span class="p">[:</span><span class="n">indmax</span><span class="p">:</span><span class="n">interval</span><span class="p">]</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">lons</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="n">indmax</span><span class="p">:</span><span class="n">interval</span><span class="p">]</span>
+        <span class="n">vs</span> <span class="o">=</span> <span class="n">vmaxs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="n">indmax</span><span class="p">:</span><span class="n">interval</span><span class="p">]</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">vs</span> <span class="o">&gt;=</span> <span class="n">wind_speed_threshold</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">lat</span> <span class="o">=</span> <span class="n">lat</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+            <span class="n">lon</span> <span class="o">=</span> <span class="n">lon</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="n">vs</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">segments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">points</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">:]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">lc</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span>
+                <span class="n">segments</span><span class="p">,</span>
+                <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span> <span class="k">if</span> <span class="n">wind_color</span> <span class="k">else</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">,</span>
+                <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span> <span class="k">if</span> <span class="n">wind_color</span> <span class="k">else</span> <span class="mf">0.25</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(),</span>
+            <span class="p">)</span>
+            <span class="n">lc</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">vs</span><span class="p">)</span>
+            <span class="n">lc</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">lc</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">lon</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lat</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span> <span class="k">if</span> <span class="n">wind_color</span> <span class="k">else</span> <span class="mf">0.25</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(),</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">title_ypos</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">title_fontcolor</span><span class="p">,</span>
+                     <span class="n">fontweight</span><span class="o">=</span><span class="n">title_fontstyle</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">line</span></div>
+
+
+
+<div class="viewcode-block" id="plot_exceedance_probability">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.plots.plot_exceedance_probability">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_exceedance_probability</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Exceedance Probability&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plots the exceedance probability of the given data.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    - data: array-like, the data for which to plot the exceedance probability</span>
+<span class="sd">    - ax: matplotlib axes object, the axes on which to plot</span>
+<span class="sd">    - xlabel: str, label for the x-axis (default is &#39;Exceedance Probability&#39;)</span>
+<span class="sd">    - ylabel: str, label for the y-axis (default is &#39;Value&#39;)</span>
+<span class="sd">    - title: str, title of the plot</span>
+<span class="sd">    - fontweight: str, font weight for the title (default is &#39;regular&#39;)</span>
+<span class="sd">    - fontsize: int, font size for the title (default is 12)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ensure data is a NumPy array</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">num_storms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Sort the data in descending order</span>
+    <span class="n">sorted_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">data</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Calculate exceedance probability</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sorted_data</span><span class="p">)</span>
+    <span class="n">exceedance_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span>  <span class="c1"># Ranks divided by total count</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">exceedance_prob</span><span class="p">,</span> <span class="n">sorted_data</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Exceedance Probability&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s1"> (# storms: </span><span class="si">{</span><span class="n">num_storms</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="n">fontweight</span><span class="p">,</span>
+                 <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e0</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_tracks_landfall_region">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.plots.get_tracks_landfall_region">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_tracks_landfall_region</span><span class="p">(</span><span class="n">lat_tracks</span><span class="p">,</span> <span class="n">lon_tracks</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">num_tracks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the indices of tracks that make landfall within a specified polygon.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    lat_tracks : numpy.ndarray</span>
+<span class="sd">        2D array of latitudes (degrees) for each track [num_tracks, num_points]</span>
+<span class="sd">    lon_tracks : numpy.ndarray</span>
+<span class="sd">        2D array of longitudes (degrees) for each track [num_tracks, num_points]</span>
+<span class="sd">    num_tracks : int</span>
+<span class="sd">        Number of tracks to sample and check for landfall</span>
+<span class="sd">    buffer : float, optional</span>
+<span class="sd">        Buffer distance around the polygon (degrees)</span>
+<span class="sd">    polygon : shapely.geometry.Polygon</span>
+<span class="sd">        Polygon representing the region to check for landfall</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    ind_poly : list</span>
+<span class="sd">        List of indices of tracks that make landfall within the polygon.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">num_tcs</span> <span class="o">=</span> <span class="n">lat_tracks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">num_tracks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ind_tracks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_tcs</span><span class="p">),</span> <span class="n">num_tracks</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ind_tracks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_tcs</span><span class="p">)</span>
+
+    <span class="n">polygon_buffer</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+    <span class="n">ind_poly</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">tc_id</span> <span class="ow">in</span> <span class="n">ind_tracks</span><span class="p">:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">lat_tracks</span><span class="p">[</span><span class="n">tc_id</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">indmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">temp</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">90</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lat_tracks</span><span class="p">[</span><span class="n">tc_id</span><span class="p">,</span> <span class="p">:</span><span class="n">indmax</span><span class="p">])</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lon_tracks</span><span class="p">[</span><span class="n">tc_id</span><span class="p">,</span> <span class="p">:</span><span class="n">indmax</span><span class="p">])</span>
+
+        <span class="c1"># Convert longitudes to [-180, 180] range</span>
+        <span class="n">lon</span><span class="p">[</span><span class="n">lon</span> <span class="o">&gt;</span> <span class="mi">180</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">360</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indmax</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">lon</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">lat</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">polygon_buffer</span><span class="p">):</span>
+                <span class="n">ind_poly</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tc_id</span><span class="p">)</span>
+                <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">ind_poly</span></div>
+
+
+
+<div class="viewcode-block" id="truncate_colormap">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.plots.truncate_colormap">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">truncate_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">minval</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Truncate a colormap to a specific range and return a new colormap.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    cmap : matplotlib.colors.Colormap</span>
+<span class="sd">        The colormap to be truncated.</span>
+<span class="sd">    minval : float, optional</span>
+<span class="sd">        Minimum value for the colormap range. Default is 0.0.</span>
+<span class="sd">    maxval : float, optional</span>
+<span class="sd">        Maximum value for the colormap range. Default is 1.0.</span>
+<span class="sd">    n : int, optional</span>
+<span class="sd">        Number of colors in the truncated colormap. Default is 100.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    new_cmap : matplotlib.colors.LinearSegmentedColormap</span>
+<span class="sd">        A new colormap truncated to the specified range.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ensure minval and maxval are within the range [0, 1]</span>
+    <span class="n">minval</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">minval</span><span class="p">)</span>
+    <span class="n">maxval</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">maxval</span><span class="p">)</span>
+
+    <span class="c1"># Create new colormap by sampling the original colormap</span>
+    <span class="n">new_cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;trunc(</span><span class="si">{</span><span class="n">cmap</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">minval</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">maxval</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_cmap</span></div>
+
+
+
+<div class="viewcode-block" id="create_buffer_around_POI">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.plots.create_buffer_around_POI">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_buffer_around_POI</span><span class="p">(</span><span class="n">lat_poi</span><span class="p">,</span> <span class="n">lon_poi</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a buffer zone around a Point of Interest (POI) defined by its</span>
+<span class="sd">    latitude and longitude.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    lat_poi : float</span>
+<span class="sd">        Latitude of the Point of Interest (degree)</span>
+<span class="sd">    lon_poi : float</span>
+<span class="sd">        Longitude of the Point of Interest (degree)</span>
+<span class="sd">    radius : float, optional</span>
+<span class="sd">        Radius of the buffer zone in degrees, default is 1.0</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    Polygon</span>
+<span class="sd">        A Polygon object representing the buffer zone around the POI</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">radius</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Radius must be a positive number.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">lon_poi</span> <span class="o">&gt;</span> <span class="mi">180</span><span class="p">:</span>
+        <span class="n">lon_poi</span> <span class="o">-=</span> <span class="mi">360</span>
+    <span class="k">elif</span> <span class="n">lon_poi</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">180</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Longitude must be greater than or equal to -180 degrees.&quot;</span><span class="p">)</span>
+
+    <span class="n">point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">lon_poi</span><span class="p">,</span> <span class="n">lat_poi</span><span class="p">)</span>
+    <span class="n">buffer</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">buffer</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="gmtColormap_openfile">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.plots.gmtColormap_openfile">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gmtColormap_openfile</span><span class="p">(</span><span class="n">cptf</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a GMT color map from an OPEN cpt file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cptf : open file or url handle</span>
+<span class="sd">        path to .cpt file</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        name for color map</span>
+<span class="sd">        if not provided, the file name will be used</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># generate cmap name</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">cptf</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># process file</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">lastls</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">colorModel</span> <span class="o">=</span> <span class="s2">&quot;RGB&quot;</span>  <span class="c1"># Set default value</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">cptf</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+        <span class="n">ls</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+        <span class="c1"># skip empty lines</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ls</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># parse header info</span>
+        <span class="k">if</span> <span class="n">ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;#&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">ls</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;HSV&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;HSV&quot;</span><span class="p">]:</span>
+                <span class="n">colorModel</span> <span class="o">=</span> <span class="s2">&quot;HSV&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">colorModel</span> <span class="o">=</span> <span class="s2">&quot;RGB&quot;</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># skip BFN info</span>
+        <span class="k">if</span> <span class="n">ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;N&quot;</span><span class="p">]:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># parse color vectors</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+
+        <span class="c1"># save last row</span>
+        <span class="n">lastls</span> <span class="o">=</span> <span class="n">ls</span>
+
+    <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">lastls</span><span class="p">[</span><span class="mi">4</span><span class="p">]))</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">lastls</span><span class="p">[</span><span class="mi">5</span><span class="p">]))</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">lastls</span><span class="p">[</span><span class="mi">6</span><span class="p">]))</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">lastls</span><span class="p">[</span><span class="mi">7</span><span class="p">]))</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">colorModel</span> <span class="o">==</span> <span class="s2">&quot;HSV&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="c1"># convert HSV to RGB</span>
+            <span class="n">rr</span><span class="p">,</span> <span class="n">gg</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">colorsys</span><span class="o">.</span><span class="n">hsv_to_rgb</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="mf">360.</span><span class="p">,</span> <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rr</span>
+            <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">gg</span>
+            <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span>
+    <span class="k">elif</span> <span class="n">colorModel</span> <span class="o">==</span> <span class="s2">&quot;RGB&quot;</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">/=</span> <span class="mf">255.</span>
+        <span class="n">g</span> <span class="o">/=</span> <span class="mf">255.</span>
+        <span class="n">b</span> <span class="o">/=</span> <span class="mf">255.</span>
+
+    <span class="n">red</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">blue</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">green</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">xNorm</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+        <span class="n">red</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">xNorm</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+        <span class="n">green</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">xNorm</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+        <span class="n">blue</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">xNorm</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+
+    <span class="c1"># return colormap</span>
+    <span class="n">cdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">red</span><span class="o">=</span><span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="o">=</span><span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="o">=</span><span class="n">blue</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">segmentdata</span><span class="o">=</span><span class="n">cdict</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="load_cpt_colormap">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.plots.load_cpt_colormap">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_cpt_colormap</span><span class="p">(</span><span class="n">cptfile</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a color map from a cpt file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cptfile : str or open file-like object</span>
+<span class="sd">        path to .cpt file</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        name for color map</span>
+<span class="sd">        if not provided, the file name will be used</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cptfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cptf</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">gmtColormap_openfile</span><span class="p">(</span><span class="n">cptf</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="shape2grid">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.plots.shape2grid">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">shape2grid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">shapefile</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert shapefile to a grid mask.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    x : array-like</span>
+<span class="sd">        X-coordinates of the grid.</span>
+<span class="sd">    y : array-like</span>
+<span class="sd">        Y-coordinates of the grid.</span>
+<span class="sd">    shapefile : str</span>
+<span class="sd">        Path to the shapefile.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        Grid mask where 1 indicates inside the shape, NaN outside.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Load the shapefile</span>
+    <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">shapefile</span><span class="p">)</span>
+    <span class="c1"># Create a meshgrid</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">360</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># Check if each point is inside the shapefile</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">ravel</span><span class="p">())]</span>
+    <span class="n">inside</span> <span class="o">=</span> <span class="p">[</span><span class="n">gdf</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">point</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+
+    <span class="c1"># Reshape the result to the shape of the meshgrid</span>
+    <span class="n">inside</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">inside</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">inside</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">inside</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">inside</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Phong V.V. Le
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

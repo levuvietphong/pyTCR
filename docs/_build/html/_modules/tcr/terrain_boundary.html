@@ -1,0 +1,758 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tcr.terrain_boundary &#8212; pyTCR Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-examples.css?v=e236af4b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-shadow.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-punk.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-noir.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=010c3e5c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/hoverxref.js"></script>
+    <script src="../../_static/js/tooltipster.bundle.min.js"></script>
+    <script src="../../_static/js/micromodal.min.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"N": "\\mathbb{N}", "floor": ["\\lfloor#1\\rfloor", 1], "bmat": ["\\left[\\begin{array}"], "emat": ["\\end{array}\\right]"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/tcr/terrain_boundary';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="pyTCR Documentation - Home"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="pyTCR Documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../intro.html">
+                    Documentation 🔎
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started 🚀</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../math.html">Background</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../examples/examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex0_download_tracks_from_cmip6.html"><strong>0. Download tropical cyclone tracks</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex1_tropical_cyclone_tracks.html"><strong>1. Tropical cyclone tracks and intensity</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex2_rainfall_generation.html"><strong>2. Tropical cyclone rainfall generation</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex3_wind_speed_generation.html"><strong>3. Tropical cyclone maximum wind speed</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex4_rainfall_polygons_generation.html"><strong>4. Generate tropical cyclone rainfall over a specific region</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/ex5_multiple_rainfall_event_polygon.html"><strong>5. Multiple tropical cyclone rainfall events generated over a specific region</strong></a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference 📖</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/index.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/modules.html">pyTCR</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/pyTCR.html">Functions</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for tcr.terrain_boundary</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for topography and boundary layers in PyTCR</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tcr</span><span class="w"> </span><span class="kn">import</span> <span class="n">iodata</span> <span class="k">as</span> <span class="n">tcr_io</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tcr.datadir</span><span class="w"> </span><span class="kn">import</span> <span class="n">DATA_DIR</span>
+
+
+<div class="viewcode-block" id="calculate_distance_to_track">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.terrain_boundary.calculate_distance_to_track">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_distance_to_track</span><span class="p">(</span>
+    <span class="n">point_lat</span><span class="p">,</span> <span class="n">point_lon</span><span class="p">,</span> <span class="n">track_lats</span><span class="p">,</span> <span class="n">track_lons</span><span class="p">,</span> <span class="n">num_storms</span><span class="p">,</span> <span class="n">storm_length</span><span class="p">,</span>
+    <span class="n">num_x_points</span><span class="p">,</span> <span class="n">num_y_points</span><span class="p">,</span> <span class="n">num_grid_points</span><span class="p">,</span> <span class="n">degree_to_km</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the distances of points of interest (POI) from the track.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    point_lat : numpy.ndarray</span>
+<span class="sd">        Array of latitudes for points of interest (degree)</span>
+<span class="sd">    point_lon : numpy.ndarray</span>
+<span class="sd">        Array of longitudes for points of interest (degree)</span>
+<span class="sd">    track_lats : numpy.ndarray</span>
+<span class="sd">        Array of latitudes along each track (degree)</span>
+<span class="sd">    track_lons : numpy.ndarray</span>
+<span class="sd">        Array of longitudes along each track (degree)</span>
+<span class="sd">    num_storms : int</span>
+<span class="sd">        Number of storms.</span>
+<span class="sd">    storm_length : int</span>
+<span class="sd">        Length of each storm.</span>
+<span class="sd">    num_x_points : int</span>
+<span class="sd">        Number of points in the x direction.</span>
+<span class="sd">    num_y_points : int</span>
+<span class="sd">        Number of points in the y direction.</span>
+<span class="sd">    num_grid_points : int</span>
+<span class="sd">        Number of grid points.</span>
+<span class="sd">    degree_to_km : float</span>
+<span class="sd">        Factor for converting degrees to kilometers.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    radius : numpy.ndarray</span>
+<span class="sd">        Euclidean distance from track (km).</span>
+<span class="sd">    dx : numpy.ndarray</span>
+<span class="sd">        Distance components in the x direction (km).</span>
+<span class="sd">    dy : numpy.ndarray</span>
+<span class="sd">        Distance components in the y direction (km).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pi_factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>  <span class="c1"># Use numpy&#39;s pi constant</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_storms</span><span class="p">,</span> <span class="n">storm_length</span><span class="p">,</span> <span class="n">num_x_points</span><span class="p">,</span> <span class="n">num_y_points</span><span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_x_points</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_y_points</span><span class="p">):</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="k">if</span> <span class="n">num_grid_points</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">jj</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">track_lons</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">track_lats</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">dx</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">pi_factor</span> <span class="o">*</span> <span class="n">point_lat</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">point_lon</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">track_lons</span><span class="p">)</span>
+                <span class="n">dy</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_lat</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">track_lats</span>
+            <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">track_lons</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">track_lats</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">dx</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">pi_factor</span> <span class="o">*</span> <span class="n">point_lat</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">point_lon</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">track_lons</span><span class="p">)</span>
+                <span class="n">dy</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_lat</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">track_lats</span>
+            <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">track_lons</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">track_lats</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">dx</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">pi_factor</span> <span class="o">*</span> <span class="n">point_lat</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">*</span>
+                                  <span class="p">(</span><span class="n">point_lon</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">track_lons</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]))</span>
+                <span class="n">dy</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_lat</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">track_lats</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span>
+
+    <span class="n">dx</span> <span class="o">*=</span> <span class="n">degree_to_km</span>
+    <span class="n">dy</span> <span class="o">*=</span> <span class="n">degree_to_km</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">radius</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_spatial_derivatives">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.terrain_boundary.calculate_spatial_derivatives">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_spatial_derivatives</span><span class="p">(</span>
+    <span class="n">bathymetry</span><span class="p">,</span> <span class="n">x_coords</span><span class="p">,</span> <span class="n">y_coords</span><span class="p">,</span> <span class="n">x_size</span><span class="p">,</span> <span class="n">y_size</span><span class="p">,</span> <span class="n">scale_factor</span><span class="p">,</span>
+    <span class="n">pi_factor</span><span class="p">,</span> <span class="n">num_topo_rows</span><span class="p">,</span> <span class="n">topo_resolution_inv</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the spatial derivatives of a given topography.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    bathymetry : numpy.ndarray</span>
+<span class="sd">        Array representing the bathymetry (m)</span>
+<span class="sd">    x_coords : numpy.ndarray</span>
+<span class="sd">        Array of spatial coordinates in the x direction (degree)</span>
+<span class="sd">    y_coords : numpy.ndarray</span>
+<span class="sd">        Array of spatial coordinates in the y direction (degree)</span>
+<span class="sd">    x_size : int</span>
+<span class="sd">        Size of the x dimension.</span>
+<span class="sd">    y_size : int</span>
+<span class="sd">        Size of the y dimension.</span>
+<span class="sd">    scale_factor : float</span>
+<span class="sd">        Factor for converting nautical miles to meters.</span>
+<span class="sd">    pi_factor : float</span>
+<span class="sd">        Value of pi divided by 180.</span>
+<span class="sd">    num_topo_rows : int</span>
+<span class="sd">        Number of rows in the bathymetry array.</span>
+<span class="sd">    topo_resolution_inv : float</span>
+<span class="sd">        Inverse of the topographic resolution.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    h : numpy.ndarray</span>
+<span class="sd">        Array of topographic heights (m).</span>
+<span class="sd">    hx : numpy.ndarray</span>
+<span class="sd">        Array of derivatives of h in the x direction.</span>
+<span class="sd">    hy : numpy.ndarray</span>
+<span class="sd">        Array of derivatives of h in the y direction.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_indices</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Helper function for calculating indices &quot;&quot;&quot;</span>
+        <span class="n">ib</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">topo_resolution_inv</span> <span class="o">*</span> <span class="n">lon</span><span class="p">)</span>
+        <span class="n">ibp</span> <span class="o">=</span> <span class="p">(</span><span class="n">ib</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_topo_rows</span>
+        <span class="n">ibs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">topo_resolution_inv</span> <span class="o">*</span> <span class="n">lon</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">ibsp</span> <span class="o">=</span> <span class="p">(</span><span class="n">ibs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_topo_rows</span>
+        <span class="n">jb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">topo_resolution_inv</span> <span class="o">*</span> <span class="p">(</span><span class="n">lat</span> <span class="o">+</span> <span class="mi">90</span><span class="p">))</span>
+        <span class="n">jbs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">topo_resolution_inv</span> <span class="o">*</span> <span class="p">(</span><span class="n">lat</span> <span class="o">+</span> <span class="mi">90</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ib</span><span class="p">,</span> <span class="n">ibp</span><span class="p">,</span> <span class="n">ibs</span><span class="p">,</span> <span class="n">ibsp</span><span class="p">,</span> <span class="n">jb</span><span class="p">,</span> <span class="n">jbs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">weighted_sum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">delx</span><span class="p">,</span> <span class="n">dely</span><span class="p">,</span> <span class="n">logfac</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Helper function for weighted sum &quot;&quot;&quot;</span>
+        <span class="n">ib</span><span class="p">,</span> <span class="n">ibp</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">jb</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">indices</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">ib</span><span class="p">,</span> <span class="n">jb</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">ib</span><span class="p">,</span> <span class="n">jb</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">ibp</span><span class="p">,</span> <span class="n">jb</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">ibp</span><span class="p">,</span> <span class="n">jb</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">delx</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">dely</span><span class="p">),</span> <span class="n">dely</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">delx</span><span class="p">),</span> <span class="n">delx</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">dely</span><span class="p">),</span> <span class="n">delx</span> <span class="o">*</span> <span class="n">dely</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">logfac</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mi">11</span><span class="p">)</span> <span class="o">*</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+
+    <span class="c1"># since bathymetry is in meters, need to convert space resolution from degree to meters</span>
+    <span class="c1"># for topographic derivatives</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">hx</span><span class="p">,</span> <span class="n">hy</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x_size</span><span class="p">,</span> <span class="n">y_size</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="n">bathymetry</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">bathymetry</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">dhdx</span> <span class="o">=</span> <span class="n">scale_factor</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">bathymetry</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">bathymetry</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">dhdy</span> <span class="o">=</span> <span class="n">scale_factor</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">bathymetry</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">bathymetry</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lon</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_coords</span><span class="p">):</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">lon</span> <span class="k">if</span> <span class="n">lon</span> <span class="o">&lt;</span> <span class="mi">360</span> <span class="k">else</span> <span class="n">lon</span> <span class="o">-</span> <span class="mi">360</span>
+
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">lat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y_coords</span><span class="p">):</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">calculate_indices</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+            <span class="n">ib</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">ibs</span><span class="p">,</span> <span class="n">ibsp</span><span class="p">,</span> <span class="n">jb</span><span class="p">,</span> <span class="n">jbs</span> <span class="o">=</span> <span class="n">indices</span>
+            <span class="n">delx</span><span class="p">,</span> <span class="n">dely</span> <span class="o">=</span> <span class="n">topo_resolution_inv</span> <span class="o">*</span> <span class="n">lon</span> <span class="o">-</span> <span class="n">ib</span><span class="p">,</span> <span class="n">topo_resolution_inv</span> <span class="o">*</span> <span class="p">(</span><span class="n">lat</span> <span class="o">+</span> <span class="mi">90</span><span class="p">)</span> <span class="o">-</span> <span class="n">jb</span>
+            <span class="n">h</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">weighted_sum</span><span class="p">(</span><span class="n">bathymetry</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">delx</span><span class="p">,</span> <span class="n">dely</span><span class="p">,</span> <span class="n">logfac</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span> <span class="o">-</span> <span class="mi">11</span>
+
+            <span class="n">delx</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">+</span> <span class="n">topo_resolution_inv</span> <span class="o">*</span> <span class="n">lon</span> <span class="o">-</span> <span class="n">ibs</span>
+            <span class="n">dely</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">+</span> <span class="n">topo_resolution_inv</span> <span class="o">*</span> <span class="p">(</span><span class="n">lat</span> <span class="o">+</span> <span class="mi">90</span><span class="p">)</span> <span class="o">-</span> <span class="n">jbs</span>
+            <span class="n">hx</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">weighted_sum</span><span class="p">(</span><span class="n">dhdx</span><span class="p">,</span> <span class="p">(</span><span class="n">ibs</span><span class="p">,</span> <span class="n">ibsp</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">jbs</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                    <span class="n">delx</span><span class="p">,</span> <span class="n">dely</span><span class="p">,</span> <span class="n">logfac</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">pi_factor</span> <span class="o">*</span> <span class="n">lat</span><span class="p">)</span>
+            <span class="n">hy</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">weighted_sum</span><span class="p">(</span><span class="n">dhdy</span><span class="p">,</span> <span class="p">(</span><span class="n">ibs</span><span class="p">,</span> <span class="n">ibsp</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">jbs</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                    <span class="n">delx</span><span class="p">,</span> <span class="n">dely</span><span class="p">,</span> <span class="n">logfac</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">h</span><span class="p">,</span> <span class="n">hx</span><span class="p">,</span> <span class="n">hy</span></div>
+
+
+
+<div class="viewcode-block" id="estimate_topographic_height">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.terrain_boundary.estimate_topographic_height">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_topographic_height</span><span class="p">(</span><span class="n">bxmin</span><span class="p">,</span> <span class="n">bxmax</span><span class="p">,</span> <span class="n">bymin</span><span class="p">,</span> <span class="n">bymax</span><span class="p">,</span> <span class="n">dellatlong</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate the topographic height and its spatial derivatives.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    bxmin : float</span>
+<span class="sd">        Minimum bound in the x-axis (longitude in degree)</span>
+<span class="sd">    bxmax : float</span>
+<span class="sd">        Maximum bound in the x-axis (longitude in degree)</span>
+<span class="sd">    bymin : float</span>
+<span class="sd">        Minimum bound in the y-axis (latitude in degree)</span>
+<span class="sd">    bymax : float</span>
+<span class="sd">        Maximum bound in the y-axis (latitude in degree)</span>
+<span class="sd">    dellatlong : float</span>
+<span class="sd">        Horizontal resolution of the map in degrees.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    h : numpy.ndarray</span>
+<span class="sd">        Topographic height data (m)</span>
+<span class="sd">    hx : numpy.ndarray</span>
+<span class="sd">        Topographic gradient in the x direction</span>
+<span class="sd">    hy : numpy.ndarray</span>
+<span class="sd">        Topographic gradient in the y direction</span>
+<span class="sd">    x : numpy.ndarray</span>
+<span class="sd">        Array of longitude values for the grid (degree)</span>
+<span class="sd">    y : numpy.ndarray</span>
+<span class="sd">        Array of latitude values for the grid (degree)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Load high-resolution bathymetry data</span>
+    <span class="n">bathymetry</span> <span class="o">=</span> <span class="n">tcr_io</span><span class="o">.</span><span class="n">load_netcdf_2d_parameters</span><span class="p">(</span><span class="n">DATA_DIR</span><span class="p">,</span> <span class="s2">&quot;surface_data.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;bathymetry_high&quot;</span><span class="p">)</span>
+    <span class="n">ntopo</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">bathymetry</span><span class="p">)</span>  <span class="c1"># number of grid point in x direction</span>
+    <span class="n">topo_resolution</span> <span class="o">=</span> <span class="mi">360</span> <span class="o">/</span> <span class="n">ntopo</span>
+    <span class="n">topo_resolution_inv</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">topo_resolution</span>
+    <span class="n">pi_factor</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>  <span class="c1"># pi number</span>
+    <span class="c1"># scale factor converting nautical mile (degree) to meter</span>
+    <span class="n">scale_factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">topo_resolution</span> <span class="o">*</span> <span class="mf">60.0</span> <span class="o">*</span> <span class="mi">1852</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">bxmin</span><span class="p">,</span> <span class="n">bxmax</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">dellatlong</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">bymin</span><span class="p">,</span> <span class="n">bymax</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">dellatlong</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">x_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x_size</span> <span class="o">==</span> <span class="n">y_size</span><span class="p">:</span>
+        <span class="n">x_size</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bxmax</span> <span class="o">+</span> <span class="n">dellatlong</span><span class="p">)</span>
+
+    <span class="n">h</span><span class="p">,</span> <span class="n">hx</span><span class="p">,</span> <span class="n">hy</span> <span class="o">=</span> <span class="n">calculate_spatial_derivatives</span><span class="p">(</span>
+        <span class="n">bathymetry</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_size</span><span class="p">,</span> <span class="n">y_size</span><span class="p">,</span> <span class="n">scale_factor</span><span class="p">,</span>
+        <span class="n">pi_factor</span><span class="p">,</span> <span class="n">ntopo</span><span class="p">,</span> <span class="n">topo_resolution_inv</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">h</span><span class="p">,</span> <span class="n">hx</span><span class="p">,</span> <span class="n">hy</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span></div>
+
+
+
+<div class="viewcode-block" id="estimate_drag_coefficients">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.terrain_boundary.estimate_drag_coefficients">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_drag_coefficients</span><span class="p">(</span><span class="n">plat</span><span class="p">,</span> <span class="n">plong</span><span class="p">,</span> <span class="n">sfac</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate the drag coefficients and their gradients at points of interest (POI).</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    plat : numpy.ndarray</span>
+<span class="sd">        Array of latitudes for points of interest (degree)</span>
+<span class="sd">    plong : numpy.ndarray</span>
+<span class="sd">        Array of longitudes for points of interest (degree)</span>
+<span class="sd">    sfac : float</span>
+<span class="sd">        Factor for converting spatial resolution in nautical miles to meters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    cdrag : numpy.ndarray</span>
+<span class="sd">        Array of drag coefficients at POI (-)</span>
+<span class="sd">    cdx : numpy.ndarray</span>
+<span class="sd">        Array of drag coefficient gradients in the x direction (1/m)</span>
+<span class="sd">    cdy : numpy.ndarray</span>
+<span class="sd">        Array of drag coefficient gradients in the y direction (1/m)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_interpolate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper function for bilinear interpolation&quot;&quot;&quot;</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">dx</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">dy</span><span class="p">),</span> <span class="n">dy</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">dx</span><span class="p">),</span> <span class="n">dx</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">dy</span><span class="p">),</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">dy</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">]</span> <span class="o">+</span>
+                <span class="n">weights</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">ix</span><span class="p">,</span> <span class="n">iy</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span>
+                <span class="n">weights</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[(</span><span class="n">ix</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1440</span><span class="p">,</span> <span class="n">iy</span><span class="p">]</span> <span class="o">+</span>
+                <span class="n">weights</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[(</span><span class="n">ix</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1440</span><span class="p">,</span> <span class="n">iy</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">pi_factor</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>  <span class="c1"># pi number</span>
+
+    <span class="c1"># Load neutral drag coefficients</span>
+    <span class="n">cd</span> <span class="o">=</span> <span class="n">tcr_io</span><span class="o">.</span><span class="n">load_netcdf_2d_parameters</span><span class="p">(</span><span class="n">DATA_DIR</span><span class="p">,</span> <span class="s2">&quot;surface_data.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;cdrag&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Correct the drag coefficient for gradient wind application</span>
+    <span class="n">cd</span> <span class="o">=</span> <span class="mf">0.9</span> <span class="o">*</span> <span class="n">cd</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">cd</span><span class="p">)</span>
+    <span class="n">cd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">cd</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">)</span>  <span class="c1"># Ensure minimum drag coefficient value</span>
+
+    <span class="c1"># Calculate gradients of drag coefficients</span>
+    <span class="n">dcddx</span> <span class="o">=</span> <span class="n">sfac</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cd</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">cd</span><span class="p">)</span>
+    <span class="n">dcddy</span> <span class="o">=</span> <span class="n">sfac</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cd</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">cd</span><span class="p">)</span>
+
+    <span class="c1"># Initialize arrays for drag coefficients and their gradients at POI</span>
+    <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span> <span class="o">=</span> <span class="n">plong</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">plat</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">cdrag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">))</span>
+    <span class="n">cdx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">))</span>
+    <span class="n">cdy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sx</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sy</span><span class="p">):</span>
+            <span class="c1"># Calculate indices for interpolation</span>
+            <span class="n">ib</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">plong</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">%</span> <span class="mi">1440</span>
+            <span class="n">ibs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">plong</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">))</span> <span class="o">%</span> <span class="mi">1440</span>
+            <span class="n">jb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">plat</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="mi">90</span><span class="p">)))</span>
+            <span class="n">jbs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">plat</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="mi">90</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">))</span>
+
+            <span class="c1"># Interpolate drag coefficient and its gradients</span>
+            <span class="n">delx</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">plong</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">ib</span>
+            <span class="n">dely</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">plat</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="mi">90</span><span class="p">)</span> <span class="o">-</span> <span class="n">jb</span>
+            <span class="n">cdrag</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">_interpolate</span><span class="p">(</span><span class="n">cd</span><span class="p">,</span> <span class="n">ib</span><span class="p">,</span> <span class="n">jb</span><span class="p">,</span> <span class="n">delx</span><span class="p">,</span> <span class="n">dely</span><span class="p">)</span>
+
+            <span class="n">delx</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">plong</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">ibs</span>
+            <span class="n">dely</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">plat</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="mi">90</span><span class="p">)</span> <span class="o">-</span> <span class="n">jbs</span>
+            <span class="n">cdx</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">_interpolate</span><span class="p">(</span><span class="n">dcddx</span><span class="p">,</span> <span class="n">ibs</span><span class="p">,</span> <span class="n">jbs</span><span class="p">,</span> <span class="n">delx</span><span class="p">,</span> <span class="n">dely</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">pi_factor</span> <span class="o">*</span> <span class="n">plat</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="n">cdy</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">_interpolate</span><span class="p">(</span><span class="n">dcddy</span><span class="p">,</span> <span class="n">ibs</span><span class="p">,</span> <span class="n">jbs</span><span class="p">,</span> <span class="n">delx</span><span class="p">,</span> <span class="n">dely</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cdrag</span><span class="p">,</span> <span class="n">cdx</span><span class="p">,</span> <span class="n">cdy</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_qs900">
+<a class="viewcode-back" href="../../api/pyTCR.html#tcr.terrain_boundary.calculate_qs900">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_qs900</span><span class="p">(</span><span class="n">T600</span><span class="p">,</span> <span class="n">vmax</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate saturation specific humidity at 600 hPa and 950 hPa given the</span>
+<span class="sd">    temperature at 600 hPa and assuming a moist adiabatic lapse rate.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T600 : numpy.ndarray</span>
+<span class="sd">        Temperature at 600 hPa (K).</span>
+<span class="sd">    vmax : numpy.ndarray</span>
+<span class="sd">        Maximum wind speed (knots).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    q900 : numpy.ndarray</span>
+<span class="sd">        Saturation specific humidity at 950 hPa (g/g)</span>
+<span class="sd">    q600 : numpy.ndarray</span>
+<span class="sd">        Saturation specific humidity at 600 hPa (g/g)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Constants</span>
+    <span class="n">CONSTANTS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;pref&#39;</span><span class="p">:</span> <span class="mi">950</span><span class="p">,</span>  <span class="c1"># Pressure to find qs at (hPa)</span>
+        <span class="s1">&#39;cp&#39;</span><span class="p">:</span> <span class="mi">1005</span><span class="p">,</span>  <span class="c1"># Specific heat capacity of dry air at constant pressure (J/(kg·K))</span>
+        <span class="s1">&#39;Rv&#39;</span><span class="p">:</span> <span class="mi">491</span><span class="p">,</span>  <span class="c1"># Gas constant for water vapor (J/(kg·K))</span>
+        <span class="s1">&#39;Rd&#39;</span><span class="p">:</span> <span class="mi">287</span><span class="p">,</span>  <span class="c1"># Gas constant for dry air (J/(kg·K))</span>
+        <span class="s1">&#39;Lv&#39;</span><span class="p">:</span> <span class="mf">2.5e6</span><span class="p">,</span>  <span class="c1"># Latent heat of vaporization (J/kg)</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_es_qs</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="n">Tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="mf">273.15</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">es</span> <span class="o">=</span> <span class="mf">6.112</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">17.67</span> <span class="o">*</span> <span class="n">Tc</span> <span class="o">/</span> <span class="p">(</span><span class="mf">243.5</span> <span class="o">+</span> <span class="n">Tc</span><span class="p">))</span>
+        <span class="n">q600</span> <span class="o">=</span> <span class="mf">0.622</span> <span class="o">*</span> <span class="n">es</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">es</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">es</span><span class="p">,</span> <span class="n">q600</span>
+
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">CONSTANTS</span><span class="p">[</span><span class="s1">&#39;Lv&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">CONSTANTS</span><span class="p">[</span><span class="s1">&#39;Rv&#39;</span><span class="p">]</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">CONSTANTS</span><span class="p">[</span><span class="s1">&#39;Rd&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">CONSTANTS</span><span class="p">[</span><span class="s1">&#39;pref&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">600</span><span class="p">)</span>
+    <span class="n">c3</span> <span class="o">=</span> <span class="mf">1.6</span> <span class="o">/</span> <span class="mi">100</span>
+
+    <span class="c1"># Convert vmax from knots to m/s</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">vmax</span> <span class="o">*</span> <span class="mi">1852</span> <span class="o">/</span> <span class="mi">3600</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">q600</span> <span class="o">=</span> <span class="n">calc_es_qs</span><span class="p">(</span><span class="n">T600</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+
+    <span class="c1"># First guess for T</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">T600</span> <span class="o">+</span> <span class="mi">20</span>
+
+    <span class="c1"># Mask to ignore zero fill values of T600</span>
+    <span class="n">valid_mask</span> <span class="o">=</span> <span class="n">T600</span> <span class="o">&gt;</span> <span class="mi">100</span>
+
+    <span class="c1"># Only compute for valid entries</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>  <span class="c1"># Iterative refinement (5 iterations)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">qs</span> <span class="o">=</span> <span class="n">calc_es_qs</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">],</span> <span class="n">CONSTANTS</span><span class="p">[</span><span class="s1">&#39;pref&#39;</span><span class="p">])</span>
+        <span class="n">er</span> <span class="o">=</span> <span class="p">(</span><span class="n">CONSTANTS</span><span class="p">[</span><span class="s1">&#39;cp&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">/</span> <span class="n">T600</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">])</span>
+              <span class="o">+</span> <span class="n">CONSTANTS</span><span class="p">[</span><span class="s1">&#39;Lv&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">qs</span> <span class="o">/</span> <span class="n">T</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">-</span> <span class="n">q600</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">/</span> <span class="n">T600</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">])</span>
+              <span class="o">-</span> <span class="n">c2</span> <span class="o">-</span> <span class="n">c3</span> <span class="o">*</span> <span class="n">vmax</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">derdT</span> <span class="o">=</span> <span class="p">(</span><span class="n">CONSTANTS</span><span class="p">[</span><span class="s1">&#39;cp&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">T</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">+</span>
+                 <span class="n">CONSTANTS</span><span class="p">[</span><span class="s1">&#39;Lv&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">qs</span> <span class="o">*</span> <span class="p">(</span><span class="n">c1</span> <span class="o">/</span> <span class="n">T</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="n">T</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">T</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">-=</span> <span class="n">er</span> <span class="o">/</span> <span class="n">derdT</span>
+
+    <span class="n">q900</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">q600</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">q900</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">calc_es_qs</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">],</span> <span class="n">CONSTANTS</span><span class="p">[</span><span class="s1">&#39;pref&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">q900</span><span class="p">,</span> <span class="n">q600</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Phong V.V. Le
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

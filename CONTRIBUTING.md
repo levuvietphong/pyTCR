@@ -1,43 +1,57 @@
 <!-- omit in toc -->
-# Contributing to pyTCR
+# pyTCR Contribution Guide
 
-Thank you for your interest in contributing to pyTCR. Please consider following the guidelines below:
+Thank you for your interest in contributing to pyTCR. Contributions are greatly appreciated!
 
 ### Getting Started
-1. **Fork the Repository**: Click the "Fork" button on GitHub to create your own copy of the repository.
+Ready to contribute? Here's how to set up *pyTCR* for local development.
 
-2. **Clone the Repository**: Clone your forked repository to your local machine and install the library in editable mode:
+1. Fork the [pyTCR](https://github.com/levuvietphong/pyTCR) repo on GitHub.
 
+2. Clone your fork locally:
     ```sh
     git clone https://github.com/your-username/pyTCR.git
-    cd pyTCR
+    ```
+3. We recommend using `mamba` to manage dependencies. If you already have `mamba` installed, skip to the next step. If not, you can install it by running:
+    ```sh    
+    conda install -n base -c conda-forge mamba
+    ```
+4. Install your local copy into a conda environment:
+    ```sh
+    mamba env create -f environment.yml
+    conda activate pyTCR
     pip install -e .
     ```
 
-3. **Create a branch**: Work on a separate branch for each feature or fix
+4. Create a branch for local development:
     ```sh
     git checkout -b feature/your-feature-name
     ```
+    Now you can make your changes locally.
 
-4. **Make Changes & Commit**: Follow best coding practices and commit meaningful messages
+
+5. Commit your changes and push your branch to GitHub:
     ```sh
     git add .
-    git commit -m "Add feature: Your feature description"
-    ```
-5. **Push your branch to GitHub**: Push your changes to your fork and create a pull request (PR):
-    ```sh
+    git commit -m "Add feature: Your detailed feature description"
     git push origin feature/your-feature-name
     ```
+6. Submit a pull request through the GitHub website.
 
-6. **Submit your PR for review**: Finally, open a pull request to the `main` or `dev` branch :rocket: 
+### Report Bugs
+Report bugs at https://github.com/levuvietphong/pyTCR/issues.
 
-### Reporting Issues
-If you encounter a bug or have a feature request, we encourage you to open an issue on GitHub. To help us address your issue efficiently, please include the following details:
+If you are reporting a bug, please include:
 
-- **A clear and concise title**: Summarize the issue or feature request in a few words.
-- **Steps to reproduce**: Provide a step-by-step description of how to reproduce the issue.
-- **Expected vs. actual behavior**: Clearly state what you expected to happen and what actually occurred.
-- **Supporting information**: Attach any relevant logs, screenshots, or error messages to help us understand the problem better.
+- Your operating system name and version.
+- Any details about your local setup that might be helpful in troubleshooting.
+- Detailed steps to reproduce the bug.
+
+### Pull Request Guidelines
+Before you submit a pull request, check that it meets these guidelines:
+
+- The pull request should include tests.
+- If the pull request adds functionality, the docs should be updated. Put your new functionality into a function with a docstring, and add the feature to the list in README.
 
 ### Code Style
 This project follows PEP 8 coding conventions.

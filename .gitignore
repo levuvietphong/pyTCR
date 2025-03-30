@@ -3,9 +3,6 @@
 .chglog/
 dist/
 build/
-docs/
-/docs/conf.py
-/docs/_build
 
 *.egg-info/
 __pycache__/
