@@ -1,5 +1,8 @@
 version: 2
 
+sphinx:
+  configuration: docs/conf.py  # Path to your Sphinx configuration file
+
 # Set the version of Python and other tools you might need
 build:
   os: ubuntu-22.04
@@ -11,10 +14,17 @@ build:
       - "jupyter-book config sphinx docs/"
 
 python:
-   install:
-   - requirements: docs/requirements.txt
-#   - method: pip
-#     path: .
+  install:
+  - requirements: docs/requirements.txt
+  - method: pip
+    path: .
+    extra_requirements:
+    - sphinx
+
+sphinx:
+  configuration: docs/conf.py
+  builder: html
+  fail_on_warning: true
 
 formats:
   - pdf
