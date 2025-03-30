@@ -18,6 +18,8 @@ parts:
     - file: examples/ex3_wind_speed_generation
     - file: examples/ex4_rainfall_polygons_generation
     - file: examples/ex5_multiple_rainfall_event_polygon
-- caption: Reference 📖
+- caption: References 📖
   chapters:
-  - file: api/index
+  - file: paper
+  - file: api/pyTCR
+

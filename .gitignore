@@ -3,6 +3,8 @@
 .chglog/
 dist/
 build/
+docs/_build/
+docs/jupyter_execute/
 
 *.egg-info/
 __pycache__/
@@ -26,4 +28,4 @@ tcr/data/*.mat
 tcr/data/test/
 tcr/data/reanalysis/
 /joss/internal/
-README-pypi.md
+# README-pypi.md

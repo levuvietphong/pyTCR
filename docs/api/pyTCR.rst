@@ -1,8 +1,8 @@
-Functions
-=========
+API 
+===
 
-Submodules
-----------
+Functions and Submodules
+------------------------
 
 tcr.convert module
 ------------------
