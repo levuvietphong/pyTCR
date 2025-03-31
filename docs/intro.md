@@ -1,13 +1,17 @@
 # Documentation 🔎
-```{rubric} Main Features:
+
+```{rubric} pyTCR: A physics-based model developed in python to estimate rainfall induced by tropical cyclones🌀
 ```
 
-- A physics-based model developed in python to estimate rainfall induced by tropical cyclones 🌀.
+**Main Features:**
+
 - Simulate convective tropical cyclone rainfall by correlating the precipitation rate 🌨️ with the total upward wind velocity 🌬️ within the tropical cyclone vortex.
-- Integrate with outputs from tropical cyclone downscaling models driven by large-scale environmental conditions from GCMs 🌎.
 - Generate detailed spatial-temporal tropical cyclone rainfall patterns that align with hurricane tracks.
+- Integrate with outputs from tropical cyclone downscaling models driven by large-scale environmental conditions from GCMs 🌎.
 
 This documentation explains how to install and use `pyTCR`.
+
+---
 
 ::::{grid} 1 2 2 3
 :gutter: 1 1 1 2

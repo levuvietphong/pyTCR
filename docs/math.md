@@ -2,19 +2,21 @@
 
 # Background
 
-`PyTCR` implements a tropical cyclone (TC) rainfall model described in {cite}`Zhu:2013` and {cite}`Lu:2018` that simulates along-track convective rainfall by relating the precipitation rate to the total upward velocity within the TC vortex. We refer to the study by @Lu:2018 for detailed formulation of this model. Here, for convenience, we give a brief overview of the main rainfall mechanisms used in this model and implemented in `pyTCR`.
+--
+
+`PyTCR` implements a tropical cyclone (TC) rainfall model described in {cite:t}`Zhu:2013` and {cite:t}`Lu:2018` that simulates along-track convective rainfall by relating the precipitation rate to the total upward velocity within the TC vortex. We refer to the study by {cite:t}`Lu:2018` for detailed formulation of this model. Here, for convenience, we give a brief overview of the main rainfall mechanisms used in this model and implemented in `pyTCR`.
 
 Let $P_{TC}$ be the precipitation rate driven by TCs, calculated as:
 
 $$P_{TC} = \epsilon_p \frac{\rho_{air}}{\rho_{liquid}} q_s \max(w,0)$$
 
 where $\epsilon_p$ is precipitation efficiency, $\rho_{air}$ and $\rho_{liquid}$ are the density of water vapor and liquid water, respectively (the ratio $\rho_{air}/\rho_{liquid}\approx 0.0012$), $q_s$ is the saturation specific humidity, and $w$ is the upward-positive vertical wind velocity that brings surface moisture into the upper atmosphere.
-The key assumption used here is that time-evolving TC rainfall is organized around the storm track and proportional to $w$.
-The core function of `pyTCR` includes estimating $w$ as a linear combination of five major components:
+
+The key assumption used here is that time-evolving TC rainfall is organized around the storm track and proportional to $w$. The core function of `pyTCR` includes estimating $w$ as a linear combination of five major components:
 
 $$w = w_f + w_h + w_t + w_s + w_r$$
 
-## Surface frictional
+## Surface frictional convergence
 First, $w_f$ represents the velocity induced by surface frictional convergence that depends on the boundary layer formulation. This process is critical for maintaining deep convection and sustaining the TC's core rainfall. It is the dominant factor of $w$, estimated as:
 
 $$w_f = \frac{-1}{r} \frac{\partial}{\partial r} \left(r^2 \frac{\tau_{\theta s}}{\partial M/\partial r}\right)$$
