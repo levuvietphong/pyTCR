@@ -1,0 +1,25 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: intro
+options:
+  nav_exclude: true  # This hides the intro page from the TOC
+parts:
+- caption: Getting started 🚀
+  chapters:
+  - file: installation
+  - file: math
+  - file: examples/examples
+    sections:
+    - file: examples/ex0_download_tracks_from_cmip6
+    - file: examples/ex1_tropical_cyclone_tracks
+    - file: examples/ex2_rainfall_generation
+    - file: examples/ex3_wind_speed_generation
+    - file: examples/ex4_rainfall_polygons_generation
+    - file: examples/ex5_multiple_rainfall_event_polygon
+- caption: References 📖
+  chapters:
+  - file: paper
+  - file: api/pyTCR
+

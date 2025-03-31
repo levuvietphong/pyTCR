@@ -82,7 +82,7 @@ def calculate_spatial_derivatives(
     Compute the spatial derivatives of a given topography.
 
     Parameters:
-    ----------
+    -----------
     bathymetry : numpy.ndarray
         Array representing the bathymetry (m)
     x_coords : numpy.ndarray
@@ -103,7 +103,7 @@ def calculate_spatial_derivatives(
         Inverse of the topographic resolution.
 
     Returns:
-    -------
+    --------
     h : numpy.ndarray
         Array of topographic heights (m).
     hx : numpy.ndarray
@@ -290,7 +290,7 @@ def calculate_qs900(T600, vmax):
     temperature at 600 hPa and assuming a moist adiabatic lapse rate.
 
     Parameters:
-    ----------
+    -----------
     T600 : numpy.ndarray
         Temperature at 600 hPa (K).
     vmax : numpy.ndarray

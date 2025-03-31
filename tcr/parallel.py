@@ -12,7 +12,7 @@ def domain_decompose(comm, rank, size, data, verbose=False):
     Decomposes the domain of storms across MPI ranks for parallel processing.
 
     Parameters:
-    ----------
+    -----------
     - comm: MPI communicator object
     - rank: The rank of the current MPI process
     - size: The total number of MPI processes
