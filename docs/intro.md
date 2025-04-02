@@ -7,7 +7,7 @@
 
 - Simulate convective tropical cyclone rainfall by correlating the precipitation rate 🌨️ with the total upward wind velocity 🌬️ within the tropical cyclone vortex.
 - Generate detailed spatial-temporal tropical cyclone rainfall patterns that align with hurricane tracks.
-- Integrate with outputs from tropical cyclone downscaling models driven by large-scale environmental conditions from GCMs 🌎.
+- Integrate with outputs from tropical cyclone downscaling models driven by large-scale environmental conditions obtained from General Circulation Models (GCMs) 🌎.
 
 This documentation explains how to install and use `pyTCR`.
 
