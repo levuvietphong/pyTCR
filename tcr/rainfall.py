@@ -155,7 +155,7 @@ def calculate_rainfall_rate(
 
     if u850 is not None:
         vdrift = 1.5 * 3600 / 1852
-        vdrift = vdrift * latitude[1, 1] / (abs(latitude[1, 1]) + 1e-8)
+        vdrift = vdrift * latitude[0, 0] / (abs(latitude[0, 0]) + 1e-8)
         u850storm = u850[nt, jplot - 1:jplot + 2]
         v850storm = v850[nt, jplot - 1:jplot + 2]
         ush = 5 * knotfac * (utstorm - u850storm)

@@ -2,7 +2,6 @@
 Functions for topography and boundary layers in PyTCR
 """
 
-import os
 import math
 import numpy as np
 from tcr import iodata as tcr_io
