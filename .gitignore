@@ -9,6 +9,9 @@ docs/jupyter_execute/
 *.egg-info/
 __pycache__/
 pyTCR.egg-info/
+.pytest_cache/
+.ruff_cache/
+tests/.ruff_cache/
 
 *.mp4
 /notebooks/animations/
