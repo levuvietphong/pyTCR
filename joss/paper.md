@@ -76,16 +76,10 @@ where $w_f$ represents the velocity induced by surface frictional convergence, $
 
 # Examples
 
-To help users learn key concepts and functions of `pyTCR`, we provide six `Jupyter` notebooks designed for training purposes:
+To help users learn key concepts and functions of `pyTCR`, we provide different `Jupyter` notebooks designed for training purposes. For example, Figure 1 compares the tracks and mean power dissipation index (PDI) of TCs downscaled from the outputs of the E3SM-1-0 model and ERA5 reanalysis data using the TC downscaling model [@Lin:2023] with those obtained from the IBTrACS observations in the North Atlantic Ocean during the historical period (1964-2014).
+Along each TC track, `pyTCR` can generate time series and spatial patterns of rainfall events. Figure 2 illustrates the spatial distribution of total rainfall along a TC track.
 
-- Downloading and preprocessing TCs data
-- Visualizing and analyzing TC tracks
-- Generating TC rainfall timeseries
-- Generating TC wind speed
-- Generating single rainfall event within polygons
-- Generating multiple rainfall events within polygons
-
-Along each TC track, `pyTCR` can generate time series and spatial patterns of rainfall events. Figure 1 illustrates the spatial distribution of total rainfall along a TC track. The TC originates in the central Atlantic (25$^\circ$N, 60$^\circ$W) and generally moves westward before making landfall in the US. Rainfall intensity increases significantly upon landfall in Texas compared to its intensity over the ocean. Time series of rainfall at any domain influenced by the TCs can be extracted in `pyTCR` for analyses.
+![(Top) Tracks of 200 example TCs in the North Atlantic. Color lines indicates wind speed and TC tracks that landfall in Texas.(Bottom) Mean power dissipation index (PDI) per $2^{\circ} \times 2^{\circ}$ box per year. Plot was generated using the notebook `ex1_tropical_cyclone_tracks.ipynb` in the repository.\label{fig1}](Fig1.png)
 
 ![Spatial distribution of total rainfall generated for a particular TC track that makes landfall on Texas, USA. Plot was generated using the notebook `ex2_rainfall_generation.ipynb` in the repository\label{fig2}](Fig2.png){width=90%}
 
