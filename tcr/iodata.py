@@ -12,37 +12,72 @@ import shapefile
 from bs4 import BeautifulSoup
 from tcr.datadir import DATA_DIR
 
+
 def convert_to_mps(values, conversion_factor=0.514444):
-    """Convert values to meters per second using the given conversion factor."""
+    """
+    Convert the provided values to meters per second (m/s) using the specified conversion factor.
+
+    Parameters:
+    -----------
+    values : array-like
+        The input values to be converted.
+    conversion_factor : float, optional
+        The factor used for conversion to meters per second (default is 0.514444).
+
+    Returns:
+    --------
+    array-like
+        The converted values in meters per second (m/s).
+    """
     return values * conversion_factor
 
 
 def filter_by_year(data, years, start_year, end_year):
-    """Filter data by year range and return filtered data with indices."""
+    """
+    Filter the input data based on a specified year range and return the filtered data along with their indices.
+
+    Parameters:
+    -----------
+    data : array-like
+        The input data to be filtered.
+    years : array-like
+        Array of years corresponding to the input data.
+    start_year : int
+        The starting year of the desired range (inclusive).
+    end_year : int
+        The ending year of the desired range (inclusive).
+
+    Returns:
+    --------
+    tuple
+        A tuple containing the filtered data and the indices of the filtered elements.
+    """
     indices = np.where((years >= start_year) & (years <= end_year))[0]
     return data[indices], indices
 
 
 def load_Matlab_data(directory, filename):
     """
-    Load data in Matlab format.
+    Load data from a Matlab (.mat) file.
 
     Parameters:
     -----------
     directory : str
-        Name of the directory where data is stored.
+        The directory containing the Matlab file.
     filename : str
-        Name of the Matlab file.
+        The name of the Matlab file to be loaded.
 
     Returns:
     --------
     dict
-        Dictionary containing the loaded Matlab data.
+        A dictionary containing the data loaded from the Matlab file.
 
     Raises:
     -------
     FileNotFoundError
-        If the specified file does not exist.
+        If the specified file does not exist in the given directory.
+    RuntimeError
+        If an error occurs while loading the Matlab file.
     """
     try:
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -63,43 +98,55 @@ def load_netcdf_track_data(
     data_directory=None, model="E3SM-1-0", basin="NA", expmnt="historical"
 ):
     """
-    Load data in NetCDF format from Tropical cyclone downscaling.
+    Load and extract data from a NetCDF file containing tropical cyclone downscaling information.
 
     Parameters:
     -----------
-    data_directory : str
-        Path to the data directory.
-    model : str
-        Name of the CMIP6 model.
-    basin : str
-        Name of the ocean basin (e.g., NA, WP, EP, SH).
-    expmnt : str
-        Name of the model experiment (e.g., historical, ssp585).
+    data_directory : str, optional
+        Path to the directory containing the NetCDF files.
+        If not provided, defaults to the downscaled data directory.
+    model : str, optional
+        Name of the CMIP6 model (e.g., 'E3SM-1-0'). Default is 'E3SM-1-0'.
+    basin : str, optional
+        Name of the ocean basin (e.g., 'NA' for North Atlantic, 'WP' for Western Pacific).
+        Default is 'NA'.
+    expmnt : str, optional
+        Name of the model experiment (e.g., 'historical', 'ssp585').
+        Default is 'historical'.
 
     Returns:
     --------
     ds : xarray.Dataset
-        The loaded NetCDF dataset.
+        The loaded NetCDF dataset containing tropical cyclone data.
     lat_trks : numpy.ndarray
-        Array of track latitude (degree).
+        Latitude coordinates of tropical cyclone tracks (in degrees).
     lon_trks : numpy.ndarray
-        Array of track longitude (degree).
+        Longitude coordinates of tropical cyclone tracks (in degrees).
     n_trk : numpy.ndarray
-        Array of track numbers.
+        Track numbers identifying individual tropical cyclones.
     v_trks : numpy.ndarray
-        Array of track azimuthal wind (m/s).
+        Azimuthal wind speeds along the tracks (in m/s).
     vmax_trks : numpy.ndarray
-        Array of track maximum wind or intensity (m/s).
+        Maximum wind speeds or intensities along the tracks (in m/s).
     u850_trks : numpy.ndarray
-        Array of 850 hPa zonal wind components (m/s).
+        Zonal wind components at 850 hPa along the tracks (in m/s).
     v850_trks : numpy.ndarray
-        Array of 850 hPa meridional wind components (m/s).
+        Meridional wind components at 850 hPa along the tracks (in m/s).
     tc_month : numpy.ndarray
-        Array of tropical cyclone months.
+        Months corresponding to the tropical cyclone occurrences.
     tc_years : numpy.ndarray
-        Array of tropical cyclone years.
+        Years corresponding to the tropical cyclone occurrences.
     tc_time : numpy.ndarray
-        Array of tropical cyclone times.
+        Timestamps of the tropical cyclone occurrences.
+
+    Raises:
+    -------
+    FileNotFoundError
+        If no matching NetCDF file is found in the specified directory.
+    KeyError
+        If the expected variables are missing in the NetCDF dataset.
+    RuntimeError
+        If an error occurs while loading or processing the dataset.
     """
     if data_directory is None:
         data_directory = os.path.join(DATA_DIR, 'downscaled')
@@ -138,16 +185,25 @@ def load_netcdf_2d_parameters(directory, filename, varname):
     Parameters:
     -----------
     directory : str
-        The directory where the NetCDF file is stored.
+        Path to the directory containing the NetCDF file.
     filename : str
-        The name of the NetCDF file.
+        Name of the NetCDF file to be loaded.
     varname : str
-        The name of the variable to be loaded from the NetCDF file.
+        Name of the variable to extract from the NetCDF file.
 
     Returns:
     --------
     numpy.ndarray
-        The data of the specified variable from the NetCDF file.
+        Array containing the data of the specified variable.
+
+    Raises:
+    -------
+    FileNotFoundError
+        If the specified NetCDF file does not exist in the given directory.
+    KeyError
+        If the specified variable is not found in the NetCDF file.
+    RuntimeError
+        If an error occurs while loading the NetCDF file.
     """
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -337,7 +393,8 @@ def download_tracks_data_cmip6(
     model : str, optional
         Name of the CMIP6 model (default is 'E3SM-1-0').
     target_directory : str, optional
-        Path to the target directory to save the downloaded files (default is '{DATA_DIR}/downscaled/').
+        Path to the target directory to save the downloaded files.
+        Default is '{DATA_DIR}/downscaled/'
 
     Returns:
     --------
@@ -398,20 +455,33 @@ def download_tracks_data_cmip6(
                     print()  # Move to the next line after download is complete
 
 
-def get_bbox_from_shapefile(shapefile_path):
+def get_bounding_box_from_shapefile(shapefile_path):
     """
-    Get the bounding box from a shapefile.
+    Extract the bounding box coordinates from a shapefile.
 
     Parameters:
     -----------
     shapefile_path : str
-        Path to the shapefile.
+        The file path to the shapefile.
 
     Returns:
     --------
-    bbox : tuple
-        Bounding box in the format (xmin, xmax, ymin, ymax).
+    tuple
+        A tuple representing the bounding box in the format (xmin, xmax, ymin, ymax).
+
+    Raises:
+    -------
+    FileNotFoundError
+        If the specified shapefile does not exist.
+    RuntimeError
+        If an error occurs while reading the shapefile.
     """
-    sf = shapefile.Reader(shapefile_path)
-    bbox = sf.bbox  # returns [xmin, ymin, xmax, ymax]
-    return bbox[0], bbox[2], bbox[1], bbox[3]
+    if not os.path.exists(shapefile_path):
+        raise FileNotFoundError(f"Shapefile not found: {shapefile_path}")
+
+    try:
+        with shapefile.Reader(shapefile_path) as sf:
+            bbox = sf.bbox  # [xmin, ymin, xmax, ymax]
+            return bbox[0], bbox[2], bbox[1], bbox[3]
+    except Exception as e:
+        raise RuntimeError(f"Failed to read shapefile: {e}") from e
