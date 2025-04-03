@@ -1,5 +1,6 @@
 """
-Functions for plottings in PyTCR
+This module provides a collection of functions for advanced plotting and visualization 
+in PyTCR, including map formatting, density plotting, track visualization, and more.
 """
 
 import os
@@ -23,32 +24,35 @@ def format_mapping(ax, extent=(-180, 180, -90, 90), projection=None,
                    shapefile=None, gridlabel=False, gridspace=10,
                    coastlines=True, add_features=True):
     """
-    Customizes the map by setting its spatial extent, grid spacing, and
-    optionally overlays a shapefile.
+    Configures the map's appearance by defining its spatial extent, grid spacing, 
+    and optionally overlaying a shapefile.
 
     Parameters:
     -----------
     ax : matplotlib.axes.Axes
-        The axis object where the map will be formatted.
+        The Matplotlib axis object on which the map will be rendered.
     extent : tuple, optional
-        Specifies the map's spatial extent in data coordinates (left, right,
-        bottom, top). Defaults to (-180, 180, -90, 90).
+        Defines the spatial bounds of the map in data coordinates 
+        (left, right, bottom, top). Default is (-180, 180, -90, 90).
     shapefile : str or shapefile-like object, optional
-        Path to a shapefile or shapefile object to overlay on the map.
+        Path to a shapefile or a shapefile-like object to overlay on the map.
     gridlabel : bool, optional
-        Toggles the display of grid labels on the map.
-        Default is False, hiding gridline labels.
-    projection : cartopy.crs, optional
-        The projection to use for the map. Defaults to None, which implies a
+        Enables or disables the display of gridline labels. Default is False.
+    projection : cartopy.crs.Projection, optional
+        The map projection to use. Default is None, which implies a 
         PlateCarree projection.
     coastlines : bool, optional
-        Toggles the display of coastlines on the map.
-        Default is True, showing coastlines.
+        Determines whether coastlines are displayed. Default is True.
     add_features : bool, optional
-        Toggles the display of additional geographical features.
-        Default is True, showing these features.
+        Specifies whether additional geographical features (e.g., land, borders) 
+        are displayed. Default is True.
     gridspace : int, optional
-        Specifies the spacing between gridlines. Defaults to 10 degrees.
+        Sets the spacing between gridlines in degrees. Default is 10.
+
+    Notes:
+    ------
+    - If a shapefile is provided, its geometries will be overlaid on the map.
+    - Gridline labels and spacing can be customized for better visualization.
     """
 
     xmin, xmax, ymin, ymax = extent
@@ -167,6 +171,27 @@ def plot_density(ax, lat, lon, density, levels, extent=None, projection=None,
         Color of the plot title, default is 'k'
     title_fontstyle : str, optional
         Font style of the plot title, default is 'regular'
+
+    Notes:
+    ------
+    - The function supports both contour and pcolormesh methods for plotting density.
+    - If `logscale` is True, the density values are plotted on a logarithmic scale.
+    - The `extent` parameter defines the spatial bounds of the map.
+
+    Example:
+    --------
+    >>> import numpy as np
+    >>> import matplotlib.pyplot as plt
+    >>> import cartopy.crs as ccrs
+    >>> fig, ax = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()})
+    >>> lat = np.linspace(-30, 30, 100)
+    >>> lon = np.linspace(120, 180, 100)
+    >>> lon, lat = np.meshgrid(lon, lat)
+    >>> density = np.exp(-((lat - 0)**2 + (lon - 150)**2) / (2 * 10**2))
+    >>> levels = np.linspace(0, 1, 11)
+    >>> plot_density(ax, lat, lon, density, levels, extent=(120, 180, -30, 30),
+    ...              cmap='viridis', title="TC Density")
+    >>> plt.show()
     """
 
     # Format the map
@@ -270,6 +295,27 @@ def plot_tracks(ax, lats, lons, vmaxs, track_inds, interval=1,
     --------
     line : matplotlib.collections.LineCollection
         The LineCollection object representing the plotted tracks.
+
+    Notes:
+    ------
+    - Tracks with wind speeds below the `wind_speed_threshold` will not be plotted.
+    - The function uses `LineCollection` to efficiently plot multiple line segments.
+    - If `wind_color` is True, the tracks will be colored based on wind speed using the provided colormap.
+
+    Example:
+    --------
+    >>> import matplotlib.pyplot as plt
+    >>> import numpy as np
+    >>> import cartopy.crs as ccrs
+    >>> from matplotlib.colors import Normalize
+    >>> fig, ax = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()})
+    >>> lats = np.random.uniform(-30, 30, (5, 100))
+    >>> lons = np.random.uniform(120, 180, (5, 100))
+    >>> vmaxs = np.random.uniform(10, 50, (5, 100))
+    >>> track_inds = [0, 1, 2, 3, 4]
+    >>> plot_tracks(ax, lats, lons, vmaxs, track_inds, wind_color=True, 
+    ...             cmap='viridis', norm=Normalize(10, 50), title="TC Tracks")
+    >>> plt.show()
     """
 
     # Format the map
@@ -322,16 +368,32 @@ def plot_exceedance_probability(
     fontweight='regular', fontsize=12, color="tab:blue"
 ):
     """
-    Plots the exceedance probability of the given data.
+    Generate a plot illustrating the exceedance probability of the provided dataset.
 
     Parameters:
-    - data: array-like, the data for which to plot the exceedance probability
-    - ax: matplotlib axes object, the axes on which to plot
-    - xlabel: str, label for the x-axis (default is 'Exceedance Probability')
-    - ylabel: str, label for the y-axis (default is 'Value')
-    - title: str, title of the plot
-    - fontweight: str, font weight for the title (default is 'regular')
-    - fontsize: int, font size for the title (default is 12)
+    -----------
+    data : array-like
+        The dataset for which the exceedance probability plot will be generated.
+    ax : matplotlib.axes.Axes
+        The Matplotlib Axes object on which the plot will be rendered.
+    ylabel : str, optional
+        Label for the y-axis. Default is 'Value'.
+    xlabel : str, optional
+        Label for the x-axis. Default is 'Exceedance Probability'.
+    title : str, optional
+        Title of the plot. If provided, it will be displayed above the plot. Default is None.
+    fontweight : str, optional
+        Font weight for the plot title. Default is 'regular'.
+    fontsize : int, optional
+        Font size for the plot title. Default is 12.
+    color : str, optional
+        Color of the data points in the plot. Default is 'tab:blue'.
+
+    Notes:
+    ------
+    - The exceedance probability is calculated as the rank of each data point divided by the total number of points.
+    - The x-axis is displayed on a logarithmic scale to emphasize the lower probability range.
+    - The function ensures that the data is converted to a NumPy array for consistent processing.
     """
     # Ensure data is a NumPy array
     data = np.array(data)
@@ -378,6 +440,25 @@ def get_tracks_landfall_region(lat_tracks, lon_tracks, polygon, buffer=0,
     --------
     ind_poly : list
         List of indices of tracks that make landfall within the polygon.
+
+    Notes:
+    ------
+    - The function applies a buffer to the input polygon if a non-zero buffer distance is provided.
+    - Longitude values are normalized to the range [-180, 180] to ensure compatibility with the
+      polygon's coordinates.
+    - Tracks are considered to make landfall if any point along the track lies within the buffered
+      polygon.
+
+    Example:
+    --------
+    >>> from shapely.geometry import Polygon
+    >>> import numpy as np
+    >>> lat_tracks = np.random.uniform(-90, 90, (100, 50))
+    >>> lon_tracks = np.random.uniform(-180, 180, (100, 50))
+    >>> polygon = Polygon([(-10, 30), (-10, 40), (10, 40), (10, 30)])
+    >>> landfall_indices = get_tracks_landfall_region(lat_tracks, lon_tracks, polygon, buffer=0.5)
+    >>> print(landfall_indices)
+    [0, 5, 12, 45]
     """
 
     num_tcs = lat_tracks.shape[0]
@@ -417,18 +498,33 @@ def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
     Parameters:
     -----------
     cmap : matplotlib.colors.Colormap
-        The colormap to be truncated.
+        The original colormap to be truncated.
     minval : float, optional
-        Minimum value for the colormap range. Default is 0.0.
+        The lower bound of the colormap range, normalized to [0, 1]. Default is 0.0.
     maxval : float, optional
-        Maximum value for the colormap range. Default is 1.0.
+        The upper bound of the colormap range, normalized to [0, 1]. Default is 1.0.
     n : int, optional
-        Number of colors in the truncated colormap. Default is 100.
+        The number of discrete colors in the truncated colormap. Default is 100.
 
     Returns:
     --------
-    new_cmap : matplotlib.colors.LinearSegmentedColormap
+    matplotlib.colors.LinearSegmentedColormap
         A new colormap truncated to the specified range.
+
+    Notes:
+    ------
+    - The `minval` and `maxval` parameters must be within the range [0, 1].
+    - The function creates a new colormap by sampling the original colormap
+      within the specified range.
+
+    Example:
+    --------
+    >>> import matplotlib.pyplot as plt
+    >>> from matplotlib import cm
+    >>> truncated_cmap = truncate_colormap(cm.viridis, minval=0.2, maxval=0.8)
+    >>> plt.imshow([[0, 1]], cmap=truncated_cmap, aspect='auto')
+    >>> plt.colorbar()
+    >>> plt.show()
     """
     # Ensure minval and maxval are within the range [0, 1]
     minval = max(0.0, minval)
@@ -445,22 +541,42 @@ def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
 
 def create_buffer_around_POI(lat_poi, lon_poi, radius=1.0):
     """
-    Creates a buffer zone around a Point of Interest (POI) defined by its
-    latitude and longitude.
+    Generate a buffer zone around a specified Point of Interest (POI).
+
+    This function creates a circular buffer zone around a given latitude and
+    longitude, representing the area within a specified radius.
 
     Parameters:
     -----------
     lat_poi : float
-        Latitude of the Point of Interest (degree)
+        Latitude of the Point of Interest (in degrees). Must be within the range [-90, 90].
     lon_poi : float
-        Longitude of the Point of Interest (degree)
+        Longitude of the Point of Interest (in degrees). Must be within the range [-180, 180].
     radius : float, optional
-        Radius of the buffer zone in degrees, default is 1.0
+        Radius of the buffer zone (in degrees). Must be a positive value. Default is 1.0.
 
     Returns:
     --------
-    Polygon
-        A Polygon object representing the buffer zone around the POI
+    shapely.geometry.Polygon
+        A Polygon object representing the buffer zone around the POI.
+
+    Raises:
+    -------
+    ValueError
+        If the radius is not positive or if the longitude is outside the valid range.
+
+    Notes:
+    ------
+    - The buffer zone is created using a simple Euclidean distance approximation
+      and may not account for distortions in certain map projections.
+    - If the longitude exceeds 180 degrees, it is normalized to the range [-180, 180].
+
+    Examples:
+    ---------
+    >>> from shapely.geometry import Polygon
+    >>> buffer = create_buffer_around_POI(37.7749, -122.4194, radius=0.5)
+    >>> isinstance(buffer, Polygon)
+    True
     """
     if radius <= 0:
         raise ValueError("Radius must be a positive number.")
@@ -476,15 +592,26 @@ def create_buffer_around_POI(lat_poi, lon_poi, radius=1.0):
 
 
 def gmtColormap_openfile(cptf, name=None):
-    """Read a GMT color map from an OPEN cpt file
+    """
+    Reads a GMT color map from an open .cpt file and generates a Matplotlib colormap.
 
     Parameters
     ----------
-    cptf : open file or url handle
-        path to .cpt file
+    cptf : file-like object
+        An open file or URL handle pointing to a .cpt file containing the colormap data.
     name : str, optional
-        name for color map
-        if not provided, the file name will be used
+        A custom name for the generated colormap. If not provided, the name will be 
+        derived from the file name.
+
+    Returns
+    -------
+    matplotlib.colors.LinearSegmentedColormap
+        A Matplotlib colormap object created from the .cpt file.
+
+    Notes
+    -----
+    - The .cpt file should follow the GMT colormap format.
+    - Supports both RGB and HSV color models, automatically converting HSV to RGB.
     """
     # generate cmap name
     if name is None:
@@ -562,15 +689,27 @@ def gmtColormap_openfile(cptf, name=None):
 
 
 def load_cpt_colormap(cptfile, name=None):
-    """Read a color map from a cpt file
+    """
+    Load a colormap from a GMT .cpt file.
 
     Parameters
     ----------
-    cptfile : str or open file-like object
-        path to .cpt file
+    cptfile : str or file-like object
+        Path to the .cpt file or an open file-like object containing the colormap data.
     name : str, optional
-        name for color map
-        if not provided, the file name will be used
+        Custom name for the colormap. If not provided, the colormap name will be derived
+        from the file name.
+
+    Returns
+    -------
+    matplotlib.colors.LinearSegmentedColormap
+        A colormap object that can be used with Matplotlib plotting functions.
+
+    Notes
+    -----
+    - The .cpt file should follow the GMT colormap format.
+    - Supports both RGB and HSV color models, automatically converting HSV to RGB.
+    - If the file is provided as a path, it will be opened and read internally.
     """
     with open(cptfile, 'r', encoding='utf-8') as cptf:
         return gmtColormap_openfile(cptf, name=name)
@@ -578,21 +717,43 @@ def load_cpt_colormap(cptfile, name=None):
 
 def shape2grid(x, y, shapefile):
     """
-    Convert shapefile to a grid mask.
+    Generates a grid mask from a shapefile, marking grid points that fall
+    inside the shape with 1 and points outside with NaN.
 
     Parameters:
     -----------
     x : array-like
-        X-coordinates of the grid.
+        1D array of X-coordinates representing the grid's longitude values.
     y : array-like
-        Y-coordinates of the grid.
+        1D array of Y-coordinates representing the grid's latitude values.
     shapefile : str
-        Path to the shapefile.
+        File path to the shapefile containing the geometric shape(s) to be
+        used for masking.
 
     Returns:
     --------
     numpy.ndarray
-        Grid mask where 1 indicates inside the shape, NaN outside.
+        A 2D array (grid mask) with the same shape as the meshgrid created 
+        from `x` and `y`. Grid cells inside the shape are marked with 1, 
+        while cells outside are assigned NaN.
+
+    Notes
+    -----
+    - The function assumes the shapefile is in a compatible coordinate 
+      reference system (CRS) with the provided `x` and `y` coordinates.
+    - The X-coordinates are adjusted by subtracting 360 to handle 
+      longitude wrapping, if necessary.
+    - The function uses the `shapely` library to determine whether 
+      grid points are inside the shape(s) defined in the shapefile.
+
+    Examples
+    >>> import numpy as np
+    >>> x = np.linspace(-180, 180, 360)
+    >>> y = np.linspace(-90, 90, 180)
+    >>> shapefile = "path/to/shapefile.shp"
+    >>> grid_mask = shape2grid(x, y, shapefile)
+    >>> print(grid_mask.shape)
+    (180, 360)
     """
     # Load the shapefile
     gdf = gpd.read_file(shapefile)

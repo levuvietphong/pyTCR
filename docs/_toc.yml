@@ -20,6 +20,6 @@ parts:
     - file: examples/ex5_multiple_rainfall_event_polygon
 - caption: References 📖
   chapters:
-  - file: paper
+  - file: bibliography
   - file: api/pyTCR
 
