@@ -17,11 +17,13 @@
 
 ## Table of Contents
 
-- [Overview](#books-overview)
+- [Overview](#book-overview)
 - [Installation](#wrench-installation)
 - [Getting Started](#arrow_forward-getting-started)
 - [Gallery](#framed_picture-gallery)
+- [Documentation](#books-documentation)
 - [License](#page_facing_up-license)
+- [Contributions](#rocket-contributions)
 - [Acknowledgments](#people_hugging-acknowledgments)
 - [Contacts](#mailbox-contacts)
 
