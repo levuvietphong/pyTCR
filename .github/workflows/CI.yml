@@ -23,8 +23,7 @@ jobs:
       - name: Install additional dependencies and this package
         run: |
           pip install --upgrade pip setuptools wheel
-          pip install pytcr  # Install from PyPI          
-          # pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ pyTCR  # install from test PyPI
+          pip install --pre pytcr  # Install from PyPI          
           pip install notebook nbconvert
 
       - name: Check environment is correctly set up.
