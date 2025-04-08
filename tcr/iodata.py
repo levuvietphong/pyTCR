@@ -455,7 +455,7 @@ def download_tracks_data_cmip6(
                     print()  # Move to the next line after download is complete
 
 
-def get_bounding_box_from_shapefile(shapefile_path):
+def get_bbox_from_shapefile(shapefile_path):
     """
     Extract the bounding box coordinates from a shapefile.
 

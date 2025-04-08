@@ -36,7 +36,7 @@ pyTCR is a physics-based model developed in python to estimate rainfall induced 
     ```sh
     pip install pyTCR
     ```
-    or `conda`:
+    OR `conda`:
     ```sh
     conda install -c conda-forge pyTCR
     ```
