@@ -36,16 +36,19 @@ pyTCR is a physics-based model developed in python to estimate rainfall induced 
     ```sh
     pip install pyTCR
     ```
-
+    or `conda`:
+    ```sh
+    conda install -c conda-forge pyTCR
+    ```
 2. To get the latest (unstable) development version from GitHub:
     ```sh
     git clone https://github.com/levuvietphong/pyTCR.git
     cd pyTCR
     pip install .
     ```
-    
-> [!NOTE]
-> This installs the most recent updates, which may include new features and bug fixes that are not yet available in the stable release. Cloning the repository also gives you access to the tutorial in the notebooks folder.
+
+    > 💡 **Note:**
+    > *This installs the most recent updates, which may include new features and bug fixes that are not yet available in the stable release. Cloning the repository also gives you access to the tutorial in the notebooks folder.*
 
 ## :arrow_forward: Getting Started
 This repository provides a collection of [jupyter notebooks](https://github.com/levuvietphong/pyTCR/tree/main/notebooks) designed to facilitate the use of PyTCR for generating and visualizing rainfall and wind speed induced by TCs. These notebooks cover various use cases and data sources, providing comprehensive guidance for users.
