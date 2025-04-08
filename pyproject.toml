@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "pyTCR"
 dynamic = ["version"]
-description = "Python-based Tropical Cyclone Rainfall"
+description = "A model for tropical cyclone rainfall"
 authors = [
     {name = "Phong Le", email = "levuvietphong@gmail.com"}
 ]
