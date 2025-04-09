@@ -1,5 +1,23 @@
 # Change Log
 
+## [pyTCR-1.2.2](https://github.com/levuvietphong/pyTCR/compare/pyTCR-1.2.1..pyTCR-1.2.2) - 2025-04-09
+
+### 🐛 Bug Fixes
+
+- Resolve a bug in iodata to get bounding box - ([765cb5d](https://github.com/levuvietphong/pyTCR/commit/765cb5dca6a044ae4cafdac24bc990431a6edcad))
+
+### 📚 Documentation
+
+- Update README file and change docs/paper to avoid confusion for paper compilation - ([1ee90b1](https://github.com/levuvietphong/pyTCR/commit/1ee90b134e7a5d8c59264b706c18bd3c654dd261))
+- Improve API docstring for I/O and plotting functions - ([c7d9430](https://github.com/levuvietphong/pyTCR/commit/c7d9430bff8b19fe3e99aed3038ae81698ffc09e))
+- Add conda installation to README - ([c9b15a4](https://github.com/levuvietphong/pyTCR/commit/c9b15a4415b7e01f2fa78a41dd010381dd9422f5))
+- Add conda installation to README - ([13b7ac8](https://github.com/levuvietphong/pyTCR/commit/13b7ac82e63c7bcbb1620e02c8433d9cb03e604b))
+- Update version 1.2.2 development and CI - ([016a043](https://github.com/levuvietphong/pyTCR/commit/016a04367dddcb0d19b981661011e5bad55a8849))
+
+### ⚙️ Miscellaneous Tasks
+
+- Add workflow to check the paper in joss - ([ff98a19](https://github.com/levuvietphong/pyTCR/commit/ff98a195d4aaead447f9f1169e829847819f139f))
+
 ## [pyTCR-1.2.1](https://github.com/levuvietphong/pyTCR/compare/pyTCR-1.2..pyTCR-1.2.1) - 2025-04-03
 
 ### ⛰️  Features
@@ -28,6 +46,7 @@
 - Revise documentation website - ([f2ac246](https://github.com/levuvietphong/pyTCR/commit/f2ac24644a7ab4e19db4518adab0d1c6e2665376))
 - Update docstring and api function of dirdata - ([e083d1a](https://github.com/levuvietphong/pyTCR/commit/e083d1a25a80ce7ea86c42bf43d5551a4b5f64fc))
 - Minor update on the introduction and version - ([62b2d3e](https://github.com/levuvietphong/pyTCR/commit/62b2d3e9e2a863e793d98e86908ce7b33d716456))
+- Move changelog to git-cliff - ([5c10c00](https://github.com/levuvietphong/pyTCR/commit/5c10c00a90cd9b81013272e06ed86f1f4106b37c))
 
 ### ⚙️ Miscellaneous Tasks
 
@@ -35,6 +54,7 @@
 
 ## New Contributors ❤️
 
+* @levuvietphong made their first contribution
 * @ecoon made their first contribution in [#6](https://github.com/levuvietphong/pyTCR/pull/6)
 ## [pyTCR-1.2](https://github.com/levuvietphong/pyTCR/compare/pyTCR-1.1..pyTCR-1.2) - 2024-12-29
 
