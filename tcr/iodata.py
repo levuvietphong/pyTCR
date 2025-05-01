@@ -154,7 +154,9 @@ def load_netcdf_track_data(
     ncfilename = os.path.join(data_directory, expmnt, f"tracks_{basin}_{model}_*.nc")
     try:
         ncfile = glob.glob(ncfilename)[0]
-        ds = xr.open_dataset(ncfile)
+        with xr.open_dataset(ncfile) as file_handle:
+            ds = file_handle.load()
+        #ds = xr.open_dataset(ncfile)
         lat_trks = np.nan_to_num(ds['lat_trks'].values)
         lon_trks = np.nan_to_num(ds['lon_trks'].values)
         n_trk = np.nan_to_num(ds['n_trk'].values)
@@ -310,7 +312,9 @@ def load_tracks_GCMs(
     ncfilename = os.path.join(data_directory, expmnt, f"tracks_{basin}_{model}_*.nc")
     try:
         ncfile = glob.glob(ncfilename)[0]
-        ds = xr.open_dataset(ncfile)
+        #ds = xr.open_dataset(ncfile)
+        with xr.open_dataset(ncfile) as file_handle:
+            ds = file_handle.load()
         lon_trks = ds['lon_trks'].values
         lat_trks = ds['lat_trks'].values
         vmax_trks = ds['vmax_trks'].values
