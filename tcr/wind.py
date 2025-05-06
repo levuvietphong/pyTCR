@@ -10,6 +10,7 @@ import glob
 import numpy as np
 from tcr import terrain_boundary as tcr_tb
 from tcr import iodata as tcr_io
+from tcr import constants as tcr_cons
 from tcr.datadir import DATA_DIR
 
 
@@ -762,15 +763,16 @@ def calculate_upward_velocity_field(
 
     plong = plong + 360 if plong[0] < 0 else plong
 
-    pifac = math.pi / 180
+    pifac = tcr_cons.RAD2DEG
     dfac = 60 * 1.852
 
     # scale factor converting nautical miles to meters (using 0.25 degree resolution).
     sfac = 1 / (0.25 * 60 * 1852)
-    knotfac = 1852. / 3600  # convert knots to m/s (1 knots = 0.5144 m/s)
+    knotfac = tcr_cons.KNOTS2MPS  # convert knots to m/s (1 knots = 0.5144 m/s)
     ut = ut * knotfac   # convert to m/s
     vt = vt * knotfac   # convert to m/s
-    omega = math.pi / (6 * 3600)
+    #omega = math.pi / (6 * 3600)
+    omega = tcr_cons.OMEGA  # Earth angular velocity parameter (rad/s)
     latfac = (latitude[0] / (abs(latitude[0]) + 1e-8) if latitude.ndim == 1
               else latitude[0, 0] / (abs(latitude[0, 0]) + 1e-8))
 
@@ -1128,11 +1130,11 @@ def calculate_upward_velocity_time_series(
     timeresi = 1.0 / (3600 * timeres)
 
     # convert degree to km (1 nautical mile = 1/60 degree = 1.852 km)
-    pifac = math.acos(-1) / 180  # pi number
+    pifac = tcr_cons.RAD2DEG  # pi number
     dfac = 60 * 1.852
     sfac = 1.0 / (0.25 * 60.0 * 1852)
-    knotfac = 1852.0 / 3600  # convert knots to m/s (1 knots = 0.5144 m/s)
-    omega = math.acos(-1) / (6 * 3600)  # Earth angular velocity parameter
+    knotfac = tcr_cons.KNOTS2MPS  # convert knots to m/s (1 knots = 0.5144 m/s)
+    omega = tcr_cons.OMEGA  # Earth angular velocity parameter
 
     se = np.nanmax(velocity_secondary)  # for secondary eyewalls
     ntime = int(timelength / timeres + 1)
@@ -1470,7 +1472,7 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
                 vsin = vmax_tracks[ind, jnd]
                 # Skip at equator (coriolis force fc = 0) or vs = 0
                 if alats != 0 and vsin > 0:
-                    fc1 = 1.45e-4 * np.abs(alats * 0.0175)
+                    fc1 = 2 * tcr_cons.OMEGA * np.sin(abs(alats) * tcr_cons.RAD2DEG)
                     _, rm, _ = integrate_outer_wind_profile(vsin, fc1, ro, wc, cdouter, nouter)
                 else:
                     rm = 0

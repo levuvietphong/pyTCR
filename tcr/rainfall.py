@@ -9,6 +9,7 @@ import numpy as np
 from tcr import wind as tcr_wind
 from tcr import terrain_boundary as tcr_tb
 from tcr import iodata as tcr_io
+from tcr import constants as tcr_cons
 from tcr.datadir import DATA_DIR
 
 
@@ -16,7 +17,7 @@ def calculate_rainfall_rate(
     nt, latitude, longitude, radius_storm, velocity, radius_storm_secondary,
     velocity_secondary, ut, vt, u850, v850, months, days, hours, monthplot,
     dayplot, hourplot, extent=None, shapefile=None, magfac=1.0, deltax=5,
-    deltay=4, dellatlong=0.05, q900=0.01, eprecip=0.9, wrad=-0.005
+    deltay=4, dellatlong=0.05, q900=0.01, eprecip=tcr_cons.eprecip, wrad=tcr_cons.wrad
 ):
     """
     Computes the surface rain rate distribution (mm/hr) for a specified storm
@@ -99,11 +100,11 @@ def calculate_rainfall_rate(
             bxmin, bxmax, bymin, bymax = tcr_io.get_bbox_from_shapefile(
                 shapefile)
 
-    RHOA_OVER_RHOL = 0.00117  # ratio of air density over water density
+    RHOA_OVER_RHOL = tcr_cons.RHOA_OVER_RHOL  # ratio of air density over water density
     nrm, mrm = np.shape(radius_storm)
     rfac = magfac * (1+np.zeros((nrm, mrm)))
-    pifac = math.acos(-1)/180
-    knotfac = 1852./3600  # convert knots to m/s (1 knots = 0.5144 m/s)
+    pifac = tcr_cons.RAD2DEG  # pi number
+    knotfac = tcr_cons.KNOTS2MPS  # convert knots to m/s (1 knots = 0.5144 m/s)
 
     # Get the length of each event by finding the first 0 element,
     # if non-zero, get all length
@@ -191,7 +192,7 @@ def calculate_etr_swath(
     nt, latitude, longitude, radius_storm, velocity, radius_storm_secondary,
     velocity_secondary, ut, vt, u850, v850, extent=None, shapefile=None,
     magfac=1, deltax=5, deltay=4, dellatlongs=0.15, q900=0.01, timeres=0.5,
-    wrad=-0.005, eprecip=0.9
+    wrad=tcr_cons.wrad, eprecip=tcr_cons.eprecip
 ):
     """
     Calculate the distribution of event total rainfall for a given individual
@@ -259,7 +260,7 @@ def calculate_etr_swath(
                 shapefile)
 
     # Constants
-    RHOA_OVER_RHOL = 0.00117  # rho_air / rho_liquid
+    RHOA_OVER_RHOL = tcr_cons.RHOA_OVER_RHOL  # rho_air / rho_liquid
 
     # Initialize variables
     nrm, mrm = np.shape(radius_storm)
@@ -340,7 +341,7 @@ def generate_rainfall_point(
     plat, plong, latitude, longitude, datearray, velocity,
     radius_storm, velocity_secondary, radius_storm_secondary,
     u850, v850, utrans, vtrans, T600=None, magfac=1.0,
-    q900_constant=0.01, timeres=0.5, wrad=-0.005, eprecip=0.9
+    q900_constant=0.01, timeres=0.5, wrad=tcr_cons.wrad, eprecip=tcr_cons.eprecip
 ):
     """
     Calculate the accumulated rainfall and rain rates at a specified location
@@ -417,8 +418,8 @@ def generate_rainfall_point(
     topores = 360.0 / ntopo  # topo resolution in degree
     toporesi = 1.0 / topores  # inverse of topo resolution
     sfac = 1.0 / (topores * 60.0 * 1852)  # factor converting degree to m
-    pifac = math.acos(-1) / 180  # pi number
-    knotfac = 1852.0 / 3600  # convert nautical mile to m/s
+    pifac = tcr_cons.RAD2DEG  # pi number
+    knotfac = tcr_cons.KNOTS2MPS  # convert nautical mile to m/s
     m, n = ut.shape  # m: num of storm; n: num of time steps
 
     if np.min(plong) < 0:
@@ -479,7 +480,7 @@ def generate_rainfall_point(
     date_record = np.reshape(datetimes_numpy, wq.shape)
 
     # Constants
-    RHOA_OVER_RHOL = 0.00117  # rho_air / rho_liquid
+    RHOA_OVER_RHOL = tcr_cons.RHOA_OVER_RHOL # rho_air / rho_liquid
 
     # Calculate rain rate (mm/hr)
     rainrate = eprecip * 1000 * 3600 * RHOA_OVER_RHOL * wq

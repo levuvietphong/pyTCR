@@ -5,6 +5,7 @@ Functions for topography and boundary layers in PyTCR
 import math
 import numpy as np
 from tcr import iodata as tcr_io
+from tcr import constants as tcr_cons
 from tcr.datadir import DATA_DIR
 
 
@@ -47,7 +48,7 @@ def calculate_distance_to_track(
     dy : numpy.ndarray
         Distance components in the y direction (km).
     """
-    pi_factor = np.pi / 180  # Use numpy's pi constant
+    pi_factor = tcr_cons.RAD2DEG  # Use numpy's pi constant
     shape = (num_storms, storm_length, num_x_points, num_y_points)
     dx = np.zeros(shape)
     dy = np.zeros(shape)
@@ -192,7 +193,7 @@ def estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlong):
     ntopo, _ = np.shape(bathymetry)  # number of grid point in x direction
     topo_resolution = 360 / ntopo
     topo_resolution_inv = 1 / topo_resolution
-    pi_factor = math.pi / 180  # pi number
+    pi_factor = tcr_cons.RAD2DEG
     # scale factor converting nautical mile (degree) to meter
     scale_factor = 1.0 / (topo_resolution * 60.0 * 1852)
 
