@@ -5,7 +5,7 @@ Functions for topography and boundary layers in PyTCR
 import math
 import numpy as np
 from tcr import iodata as tcr_io
-from tcr import constants as tcr_cons
+from tcr import constants as tcr_const
 from tcr.datadir import DATA_DIR
 
 
@@ -48,7 +48,7 @@ def calculate_distance_to_track(
     dy : numpy.ndarray
         Distance components in the y direction (km).
     """
-    pi_factor = tcr_cons.RAD2DEG  # Use numpy's pi constant
+    pi_factor = tcr_const.RAD2DEG  # Use numpy's pi constant
     shape = (num_storms, storm_length, num_x_points, num_y_points)
     dx = np.zeros(shape)
     dy = np.zeros(shape)
@@ -193,9 +193,9 @@ def estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlong):
     ntopo, _ = np.shape(bathymetry)  # number of grid point in x direction
     topo_resolution = 360 / ntopo
     topo_resolution_inv = 1 / topo_resolution
-    pi_factor = tcr_cons.RAD2DEG
-    # scale factor converting nautical mile (degree) to meter
-    scale_factor = 1.0 / (topo_resolution * 60.0 * 1852)
+    pi_factor = tcr_const.RAD2DEG
+    # scale factor converting degree to meter
+    scale_factor = tcr_const.DEG2KM * topo_resolution_inv * 1000
 
     x = np.round(np.arange(bxmin, bxmax + 1e-8, dellatlong), 4)
     y = np.round(np.arange(bymin, bymax + 1e-8, dellatlong), 4)
@@ -225,7 +225,7 @@ def estimate_drag_coefficients(plat, plong, sfac):
     plong : numpy.ndarray
         Array of longitudes for points of interest (degree)
     sfac : float
-        Factor for converting spatial resolution in nautical miles to meters
+        Factor for converting spatial resolution in degree to meters
 
     Returns:
     --------
@@ -245,7 +245,7 @@ def estimate_drag_coefficients(plat, plong, sfac):
                 weights[2] * data[(ix + 1) % 1440, iy] +
                 weights[3] * data[(ix + 1) % 1440, iy + 1])
 
-    pi_factor = math.pi / 180  # pi number
+    pi_factor = tcr_const.RAD2DEG
 
     # Load neutral drag coefficients
     cd = tcr_io.load_netcdf_2d_parameters(DATA_DIR, "surface_data.nc", "cdrag")
