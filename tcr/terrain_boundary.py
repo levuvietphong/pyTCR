@@ -195,7 +195,7 @@ def estimate_topographic_height(bxmin, bxmax, bymin, bymax, dellatlong):
     topo_resolution_inv = 1 / topo_resolution
     pi_factor = tcr_const.RAD2DEG
     # scale factor converting degree to meter
-    scale_factor = tcr_const.DEG2KM * topo_resolution_inv * 1000
+    scale_factor = 1.0 / (tcr_const.DEG2KM * topo_resolution * 1000)
 
     x = np.round(np.arange(bxmin, bxmax + 1e-8, dellatlong), 4)
     y = np.round(np.arange(bymin, bymax + 1e-8, dellatlong), 4)

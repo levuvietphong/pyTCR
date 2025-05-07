@@ -763,11 +763,11 @@ def calculate_upward_velocity_field(
     sy = 1 if ngrid == 1 else np.max(np.shape(plat))
 
     plong = plong + 360 if plong[0] < 0 else plong
-    res = 0.25  # resolution in degrees
-    pifac = tcr_const.RAD2DEG       # convert radians to degrees (pi/180)
-    dfac = tcr_const.DEG2KM         # factor converting degree to km
-    sfac = dfac / res * 1000        # resolution in degree to meter
-    knotfac = tcr_const.KNOTS2MPS   # convert knots to m/s (1 knots = 0.5144 m/s)
+    res = 0.25                          # spatial resolution in degrees
+    pifac = tcr_const.RAD2DEG           # convert radians to degrees (pi/180)
+    dfac = tcr_const.DEG2KM             # factor converting degree to km
+    sfac = 1.0 / (dfac * res * 1000)    # convert resolution from degree to meter
+    knotfac = tcr_const.KNOTS2MPS       # convert knots to m/s (1 knots = 0.5144 m/s)
     ut = ut * knotfac   # convert to m/s
     vt = vt * knotfac   # convert to m/s
     omega = tcr_const.OMEGA  # Earth angular velocity parameter (rad/s)
@@ -1130,11 +1130,12 @@ def calculate_upward_velocity_time_series(
     timeresi = 1.0 / (3600 * timeres)
 
     # convert degree to km (1 nautical mile = 1/60 degree = 1.852 km)
-    pifac = tcr_const.RAD2DEG  # pi number
+    pifac = tcr_const.RAD2DEG
     dfac = 60 * 1.852
-    sfac = 1.0 / (0.25 * 60.0 * 1852)
-    knotfac = tcr_const.KNOTS2MPS  # convert knots to m/s (1 knots = 0.5144 m/s)
-    omega = tcr_const.OMEGA  # Earth angular velocity parameter
+    res = 0.25                          # spatial resolution in degrees
+    sfac = 1.0 / (dfac * res * 1000)    # convert resolution from degree to meter
+    knotfac = tcr_const.KNOTS2MPS       # convert knots to m/s (1 knots = 0.5144 m/s)
+    omega = tcr_const.OMEGA             # Earth angular velocity parameter
 
     se = np.nanmax(velocity_secondary)  # for secondary eyewalls
     ntime = int(timelength / timeres + 1)
@@ -1454,10 +1455,10 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
         Radius of maximum circular wind (km).
     """
 
-    ro = 1000.0  # Outer radius
-    wc = 3.0  # Radiative subsidence rate
+    ro = 1000.0       # Outer radius
+    wc = 3.0          # Radiative subsidence rate
     cdouter = 1.2e-3  # Drag coefficient
-    nouter = 1000  # Number of radial point
+    nouter = 1000     # Number of radial point
     num_tcs = len(id_tracks)
 
     if 'rm_trks' not in ds.keys() or force_recompute:
@@ -1472,7 +1473,7 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
                 vsin = vmax_tracks[ind, jnd]
                 # Skip at equator (coriolis force fc = 0) or vs = 0
                 if alats != 0 and vsin > 0:
-                    fc1 = 2 * tcr_const.OMEGA * np.sin(abs(alats) * tcr_const.RAD2DEG)
+                    fc1 = 2 * tcr_const.OMEGA * np.sin(np.radians(abs(alats)))
                     _, rm, _ = integrate_outer_wind_profile(vsin, fc1, ro, wc, cdouter, nouter)
                 else:
                     rm = 0

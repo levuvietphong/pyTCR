@@ -419,7 +419,7 @@ def generate_rainfall_point(
     ntopo, _ = np.shape(bathy)  # get number of grid points in longitude direction
     topores = 360.0 / ntopo     # topo resolution in degree
     toporesi = 1.0 / topores    # inverse of topo resolution
-    sfac = tcr_const.DEG2KM * toporesi * 1000  # topo resolution in degree to meter
+    sfac = 1.0 / (tcr_const.DEG2KM * topores * 1000)  # topo resolution in degree to meter
     pifac = tcr_const.RAD2DEG   # convert radians to degrees (pi/180)
     knotfac = tcr_const.KNOTS2MPS  # convert nautical mile to m/s
     m, n = ut.shape  # m: num of storm, n: num of time steps
