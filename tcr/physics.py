@@ -4,6 +4,7 @@ Functions for physics in PyTCR
 
 import numpy as np
 
+
 def estimate_track_density(lat_trks, lon_trks, vmax_trks, num_trks, threshold, cellsize, interval):
     """
     Estimate the total number of tropical cyclone (TC) tracks crossing a latitude-longitude box

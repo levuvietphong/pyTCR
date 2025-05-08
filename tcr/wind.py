@@ -10,8 +10,8 @@ import glob
 import numpy as np
 from tcr import terrain_boundary as tcr_tb
 from tcr import iodata as tcr_io
-from tcr import constants as tcr_const
-from tcr.datadir import DATA_DIR
+from tcr import parameters as tcr_params
+from tcr.datadir import BASE_DATA_DIR, DOWNSCALED_DATA_DIR
 
 
 def calculate_wind_primary(utf, vtf, vf, rf, rmf, vsef, rmsef, latf,
@@ -708,8 +708,8 @@ def get_translation_speeds_full(lats, longs, vs=None, u850=None, v850=None):
 def calculate_upward_velocity_field(
     latitude, longitude, velocity, radius_storm, velocity_secondary,
     radius_storm_secondary, ut, vt, us, vs, plat, plong, h, hx, hy,
-    deltar=tcr_const.deltar, timeresw=tcr_const.timeresw, Htrop=tcr_const.Htrop,
-    radcity=tcr_const.radcity, wprofile=tcr_const.wprofile
+    deltar=tcr_params.deltar, timeresw=tcr_params.timeresw, Htrop=tcr_params.Htrop,
+    radcity=tcr_params.radcity, wprofile=tcr_params.wprofile
 ):
     """
     Calculate the spatial distribution of vertical velocity.
@@ -764,13 +764,13 @@ def calculate_upward_velocity_field(
 
     plong = plong + 360 if plong[0] < 0 else plong
     res = 0.25                          # spatial resolution in degrees
-    pifac = tcr_const.RAD2DEG           # convert radians to degrees (pi/180)
-    dfac = tcr_const.DEG2KM             # factor converting degree to km
+    pifac = tcr_params.RAD2DEG           # convert radians to degrees (pi/180)
+    dfac = tcr_params.DEG2KM             # factor converting degree to km
     sfac = 1.0 / (dfac * res * 1000)    # convert resolution from degree to meter
-    knotfac = tcr_const.KNOTS2MPS       # convert knots to m/s (1 knots = 0.5144 m/s)
+    knotfac = tcr_params.KNOTS2MPS       # convert knots to m/s (1 knots = 0.5144 m/s)
     ut = ut * knotfac   # convert to m/s
     vt = vt * knotfac   # convert to m/s
-    omega = tcr_const.OMEGA  # Earth angular velocity parameter (rad/s)
+    omega = tcr_params.OMEGA  # Earth angular velocity parameter (rad/s)
     latfac = (latitude[0] / (abs(latitude[0]) + 1e-8) if latitude.ndim == 1
               else latitude[0, 0] / (abs(latitude[0, 0]) + 1e-8))
 
@@ -851,9 +851,9 @@ def calculate_upward_velocity_field(
 
 def calculate_wind_time_series(latitude, longitude, velocity, radius_storm,
                                velocity_secondary, radius_storm_secondary, ut, vt,
-                               plat, plong, timeres, timelength=tcr_const.timelength,
-                               wheight=tcr_const.wheight, wprofile=tcr_const.wprofile,
-                               radcity=tcr_const.radcity):
+                               plat, plong, timeres, timelength=tcr_params.timelength,
+                               wheight=tcr_params.wheight, wprofile=tcr_params.wprofile,
+                               radcity=tcr_params.radcity):
     """
     Calculate the time series of wind speed and direction at specified points
     of interest.
@@ -922,12 +922,12 @@ def calculate_wind_time_series(latitude, longitude, velocity, radius_storm,
 
     # Load bathymetry
     bathy = tcr_io.load_netcdf_2d_parameters(
-        DATA_DIR, "surface_data.nc", "bathymetry"
+        BASE_DATA_DIR, "surface_data.nc", "bathymetry"
     )
 
     # Load neutral drag coefficients
     cd = tcr_io.load_netcdf_2d_parameters(
-        DATA_DIR, "surface_data.nc", "cdrag"
+        BASE_DATA_DIR, "surface_data.nc", "cdrag"
     )
     mincd = np.min(cd)
     cd[bathy < 0] = mincd
@@ -1057,8 +1057,8 @@ def calculate_wind_time_series(latitude, longitude, velocity, radius_storm,
 def calculate_upward_velocity_time_series(
     latitude, longitude, velocity, radius_storm,
     velocity_secondary, radius_storm_secondary, ut, vt, us, vs, plong, plat,
-    h, hx, hy, timeres, deltar=tcr_const.deltar, timelength=tcr_const.timelength,
-    Htrop=tcr_const.Htrop, wprofile=tcr_const.wprofile, radcity=tcr_const.radcity,
+    h, hx, hy, timeres, deltar=tcr_params.deltar, timelength=tcr_params.timelength,
+    Htrop=tcr_params.Htrop, wprofile=tcr_params.wprofile, radcity=tcr_params.radcity,
     date_records=None, dq=None, wrad=None,
 ):
     """
@@ -1130,12 +1130,12 @@ def calculate_upward_velocity_time_series(
     timeresi = 1.0 / (3600 * timeres)
 
     # convert degree to km (1 nautical mile = 1/60 degree = 1.852 km)
-    pifac = tcr_const.RAD2DEG
+    pifac = tcr_params.RAD2DEG
     dfac = 60 * 1.852
     res = 0.25                          # spatial resolution in degrees
     sfac = 1.0 / (dfac * res * 1000)    # convert resolution from degree to meter
-    knotfac = tcr_const.KNOTS2MPS       # convert knots to m/s (1 knots = 0.5144 m/s)
-    omega = tcr_const.OMEGA             # Earth angular velocity parameter
+    knotfac = tcr_params.KNOTS2MPS       # convert knots to m/s (1 knots = 0.5144 m/s)
+    omega = tcr_params.OMEGA             # Earth angular velocity parameter
 
     se = np.nanmax(velocity_secondary)  # for secondary eyewalls
     ntime = int(timelength / timeres + 1)
@@ -1423,7 +1423,7 @@ def integrate_outer_wind_profile(vm, fc, ro, wc, Cd, q):
 
 
 def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
-                         data_directory=os.path.join(DATA_DIR, 'downscaled'),
+                         data_directory=os.path.join(DOWNSCALED_DATA_DIR, 'downscaled'),
                          model=None, basin=None, expmnt=None, force_recompute=False):
     """
     Estimate the radius of maximum circular wind from maximum circular wind speed.
@@ -1473,7 +1473,7 @@ def estimate_radius_wind(ds, lat_tracks, vmax_tracks, id_tracks,
                 vsin = vmax_tracks[ind, jnd]
                 # Skip at equator (coriolis force fc = 0) or vs = 0
                 if alats != 0 and vsin > 0:
-                    fc1 = 2 * tcr_const.OMEGA * np.sin(np.radians(abs(alats)))
+                    fc1 = 2 * tcr_params.OMEGA * np.sin(np.radians(abs(alats)))
                     _, rm, _ = integrate_outer_wind_profile(vsin, fc1, ro, wc, cdouter, nouter)
                 else:
                     rm = 0
@@ -1533,8 +1533,8 @@ def smooth_2d_array(x, nz, jmin, jmax):
 def calculate_wind_swath(
     nt, latitude, longitude, radius_storm, velocity, radius_storm_secondary,
     velocity_secondary, uinc, vinc, extent=None, shapefile=None, 
-    magfac=tcr_const.magfac, deltax=tcr_const.deltax, deltay=tcr_const.deltay,
-    dellatlongs=tcr_const.dellatlongs, timeres=tcr_const.timeres
+    magfac=tcr_params.magfac, deltax=tcr_params.deltax, deltay=tcr_params.deltay,
+    dellatlongs=tcr_params.dellatlongs, timeres=tcr_params.timeres
 ):
     """
     Calculate the distribution of maximum point wind speed (in knots) for a
