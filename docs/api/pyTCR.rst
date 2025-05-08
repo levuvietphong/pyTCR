@@ -1,8 +1,16 @@
 API Reference
 =============
 
-Functions and Submodules
-------------------------
+Submodules
+----------
+
+tcr.constants module
+--------------------
+
+.. automodule:: tcr.constants
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 tcr.convert module
 ------------------
@@ -24,14 +32,6 @@ tcr.iodata module
 -----------------
 
 .. automodule:: tcr.iodata
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tcr.parallel module
--------------------
-
-.. automodule:: tcr.parallel
    :members:
    :undoc-members:
    :show-inheritance:
