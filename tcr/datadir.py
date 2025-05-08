@@ -16,10 +16,13 @@ def get_downscaled_data_dir(override: str = None) -> str:
     Determines the directory path for data storage based on various sources of configuration.
 
     This function checks for the data directory in the following order of precedence:
+
     1. If an override path is provided as an argument, it is returned.
     2. If a config file exists in standard locations, the `data_dir` from the file is returned.
+
        - On Windows, it checks the `APPDATA` directory.
        - On other platforms, it checks `~/.config/tcr/config.yaml`.
+
     3. If none of the above sources provide a path, a default `DATA_DIR` constant is returned.
 
     Args:
