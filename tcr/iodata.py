@@ -10,7 +10,9 @@ import xarray as xr
 import requests
 import shapefile
 from bs4 import BeautifulSoup
-from tcr.datadir import DATA_DIR
+from tcr import datadir as tcr_data
+BASE_DATA_DIR = tcr_data.BASE_DATA_DIR
+DOWNSCALED_DATA_DIR = tcr_data.get_downscaled_data_dir()
 
 
 def convert_to_mps(values, conversion_factor=0.514444):
@@ -150,7 +152,7 @@ def load_tracks_GCMs(
         If an error occurs while loading or processing the dataset.
     """
     if data_directory is None:
-        data_directory = os.path.join(DATA_DIR, 'downscaled')
+        data_directory = os.path.join(DOWNSCALED_DATA_DIR, 'downscaled')
 
     ncfilename = os.path.join(data_directory, expmnt, f"tracks_{basin}_{model}_*.nc")
     try:
@@ -344,7 +346,7 @@ def download_tracks_data_cmip6(
         Name of the CMIP6 model (default is 'E3SM-1-0').
     target_directory : str, optional
         Path to the target directory to save the downloaded files.
-        Default is '{DATA_DIR}/downscaled/'
+        Default is '{BASE_DATA_DIR}/downscaled/'
 
     Returns:
     --------
@@ -360,7 +362,7 @@ def download_tracks_data_cmip6(
         url = "https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks"
 
     if target_directory is None:
-        target_directory = os.path.join(DATA_DIR, 'downscaled')
+        target_directory = os.path.join(DOWNSCALED_DATA_DIR, 'downscaled')
 
     for experiment in experiments:
         for model in models:
