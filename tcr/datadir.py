@@ -49,7 +49,7 @@ def get_downscaled_data_dir(override: str = None) -> str:
                 if "data_dir" in config:
                     return config["data_dir"]
 
-    return DATA_DIR
+    return BASE_DATA_DIR
 
 
 # Default data directory relative to this file

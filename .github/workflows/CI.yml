@@ -25,6 +25,7 @@ jobs:
           pip install --upgrade pip setuptools wheel
           pip install --pre pytcr  # Install from PyPI          
           pip install notebook nbconvert
+          pip install .
 
       - name: Check environment is correctly set up.
         run: |

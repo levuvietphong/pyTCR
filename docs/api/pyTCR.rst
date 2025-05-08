@@ -4,14 +4,6 @@ API Reference
 Submodules
 ----------
 
-tcr.constants module
---------------------
-
-.. automodule:: tcr.constants
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 tcr.convert module
 ------------------
 
@@ -32,6 +24,14 @@ tcr.iodata module
 -----------------
 
 .. automodule:: tcr.iodata
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tcr.parameters module
+---------------------
+
+.. automodule:: tcr.parameters
    :members:
    :undoc-members:
    :show-inheritance:
