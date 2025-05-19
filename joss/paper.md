@@ -43,7 +43,7 @@ bibliography: paper.bib
 
 # Summary
 `pyTCR` is a climatology software package developed in the Python programming language.
-It integrates the capabilities of several legacy physical models into a reduced-complexity framework, enabling rapid estimation of tropical cyclone (TC) rainfall consistent with the large-scale environment.
+It integrates the capabilities of several legacy physical models [@Emanuel:2008;@Langousis:2009] into a reduced-complexity framework, enabling rapid estimation of tropical cyclone (TC) rainfall consistent with the large-scale environment.
 Specifically, `pyTCR` implements a horizontally distributed and vertically integrated model [@Zhu:2013] for simulating rainfall driven by TCs. Along storm tracks, rainfall is estimated by computing the cross-boundary-layer, upward water vapor transport caused by different mechanisms including frictional convergence, vortex stretching, large-scale baroclinic effect (i.e., wind shear), topographic forcing, and radiative cooling [@Lu:2018].
 The package provides essential functionalities for modeling and interpreting spatio-temporal TC rainfall data. `pyTCR` requires a limited number of model input parameters, making it a convenient and useful tool for analyzing rainfall mechanisms driven by TCs.
 
