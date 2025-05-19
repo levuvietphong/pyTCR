@@ -10,7 +10,9 @@ import xarray as xr
 import requests
 import shapefile
 from bs4 import BeautifulSoup
-from tcr.datadir import DATA_DIR
+from tcr import datadir as tcr_data
+BASE_DATA_DIR = tcr_data.BASE_DATA_DIR
+DOWNSCALED_DATA_DIR = tcr_data.get_downscaled_data_dir()
 
 
 def convert_to_mps(values, conversion_factor=0.514444):
@@ -94,8 +96,8 @@ def load_Matlab_data(directory, filename):
         raise RuntimeError(f"An error occurred while loading the Matlab file: {e}") from e
 
 
-def load_netcdf_track_data(
-    data_directory=None, model="E3SM-1-0", basin="NA", expmnt="historical"
+def load_tracks_GCMs(
+    data_directory=None, model="E3SM-1-0", basin="NA", expmnt="historical", dropna=True,
 ):
     """
     Load and extract data from a NetCDF file containing tropical cyclone downscaling information.
@@ -106,13 +108,14 @@ def load_netcdf_track_data(
         Path to the directory containing the NetCDF files.
         If not provided, defaults to the downscaled data directory.
     model : str, optional
-        Name of the CMIP6 model (e.g., 'E3SM-1-0'). Default is 'E3SM-1-0'.
+        CMIP6 model name (e.g., 'E3SM-1-0'). Default is 'E3SM-1-0'.
     basin : str, optional
         Name of the ocean basin (e.g., 'NA' for North Atlantic, 'WP' for Western Pacific).
         Default is 'NA'.
     expmnt : str, optional
-        Name of the model experiment (e.g., 'historical', 'ssp585').
-        Default is 'historical'.
+        Experiment name (e.g., 'historical', 'ssp585'). Default is 'historical'.
+    dropna : bool, optional
+        Whether to convert NaNs to zeros. Default is True.        
 
     Returns:
     --------
@@ -149,31 +152,32 @@ def load_netcdf_track_data(
         If an error occurs while loading or processing the dataset.
     """
     if data_directory is None:
-        data_directory = os.path.join(DATA_DIR, 'downscaled')
+        data_directory = os.path.join(DOWNSCALED_DATA_DIR, 'downscaled')
 
     ncfilename = os.path.join(data_directory, expmnt, f"tracks_{basin}_{model}_*.nc")
     try:
         ncfile = glob.glob(ncfilename)[0]
-        ds = xr.open_dataset(ncfile)
-        lat_trks = np.nan_to_num(ds['lat_trks'].values)
-        lon_trks = np.nan_to_num(ds['lon_trks'].values)
-        n_trk = np.nan_to_num(ds['n_trk'].values)
-        v_trks = np.nan_to_num(ds['v_trks'].values)
-        vmax_trks = np.nan_to_num(ds['vmax_trks'].values)
-        u850_trks = np.nan_to_num(ds['u850_trks'].values)
-        v850_trks = np.nan_to_num(ds['v850_trks'].values)
-        tc_month = np.nan_to_num(ds['tc_month'].values)
-        tc_years = np.nan_to_num(ds['tc_years'].values)
-        tc_time = np.nan_to_num(ds['time'].values)
-    except IndexError as exc:
-        raise FileNotFoundError(f"No files found for the given path: {ncfilename}") from exc
+        with xr.open_dataset(ncfile) as file_handle:
+            ds = file_handle.load()
+
+        def get_vals(var):
+            return np.nan_to_num(ds[var].values) if dropna else ds[var].values
+
+        var_names = ['lat_trks', 'lon_trks', 'n_trk', 'v_trks', 'vmax_trks', 'year',
+                     'u850_trks', 'v850_trks', 'tc_month', 'tc_years', 'time']
+
+        lat_trks, lon_trks, n_trk, v_trks, vmax_trks, year_trks, \
+            u850_trks, v850_trks, tc_month, tc_years, tc_time = map(get_vals, var_names)
+
+    except IndexError as e:
+        raise FileNotFoundError(f"No files found for the given path: {ncfilename}") from e
     except KeyError as e:
         raise KeyError(f"Missing expected data in the dataset: {e}") from e
     except Exception as e:
         raise RuntimeError(f"An error occurred while loading the dataset: {e}") from e
 
     return (
-        ds, lat_trks, lon_trks, n_trk, v_trks, vmax_trks,
+        ds, lat_trks, lon_trks, year_trks, n_trk, vmax_trks, v_trks,
         u850_trks, v850_trks, tc_month, tc_years, tc_time
     )
 
@@ -274,58 +278,6 @@ def load_best_tracks_obs(fname, year_start, year_end):
     return lat_tc, lon_tc, time_tc, ind_tc, name_tc, basin_tc, wind_tc, speed_tc
 
 
-def load_tracks_GCMs(
-    data_directory=None, model="E3SM-1-0", basin="NA", expmnt="historical"
-):
-    """
-    Load the downscaled tracks of tropical cyclones from CMIP6 models.
-
-    Parameters:
-    -----------
-    data_directory : str
-        Path to the data directory.
-    model : str
-        Name of the CMIP6 model.
-    basin : str
-        Name of the ocean basin.
-    expmnt : str
-        Name of the model experiment.
-
-    Returns:
-    --------
-    lat_trks : numpy.ndarray
-        Latitudes of tropical cyclone tracks (degree).
-    lon_trks : numpy.ndarray
-        Longitudes of tropical cyclone tracks (degree).
-    year_trks : numpy.ndarray
-        Years of tropical cyclones.
-    id_trks : numpy.ndarray
-        Indices of tropical cyclones.
-    vmax_trks : numpy.ndarray
-        Maximum wind speeds of tropical cyclones (m/s).
-    """
-    if data_directory is None:
-        data_directory = os.path.join(DATA_DIR, 'downscaled')
-
-    ncfilename = os.path.join(data_directory, expmnt, f"tracks_{basin}_{model}_*.nc")
-    try:
-        ncfile = glob.glob(ncfilename)[0]
-        ds = xr.open_dataset(ncfile)
-        lon_trks = ds['lon_trks'].values
-        lat_trks = ds['lat_trks'].values
-        vmax_trks = ds['vmax_trks'].values
-        year_trks = ds['year'].values
-        id_trks = ds['n_trk'].values
-    except IndexError as exc:
-        raise FileNotFoundError(f"No files found for the given path: {ncfilename}") from exc
-    except KeyError as e:
-        raise KeyError(f"Missing expected data in the dataset: {e}") from e
-    except Exception as e:
-        raise RuntimeError(f"An error occurred while loading the dataset: {e}") from e
-
-    return lat_trks, lon_trks, year_trks, id_trks, vmax_trks
-
-
 def fetch_directory_tree(url=None, depth=0, max_depth=2):
     """
     Fetch and print the directory tree from a specified URL up to a given depth.
@@ -394,7 +346,7 @@ def download_tracks_data_cmip6(
         Name of the CMIP6 model (default is 'E3SM-1-0').
     target_directory : str, optional
         Path to the target directory to save the downloaded files.
-        Default is '{DATA_DIR}/downscaled/'
+        Default is '{BASE_DATA_DIR}/downscaled/'
 
     Returns:
     --------
@@ -410,7 +362,7 @@ def download_tracks_data_cmip6(
         url = "https://web.corral.tacc.utexas.edu/setxuifl/tropical_cyclones/downscaled_cmip6_tracks"
 
     if target_directory is None:
-        target_directory = os.path.join(DATA_DIR, 'downscaled')
+        target_directory = os.path.join(DOWNSCALED_DATA_DIR, 'downscaled')
 
     for experiment in experiments:
         for model in models:

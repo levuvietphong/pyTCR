@@ -45,6 +45,6 @@ $ python -c "import tcr; print(tcr.__version__)"
 ---
 
 ```{note}
-If you have any challenges installing, please [open an issue here](https://github.com/levuvietphong/pyTCR/issues).  
-If you want to contribute to `pyTCR`, see the [contributing guide](https://github.com/levuvietphong/pyTCR/issues/CONTRIBUTING.md)
+If you have any difficulties during installation, please [open an issue here](https://github.com/levuvietphong/pyTCR/issues).  
+If you want to contribute to `pyTCR`, see the [contributing guide](https://github.com/levuvietphong/pyTCR/blob/main/CONTRIBUTING.md)
 ```

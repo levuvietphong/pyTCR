@@ -1,1 +1,1 @@
-__version__ = "1.2.2"
+__version__ = "1.2.3b1"  # Version of the TCR package

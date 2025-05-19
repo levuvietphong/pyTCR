@@ -1,8 +1,8 @@
 API Reference
 =============
 
-Functions and Submodules
-------------------------
+Submodules
+----------
 
 tcr.convert module
 ------------------
@@ -28,10 +28,10 @@ tcr.iodata module
    :undoc-members:
    :show-inheritance:
 
-tcr.parallel module
--------------------
+tcr.parameters module
+---------------------
 
-.. automodule:: tcr.parallel
+.. automodule:: tcr.parameters
    :members:
    :undoc-members:
    :show-inheritance:
