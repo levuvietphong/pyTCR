@@ -37,17 +37,19 @@ affiliations:
    index: 3
  - name: Texas Advanced Computing Center, The University of Texas at Austin, Austin, TX, USA 
    index: 4
-date: 16 March 2025
+date: 19 May 2025
 bibliography: paper.bib
 ---
 
 # Summary
 `pyTCR` is a climatology software package developed in the Python programming language.
-It integrates the capabilities of several legacy physical models and increases computational efficiency to allow rapid estimation of tropical cyclone (TC) rainfall consistent with the large-scale environment.
+It integrates the capabilities of several legacy physical models into a reduced-complexity framework, enabling rapid estimation of tropical cyclone (TC) rainfall consistent with the large-scale environment.
 Specifically, `pyTCR` implements a horizontally distributed and vertically integrated model [@Zhu:2013] for simulating rainfall driven by TCs. Along storm tracks, rainfall is estimated by computing the cross-boundary-layer, upward water vapor transport caused by different mechanisms including frictional convergence, vortex stretching, large-scale baroclinic effect (i.e., wind shear), topographic forcing, and radiative cooling [@Lu:2018].
 The package provides essential functionalities for modeling and interpreting spatio-temporal TC rainfall data. `pyTCR` requires a limited number of model input parameters, making it a convenient and useful tool for analyzing rainfall mechanisms driven by TCs.
 
-To sample rare (most intense) rainfall events that are often of great societal interest, `pyTCR` adapts and leverages outputs from a statistical-dynamical TC downscaling model [@Lin:2023] capable of rapidly generating a large number of synthetic TCs given a certain climate. As a result, `pyTCR` significantly reduces computational effort and improves the efficiency in capturing extreme TC rainfall events at the tail of the distributions from limited datasets. Furthermore, the TC downscaling model is forced entirely by large-scale environmental conditions from reanalysis data or coupled General Circulation Models (GCMs), simplifying the projection of TC-induced rainfall and wind speed under future climate using `pyTCR`. Finally, `pyTCR` can be coupled with hydrological and wind models to assess risks associated with independent and compound events (e.g., storm surges and freshwater flooding).
+To sample rare (most intense) rainfall events that are often of great societal interest, `pyTCR` adapts and leverages outputs from a statistical-dynamical TC downscaling model [@Lin:2023] capable of rapidly generating a large number of synthetic TCs given a certain climate.
+As a result, `pyTCR` provides a computationally efficient approach for capturing extreme TC rainfall events at the tail of the distributions from limited datasets.
+Furthermore, the TC downscaling model is forced entirely by large-scale environmental conditions from reanalysis data or coupled General Circulation Models (GCMs), simplifying the projection of TC-induced rainfall and wind speed under future climate using `pyTCR`. Finally, `pyTCR` can be coupled with hydrological and wind models to assess risks associated with independent and compound events (e.g., storm surges and freshwater flooding).
 
 
 # Statement of need
