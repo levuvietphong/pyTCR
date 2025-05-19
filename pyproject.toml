@@ -10,6 +10,7 @@ authors = [
     {name = "Phong Le", email = "levuvietphong@gmail.com"}
 ]
 readme = "README-pypi.md"
+requires-python = ">=3.11"
 
 dependencies = [
     "cartopy",
