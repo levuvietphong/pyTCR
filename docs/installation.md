@@ -45,6 +45,7 @@ $ python -c "import tcr; print(tcr.__version__)"
 ---
 
 ```{note}
-If you have any difficulties during installation, please [open an issue here](https://github.com/levuvietphong/pyTCR/issues).  
-If you want to contribute to `pyTCR`, see the [contributing guide](https://github.com/levuvietphong/pyTCR/blob/main/CONTRIBUTING.md)
+Python 3.11 or higher is required for installing pyTCR. <br>
+If you have any difficulties during installation, please [open an issue here](https://github.com/levuvietphong/pyTCR/issues). <br>
+If you want to contribute to `pyTCR`, see the [contributing guide](https://github.com/levuvietphong/pyTCR/blob/main/CONTRIBUTING.md).
 ```
