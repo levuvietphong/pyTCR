@@ -2,8 +2,6 @@
 
 # Background
 
---
-
 `PyTCR` implements a tropical cyclone (TC) rainfall model described in {cite:t}`Zhu:2013` and {cite:t}`Lu:2018` that simulates along-track convective rainfall by relating the precipitation rate to the total upward velocity within the TC vortex. We refer to the study by {cite:t}`Lu:2018` for detailed formulation of this model. Here, for convenience, we give a brief overview of the main rainfall mechanisms used in this model and implemented in `pyTCR`.
 
 Let $P_{TC}$ be the precipitation rate driven by TCs, calculated as:

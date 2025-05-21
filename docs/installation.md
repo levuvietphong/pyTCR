@@ -34,18 +34,12 @@ $ pip install .
 ```
 ````
 
-<br>
-
-To see if things worked, try checking the `pyTCR` version with:
-
-```bash
-$ python -c "import tcr; print(tcr.__version__)"
-```
-
----
-
 ```{note}
-Python 3.11 or higher is required for installing pyTCR. <br>
+Python 3.11 or higher is required to install `pyTCR`. To verify that the installation was successful, check the `pyTCR` version with:
+
+    $ python -c "import tcr; print(tcr.__version__)"
+    
 If you have any difficulties during installation, please [open an issue here](https://github.com/levuvietphong/pyTCR/issues). <br>
 If you want to contribute to `pyTCR`, see the [contributing guide](https://github.com/levuvietphong/pyTCR/blob/main/CONTRIBUTING.md).
+
 ```

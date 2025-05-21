@@ -22,3 +22,9 @@
     background-color: #2f2f2f !important; /* Dark Gray */
     color: white;
 }
+
+hr {
+    border: none;
+    border-top: 3px solid;
+    margin: 2em 0;
+  }
