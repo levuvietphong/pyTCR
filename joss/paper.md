@@ -48,7 +48,7 @@ Specifically, `pyTCR` implements a horizontally distributed and vertically integ
 The package provides essential functionalities for modeling and interpreting spatio-temporal TC rainfall data. `pyTCR` requires a limited number of model input parameters, making it a convenient and useful tool for analyzing rainfall mechanisms driven by TCs.
 
 To sample rare (most intense) rainfall events that are often of great societal interest, `pyTCR` adapts and leverages outputs from a statistical-dynamical TC downscaling model [@Lin:2023] capable of rapidly generating a large number of synthetic TCs given a certain climate.
-As a result, `pyTCR` provides a computationally efficient approach for capturing extreme TC rainfall events at the tail of the distributions from limited datasets.
+As a result, `pyTCR` provides a tractable approach for capturing extreme TC rainfall events at the tail of the distributions from limited datasets.
 Furthermore, the TC downscaling model is forced entirely by large-scale environmental conditions from reanalysis data or coupled Earth System Models (ESMs), simplifying the projection of TC-induced rainfall and wind speed under future climate using `pyTCR`. Finally, `pyTCR` can be coupled with hydrological and wind models to assess risks associated with independent and compound events (e.g., storm surges and freshwater flooding).
 
 
@@ -58,10 +58,11 @@ Tropical cyclones (TCs) -- that is, hurricanes and tropical storms -- are among 
 The ability of ESMs to simulate climate extremes has substantially improved over the past few decades.
 These models have become key tools used for exploring the effect of global warming on precipitation and climate variability [@Emanuel:2021;@Le:2021;@Le:2023].
 While high-resolution ESMs have enhanced the representation of TCs [@Haarsma:2016;@Li:2018], they remain computationally intensive to conduct, so that only a limited number of simulations can be performed.
-This constrains their application in risk analysis of TC rainfall, which requires extensive sampling of extreme events [@Emanuel:2008].
-`pyTCR` responds to this need with an easy-to-use and fast tool that facilitates TC-driven rainfall analysis across scales.
-It leverages a synthetic downscaling approach that uses simpler embedded models and thermodynamic and kinematic statistics derived from ESM outputs or reanalysis data to generate large (~10$^3$-10$^4$) numbers of synthetic TCs [@Emanuel:2006b;@Lin:2023].
-This enables `pyTCR` to produce statistically robust estimates of the probability distributions of storms for risk assessment.
+This constrains their application in TC rainfall risk analysis, which requires extensive sampling of extreme events [@Emanuel:2008].
+`pyTCR` addresses this need with an easy-to-use and fast tool that facilitates TC-driven rainfall analysis across scales.
+Specifically, it leverages a synthetic downscaling approach that combines statistical track generation with simple deterministic intensity modeling.
+This approach uses thermodynamic and kinematic statistics, derived from ESM outputs or reanalysis data, to generate large (~10$^3$-10$^4$) numbers of synthetic TCs [@Emanuel:2006b;@Lin:2023].
+As a result, `pyTCR` produces statistically robust estimates of the probability distributions of storms for risk assessment.
 
 
 # Mathematical Approach
