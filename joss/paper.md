@@ -65,7 +65,7 @@ This approach uses thermodynamic and kinematic statistics, derived from ESM outp
 As a result, `pyTCR` produces statistically robust estimates of the probability distributions of storms for risk assessment.
 
 
-# Mathematical Approach
+# Mathematical approach
 `PyTCR` implements a TC rainfall model described in @Lu:2018 that simulates along-track convective rainfall by relating the precipitation rate to the total upward velocity within the TC vortex. Let $P_{TC}$ be the precipitation rate driven by TCs, calculated as:
 
 \begin{equation}
@@ -73,13 +73,13 @@ P_{TC} = \epsilon_p \frac{\rho_{air}}{\rho_{liquid}} q_s \max(w,0)
 \end{equation}
 
 where $\epsilon_p$ is precipitation efficiency, $\rho_{air}$ and $\rho_{liquid}$ are the density of water vapor and liquid water, respectively, $q_s$ is the saturation specific humidity, and $w$ is the upward-positive vertical wind velocity that brings surface moisture into the upper atmosphere.
-The key assumption here is that time-evolving TC rainfall is organized around the storm track and proportional to $w$. The core function of `pyTCR` includes estimating $w$ as a linear combination of five major components:
+The key assumption here is that time-evolving TC rainfall is organized around the storm track and is proportional to $w$. The core function of `pyTCR` includes estimating $w$ as a linear combination of five major components:
 
 \begin{equation}
 w = w_f + w_h + w_t + w_s + w_r
 \end{equation}
 
-where $w_f$ represents the velocity induced by surface frictional convergence, $w_h$ is the velocity driven by topographic forcing, $w_t$ denotes the velocity component arising from time dependence of the storm's vorticity, $w_s$ denotes the baroclinic/shear component velocity, and $w_r$ represents the velocity related to radiative cooling. We refer to @Lu:2018 for detailed formulations of these components.
+where $w_f$ represents the velocity induced by surface frictional convergence, $w_h$ is the velocity driven by topographic forcing, $w_t$ denotes the velocity component arising from time dependence of the storm's vorticity, $w_s$ denotes the baroclinic/shear component of velocity, and $w_r$ represents the velocity related to radiative cooling. We refer to @Lu:2018 for detailed formulations of these components.
 
 
 # Examples
