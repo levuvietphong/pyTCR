@@ -57,11 +57,11 @@ Tropical cyclones (TCs)&mdash;that is, hurricanes and tropical storms&mdash;are 
 
 The ability of ESMs to simulate climate extremes has substantially improved over the past few decades.
 These models have become key tools used for exploring the effect of global warming on precipitation and climate variability [@Emanuel:2021;@Le:2021;@Le:2023].
-While high-resolution ESMs have enhanced the representation of TCs [@Haarsma:2016;@Li:2018], they remain computationally intensive to conduct, so that only a limited number of simulations can be performed.
-This constrains their application in TC rainfall risk analysis, which requires extensive sampling of extreme events [@Emanuel:2008].
+While high-resolution ESMs have enhanced the representation of TCs [@Haarsma:2016;@Li:2018] they remain computationally intensive such that often only a limited number of simulations are performed.
+This constrains their application in TC rainfall risk analysis which requires extensive sampling of extreme events [@Emanuel:2008].
 `pyTCR` addresses this need with an easy-to-use and fast tool that facilitates TC-driven rainfall analysis across scales.
 Specifically, it leverages a synthetic downscaling approach that combines statistical track generation with simple deterministic intensity modeling.
-This approach uses thermodynamic and kinematic statistics, derived from ESM outputs or reanalysis data, to generate large (~10$^3$-10$^4$) numbers of synthetic TCs [@Emanuel:2006b;@Lin:2023].
+This approach uses thermodynamic and kinematic statistics, derived from ESM outputs or reanalysis data, to generate large numbers (~$10^3$&ndash;$10^4$) of synthetic TCs [@Emanuel:2006b;@Lin:2023].
 As a result, `pyTCR` produces statistically robust estimates of the probability distributions of storms for risk assessment.
 
 
