@@ -84,7 +84,7 @@ where $w_f$ represents the velocity induced by surface frictional convergence, $
 
 # Examples
 
-To help users learn key concepts and functionalities of `pyTCR`, we provide `Jupyter` notebooks designed for training purposes. For example, Figure 1 compares the tracks and mean power dissipation index (PDI) of TCs downscaled from the outputs of the E3SM-1-0 model and ERA5 reanalysis data using the TC downscaling model [@Lin:2023] with those obtained from the IBTrACS observations in the North Atlantic Ocean during the historical period (1964-2014).
+To help users learn key concepts and functionalities of `pyTCR`, we provide `Jupyter` notebooks designed for training purposes. For example, Figure 1 compares the tracks and mean power dissipation index (PDI) of TCs downscaled from the outputs of the E3SM-1-0 model and ERA5 reanalysis data using the TC downscaling model [@Lin:2023] with those obtained from the IBTrACS observations [@IBTrACS:2010] in the North Atlantic Ocean during the historical period (1964-2014).
 Along each TC track, `pyTCR` can generate time series and spatial patterns of rainfall events. Figure 2 illustrates the spatial distribution of total rainfall along a TC track.
 
 ![(Top) Tracks of 200 example TCs in the North Atlantic. Color lines indicates wind speed and TC tracks that landfall in Texas.(Bottom) Mean power dissipation index (PDI) per $2^{\circ} \times 2^{\circ}$ box per year. Plot was generated using the notebook `ex1_tropical_cyclone_tracks.ipynb` in the repository.\label{fig1}](Fig1.png)
