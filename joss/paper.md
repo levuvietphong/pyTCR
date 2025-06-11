@@ -13,18 +13,23 @@ authors:
     corresponding: true
     affiliation: 1 # (Multiple affiliations must be quoted)
   - name: Geeta Persad
+    orcid: 0009-0001-7768-9147
     equal-contrib: false
     affiliation: 2
   - name: Gabriel Perez
+    orcid: 0000-0003-3880-0874
     equal-contrib: false
     affiliation: 3
   - name: Ifeanyichukwu C. Nduka
+    orcid: 0000-0002-1978-7048
     equal-contrib: false
     affiliation: 2
   - name: William Mobley
+    orcid: 0000-0003-1783-0599
     equal-contrib: false
     affiliation: 4
   - name: Ethan T. Coon
+    orcid: 0000-0001-8124-9622
     equal-contrib: false
     affiliation: 1
 
