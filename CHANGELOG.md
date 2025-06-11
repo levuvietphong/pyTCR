@@ -1,5 +1,34 @@
 # Change Log
 
+## [pyTCR-1.2.3](https://github.com/levuvietphong/pyTCR/compare/pyTCR-1.2.2..pyTCR-1.2.3) - 2025-06-11
+
+### ⛰️  Features
+
+- Add more physical constants and model parameters to tcr/constants.py for consistence across all functions - ([05db790](https://github.com/levuvietphong/pyTCR/commit/05db79088f2d12c2e3d7069c7d3516d28611c183))
+- Remove unused parallel.py file - ([f08f077](https://github.com/levuvietphong/pyTCR/commit/f08f077c74bfd7cddefbb2932065ecdfa66b7895))
+- Combine two functions loading GCM data into a single function for consistency across the codebase. Notebooks are also updated. - ([50370ab](https://github.com/levuvietphong/pyTCR/commit/50370abec131452f18196990a3da3f05082d0b5e))
+
+### 🐛 Bug Fixes
+
+- Correct the scale factor converting degree to SI unit and update notebooks - ([7b24122](https://github.com/levuvietphong/pyTCR/commit/7b24122538fad50a9c66e073d0a984833a662bf0))
+- Update load_tracks_GCMs in ex3 for loading netcdf track file - ([330ccb9](https://github.com/levuvietphong/pyTCR/commit/330ccb9650771f891b4d731f58e5d4be290ad779))
+- Update load_tracks_GCMs in examples 3-5 for new load_tracks_GCMs function - ([fdf7eec](https://github.com/levuvietphong/pyTCR/commit/fdf7eec6b9a3a1fe41768644bb0a0db1d6766456))
+- Correct the base data directory in datadir.py - ([68e8d8a](https://github.com/levuvietphong/pyTCR/commit/68e8d8a5c7ab8d7c8c8fe01619fba89c8e672976))
+- Unindent bug in datadir docstring due to bullet points - ([8b37567](https://github.com/levuvietphong/pyTCR/commit/8b3756764b623ec0d74e797911bc990179129372))
+
+### 📚 Documentation
+
+- Fix broken link for CONTRIBUTING.md in documentation - ([1d8ac60](https://github.com/levuvietphong/pyTCR/commit/1d8ac6006c70c5d7c1cc046c001db21aea116521))
+- Update documentation for NetCDF datasets from downscaled TCD and observational sources. - ([f50112f](https://github.com/levuvietphong/pyTCR/commit/f50112ffee206f839f1ff31ef024a9266236fb0d))
+- Update API reference for jupyter-book build - ([4edd458](https://github.com/levuvietphong/pyTCR/commit/4edd4583629e90c1edd7e6f5454bc6347bf5fb1d))
+- Update version to 1.2.3b1 - ([a31ba67](https://github.com/levuvietphong/pyTCR/commit/a31ba6776254778af13890ad67539c46b24bf8cd))
+- Update README.md to add minimum required version for python. This resolves and closes #23. - ([35e98be](https://github.com/levuvietphong/pyTCR/commit/35e98be18eb8984771fafbd13b00f9d46a3588d1))
+
+## New Contributors ❤️
+
+* @jatkinson1000 made their first contribution
+* @1JunGu made their first contribution
+* @fzhao70 made their first contribution
 ## [pyTCR-1.2.2](https://github.com/levuvietphong/pyTCR/compare/pyTCR-1.2.1..pyTCR-1.2.2) - 2025-04-09
 
 ### 🐛 Bug Fixes
@@ -17,6 +46,10 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Add workflow to check the paper in joss - ([ff98a19](https://github.com/levuvietphong/pyTCR/commit/ff98a195d4aaead447f9f1169e829847819f139f))
+
+### Release
+
+- V1.2.2 - ([67b8d68](https://github.com/levuvietphong/pyTCR/commit/67b8d68df5eead2293232bfbc6ccd0fd26ba746a))
 
 ## [pyTCR-1.2.1](https://github.com/levuvietphong/pyTCR/compare/pyTCR-1.2..pyTCR-1.2.1) - 2025-04-03
 
@@ -54,7 +87,6 @@
 
 ## New Contributors ❤️
 
-* @levuvietphong made their first contribution
 * @ecoon made their first contribution in [#6](https://github.com/levuvietphong/pyTCR/pull/6)
 ## [pyTCR-1.2](https://github.com/levuvietphong/pyTCR/compare/pyTCR-1.1..pyTCR-1.2) - 2024-12-29
 
