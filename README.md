@@ -10,6 +10,7 @@
 ![](https://img.shields.io/github/forks/levuvietphong/pyTCR)
 ![](https://img.shields.io/github/last-commit/levuvietphong/pyTCR)
 ![](https://img.shields.io/github/v/release/levuvietphong/pyTCR)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.08074/status.svg)](https://doi.org/10.21105/joss.08074)
 ![](https://img.shields.io/github/actions/workflow/status/levuvietphong/pyTCR/CI.yml)
 
 ![](images/Intro-hurricane.gif)
@@ -25,6 +26,7 @@
 - [License](#page_facing_up-license)
 - [Contributions](#rocket-contributions)
 - [Acknowledgments](#people_hugging-acknowledgments)
+- [How to Cite](#bookmark-how-to-cite)
 - [Contacts](#mailbox-contacts)
 
 ## :book: Overview
@@ -100,10 +102,28 @@ All contributions, bug reports, bug fixes, documentation improvements, enhanceme
 ## :people_hugging: Acknowledgments
 This work was supported by the [Southeast Texas Urban Integrated Field Lab](https://setx-uifl.org/) <img src="https://setx-uifl.org/wp-content/uploads/2023/08/SETx-URBAN-IFL-Logo-Full-Color-Final-300x109.png" height="22" style="vertical-align: -8px" /> project, one of four [Urban Integrated Field Laboratories](https://ess.science.energy.gov/urban-ifls/) <img src="https://ess.science.energy.gov/urban-ifls/wp-content/uploads/sites/2/2023/04/UIFL-logo-final.jpg" height="22" style="vertical-align: -8px" /> (UIFLs). The software was mostly developed at <img src="https://map.ornl.org/art/logo.png" height="22" style="vertical-align: -10px"/>. We extend our gratitude to the SETx-UIFL team for their support and collaboration.
 
+## :bookmark: How to Cite
+If you are using this library, please consider citing the following paper:
+- Le et al., (2025). pyTCR: A tropical cyclone rainfall model for python. *Journal of Open Source Software*, 10(110), 8074, https://doi.org/10.21105/joss.08074.
+
+**Bibtex:**
+```bibtex
+@article{Le2025, 
+    title = {pyTCR: A tropical cyclone rainfall model for python},
+    author = {Phong V. V. Le and Geeta Persad and Gabriel Perez and Ifeanyichukwu C. Nduka and William Mobley and Ethan T. Coon},
+    journal = {Journal of Open Source Software},
+    volume = {10},
+    number = {110},
+    pages = {8074},    
+    year = {2025},    
+    doi = {10.21105/joss.08074},
+}
+```
 
 ## :mailbox: Contacts
 For questions and feedback, please contact:
 - Phong Le (levuvietphong@gmail.com)
+
 
 <hr>
 
